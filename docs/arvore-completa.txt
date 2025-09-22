@@ -1,0 +1,78 @@
+﻿Personal_Finance_Flow/
+├── docs/
+│   ├── arvore-completa.txt
+│   ├── arvore-diretorios.txt
+│   ├── arvore-simples.txt
+│   ├── estrutura-completa.md
+│   └── PERSONAL_FINANCE_FLOW.md
+├── finance-app/
+│   ├── backend/
+│   │   ├── package.json
+│   │   ├── personal_finance.db
+│   │   ├── README.md
+│   │   └── server.js
+│   ├── frontend/
+│   │   ├── public/
+│   │   │   ├── favicon.ico
+│   │   │   ├── logo.png
+│   │   │   └── vite.svg
+│   │   ├── src/
+│   │   │   ├── assets/
+│   │   │   │   └── react.svg
+│   │   │   ├── App.css
+│   │   │   ├── App.jsx
+│   │   │   ├── index.css
+│   │   │   └── main.jsx
+│   │   ├── eslint.config.js
+│   │   ├── index.html
+│   │   ├── package.json
+│   │   ├── tailwind.config.js
+│   │   └── vite.config.js
+│   ├── .gitignore
+│   ├── package.json
+│   └── README.md
+├── personal-finance-flow/
+│   ├── backend/
+│   │   ├── package.json
+│   │   ├── personal_finance.db
+│   │   ├── README.md
+│   │   └── server.js
+│   ├── frontend/
+│   │   ├── public/
+│   │   │   ├── favicon.ico
+│   │   │   ├── logo.png
+│   │   │   └── vite.svg
+│   │   ├── src/
+│   │   │   ├── assets/
+│   │   │   │   └── react.svg
+│   │   │   ├── App.css
+│   │   │   ├── App.jsx
+│   │   │   ├── index.css
+│   │   │   └── main.jsx
+│   │   ├── eslint.config.js
+│   │   ├── index.html
+│   │   ├── package.json
+│   │   ├── tailwind.config.js
+│   │   └── vite.config.js
+│   ├── .gitignore
+│   ├── LICENSE.txt
+│   └── README.md
+├── personal-finance-pwa/
+│   ├── docs/
+│   │   ├── GuiaCompletoAtualizarGitHub&Deploy.md
+│   │   ├── Prompt.md
+│   │   └── RELATORIO_TECNICO.md
+│   ├── public/
+│   │   ├── favicon.ico
+│   │   ├── icon-192.png
+│   │   ├── icon-512.png
+│   │   ├── manifest.json
+│   │   └── sw.js
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── db-manager.js
+│   │   └── main.jsx
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.js
+└── PersonalFinanceFlow.jsx
