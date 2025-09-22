@@ -6,6 +6,7 @@ import topLevelAwait from 'vite-plugin-top-level-await'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 export default defineConfig({
+  base: '/personal-finance-flow/',
   plugins: [
     react(),
     wasm(),
