@@ -12,6 +12,22 @@ O V&M Personal Finance é um **Progressive Web App (PWA)** - um aplicativo web q
 - ✅ **Ícone na área de trabalho/celular**
 - ✅ **Atualizações automáticas**
 
+## 💡 Dicas de Uso
+
+1. **Primeira vez:** Configure sua senha de acesso
+2. **Backup regular:** Use a função "Exportar Dados" nas configurações
+3. **Atualizações:** O aplicativo se atualiza automaticamente quando conectado
+4. **Performance:** Funciona melhor quando instalado vs. usando no navegador
+
+
+## 🔒 Segurança e Privacidade
+
+- **Todos os dados ficam no seu dispositivo** (não enviamos nada para servidores)
+- **Funciona completamente offline** após primeira instalação
+- **Código aberto:** https://github.com/lamvial1958/personal-finance-flow
+- **Sem rastreamento** ou coleta de dados pessoais
+
+
 ## 💻 Como Instalar no DESKTOP
 
 ### Google Chrome / Microsoft Edge
@@ -70,27 +86,23 @@ O V&M Personal Finance é um **Progressive Web App (PWA)** - um aplicativo web q
 - **Android:** Mantenha pressionado o ícone → "Desinstalar"
 - **iPhone:** Mantenha pressionado o ícone → "Remover aplicativo"
 
-## 🔒 Segurança e Privacidade
-
-- **Todos os dados ficam no seu dispositivo** (não enviamos nada para servidores)
-- **Funciona completamente offline** após primeira instalação
-- **Código aberto:** https://github.com/lamvial1958/personal-finance-flow
-- **Sem rastreamento** ou coleta de dados pessoais
-
-## 💡 Dicas de Uso
-
-1. **Primeira vez:** Configure sua senha de acesso
-2. **Backup regular:** Use a função "Exportar Dados" nas configurações
-3. **Atualizações:** O aplicativo se atualiza automaticamente quando conectado
-4. **Performance:** Funciona melhor quando instalado vs. usando no navegador
-
 ## 🆘 Suporte
 
 **Problemas ou dúvidas?**
 - **GitHub Issues:** https://github.com/lamvial1958/personal-finance-flow/issues
-- **Email:** [seu-email@exemplo.com]
+- **Email:** [lamvial@outlook.com]
 
 ---
+
+Se você gostar do aplicativo, "buy me a coffe" e envie o valor do café usando o email como chave PIX, assim, você me ajudará a continuar a desenvolvê-lo para implementar rapidamente essas novas funcionalidades:
+### Funcionalidades Futuras (V2)
+1. Sincronização em nuvem opcional
+2. Exportação para Excel/CSV
+3. Gráficos e visualizações interativas
+4. Categorias personalizáveis
+5. Notificações e lembretes
+6. Modo escuro/claro
+7. Multi-idioma
 
 **Desenvolvido por V&M | Versão PWA 2025**
 
