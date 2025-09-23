@@ -6,23 +6,23 @@
   "background_color": "#ffffff",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "scope": "/",
-  "start_url": "/",
+  "scope": "/personal-finance-flow/",
+  "start_url": "/personal-finance-flow/",
   "categories": ["finance", "productivity", "utilities"],
   "icons": [
     {
-      "src": "/favicon.ico",
+      "src": "/personal-finance-flow/favicon.ico",
       "sizes": "48x48",
       "type": "image/x-icon"
     },
     {
-      "src": "/icon-192.png",
+      "src": "/personal-finance-flow/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/personal-finance-flow/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
@@ -30,7 +30,7 @@
   ],
   "screenshots": [
     {
-      "src": "/icon-512.png",
+      "src": "/personal-finance-flow/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "form_factor": "wide",
@@ -42,10 +42,10 @@
       "name": "Dashboard",
       "short_name": "Dashboard",
       "description": "Acessar painel principal",
-      "url": "/?tab=dashboard",
+      "url": "/personal-finance-flow/?tab=dashboard",
       "icons": [
         {
-          "src": "/icon-192.png",
+          "src": "/personal-finance-flow/icon-192.png",
           "sizes": "192x192"
         }
       ]
@@ -54,10 +54,10 @@
       "name": "Patrimônio",
       "short_name": "Patrimônio",
       "description": "Gerenciar patrimônio",
-      "url": "/?tab=patrimony",
+      "url": "/personal-finance-flow/?tab=patrimony",
       "icons": [
         {
-          "src": "/icon-192.png",
+          "src": "/personal-finance-flow/icon-192.png",
           "sizes": "192x192"
         }
       ]
@@ -66,10 +66,10 @@
       "name": "Relatórios",
       "short_name": "Relatórios",
       "description": "Ver relatórios anuais",
-      "url": "/?tab=reports",
+      "url": "/personal-finance-flow/?tab=reports",
       "icons": [
         {
-          "src": "/icon-192.png",
+          "src": "/personal-finance-flow/icon-192.png",
           "sizes": "192x192"
         }
       ]
