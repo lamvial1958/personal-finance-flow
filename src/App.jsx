@@ -247,10 +247,10 @@ export default function PersonalFinanceFlow() {
 
   // Funções de formatação
   const formatCurrency = useCallback((value) => {
-    if (typeof value !== 'number' || isNaN(value)) return 'R$ 0,00';
-    return new Intl.NumberFormat('pt-BR', {
+    if (typeof value !== 'number' || isNaN(value)) return '$ 0.00';
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'BRL'
+      currency: 'USD'
     }).format(value);
   }, []);
 
