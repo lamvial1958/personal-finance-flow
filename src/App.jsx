@@ -1,11 +1,12 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import Papa from 'papaparse';
 import dbManager from './db-manager.js';
 
 export default function PersonalFinanceFlow() {
   // Estados de autenticação
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isSystemSetup, setIsSystemSetup] = useState(null); // null = checking, true = setup, false = needs setup
-  const [authMode, setAuthMode] = useState('login'); // 'login', 'setup', 'change-password'
+  const [isSystemSetup, setIsSystemSetup] = useState(null);
+  const [authMode, setAuthMode] = useState('login');
   
   // Estados da aplicação
   const [dailyTransactions, setDailyTransactions] = useState({});
@@ -28,7 +29,20 @@ export default function PersonalFinanceFlow() {
 
   // Estados do sistema de doação
   const [showDonationModal, setShowDonationModal] = useState(false);
-  const [donationStage, setDonationStage] = useState(null); // 60 ou 90 dias
+  const [donationStage, setDonationStage] = useState(null);
+
+  // Estados FASE 1
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('date');
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [transactionToDelete, setTransactionToDelete] = useState(null);
+
+  // Categorias predefinidas
+  const categories = {
+    income: ['Salário', 'Freelance', 'Investimentos', 'Vendas', 'Prêmio', 'Outros'],
+    expenses: ['Alimentação', 'Transporte', 'Moradia', 'Saúde', 'Educação', 'Lazer', 'Compras', 'Outros']
+  };
 
   // Inicializar banco de dados
   useEffect(() => {
@@ -37,10 +51,7 @@ export default function PersonalFinanceFlow() {
         setConnectionStatus('Inicializando banco de dados...');
         await dbManager.initialize();
         
-        // Verificar se há sessão ativa
         const hasSession = sessionStorage.getItem('finance-app-authenticated') === 'true';
-        
-        // Verificar se sistema foi configurado
         const setupCheck = await dbManager.checkSetup();
         setIsSystemSetup(setupCheck.isSetup);
         
@@ -62,14 +73,12 @@ export default function PersonalFinanceFlow() {
     initializeApp();
   }, []);
 
-  // Verificar avisos de doação após autenticação
+  // Verificar avisos de doação
   useEffect(() => {
     if (isAuthenticated) {
-      // Aguarda 5 segundos após login para verificar
       const timer = setTimeout(() => {
         checkDonationStatus();
       }, 5000);
-      
       return () => clearTimeout(timer);
     }
   }, [isAuthenticated]);
@@ -86,11 +95,7 @@ export default function PersonalFinanceFlow() {
     const firstUseDate = new Date(firstUse);
     const daysSinceFirstUse = Math.floor((new Date() - firstUseDate) / (1000 * 60 * 60 * 24));
     
-    // Para teste rápido, descomente a linha abaixo (usa minutos ao invés de dias):
-    // const daysSinceFirstUse = Math.floor((new Date() - firstUseDate) / (1000 * 60));
-    
     if (daysSinceFirstUse >= 60 && !donations.day60_dismissed) {
-      // Só mostra uma vez por semana após 60 dias
       const lastShown60 = donations.day60_last_shown ? new Date(donations.day60_last_shown) : null;
       if (!lastShown60 || (new Date() - lastShown60) / (1000 * 60 * 60 * 24) >= 7) {
         setDonationStage(60);
@@ -143,14 +148,12 @@ export default function PersonalFinanceFlow() {
     try {
       setConnectionStatus('Carregando dados...');
       
-      // Carregar dados em paralelo
       const [transactions, balances, movements] = await Promise.all([
         dbManager.getTransactions(),
         dbManager.getInitialBalances(), 
         dbManager.getInvestmentMovements()
       ]);
 
-      // Usar React.startTransition para batch updates
       React.startTransition(() => {
         setDailyTransactions(transactions || {});
         setInitialBalances(balances || {});
@@ -245,6 +248,100 @@ export default function PersonalFinanceFlow() {
     setConnectionStatus('Desconectado');
   };
 
+  // FASE 1 - Exclusão de transações
+  const handleDeleteClick = (transactionId, date, type, description) => {
+    console.log('🗑️ Preparando exclusão:', { transactionId, date, type, description });
+    setTransactionToDelete({ id: transactionId, date, type, description });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      console.log('🗑️ Iniciando exclusão - ID:', transactionToDelete.id);
+      console.log('🗑️ Estrutura atual dailyTransactions:', dailyTransactions);
+      
+      await dbManager.deleteTransaction(transactionToDelete.id);
+      console.log('✅ Exclusão realizada no banco');
+      
+      // Recarregar dados FRESH do banco
+      const freshTransactions = await dbManager.getTransactions();
+      console.log('📊 Dados recarregados:', freshTransactions);
+      
+      React.startTransition(() => {
+        setDailyTransactions(freshTransactions || {});
+        setDataVersion(prev => prev + 1);
+      });
+      
+      setShowDeleteModal(false);
+      setTransactionToDelete(null);
+      alert('Transação excluída com sucesso!');
+      
+    } catch (error) {
+      console.error('❌ Erro ao excluir transação:', error);
+      alert('Erro ao excluir transação: ' + error.message);
+    }
+  };
+
+  // FASE 1 - Export CSV
+  const exportToCSV = () => {
+    try {
+      const csvData = [];
+      
+      Object.entries(dailyTransactions).forEach(([date, dayData]) => {
+        // Receitas
+        Object.entries(dayData.income || {}).forEach(([id, transaction]) => {
+          csvData.push({
+            Data: formatDate(date),
+            Tipo: 'Entrada',
+            Valor: transaction.amount.toFixed(2).replace('.', ','),
+            Categoria: transaction.category || '',
+            Descrição: transaction.description || ''
+          });
+        });
+        
+        // Despesas
+        Object.entries(dayData.expenses || {}).forEach(([id, transaction]) => {
+          csvData.push({
+            Data: formatDate(date),
+            Tipo: 'Saída',
+            Valor: transaction.amount.toFixed(2).replace('.', ','),
+            Categoria: transaction.category || '',
+            Descrição: transaction.description || ''
+          });
+        });
+      });
+      
+      // Ordenar por data
+      csvData.sort((a, b) => {
+        const dateA = new Date(a.Data.split('/').reverse().join('-'));
+        const dateB = new Date(b.Data.split('/').reverse().join('-'));
+        return dateB - dateA;
+      });
+      
+      // Converter para CSV
+      const csv = Papa.unparse(csvData, {
+        delimiter: ',',
+        header: true,
+        encoding: 'utf-8'
+      });
+      
+      // Download
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `transacoes_financeiras_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      alert('Arquivo CSV exportado com sucesso!');
+      
+    } catch (error) {
+      console.error('Erro ao exportar CSV:', error);
+      alert('Erro ao exportar dados para CSV.');
+    }
+  };
+
   // Funções de formatação
   const formatCurrency = useCallback((value) => {
     if (typeof value !== 'number' || isNaN(value)) return '$ 0.00';
@@ -262,18 +359,25 @@ export default function PersonalFinanceFlow() {
   const addTransaction = useCallback(async (type, amount, description, category, date) => {
     try {
       const dateKey = date || new Date().toISOString().split('T')[0];
+      console.log('💰 Adicionando transação:', { type, amount, description, category, dateKey });
       
       await dbManager.addTransaction(dateKey, type, parseFloat(amount), description, category);
-      const transactions = await dbManager.getTransactions();
+      console.log('✅ Transação salva no banco');
+      
+      // SEMPRE recarregar dados fresh do banco após inserção
+      const freshTransactions = await dbManager.getTransactions();
+      console.log('📊 Dados recarregados após inserção:', freshTransactions);
       
       React.startTransition(() => {
-        setDailyTransactions(transactions || {});
+        setDailyTransactions(freshTransactions || {});
         setDataVersion(prev => prev + 1);
       });
       
+      console.log('✅ Interface atualizada');
+      
     } catch (error) {
-      console.error('Erro ao adicionar transação:', error);
-      alert('Erro ao adicionar transação.');
+      console.error('❌ Erro ao adicionar transação:', error);
+      throw error; // Re-throw para ser capturado no formulário
     }
   }, []);
 
@@ -343,7 +447,82 @@ export default function PersonalFinanceFlow() {
     return initialTotal + movementsTotal + liquidBalance;
   }, [initialBalances, investmentMovements, getDailyTotals, dataVersion]);
 
-  // Componente Modal de Doação
+  // FASE 1 - Função de filtragem e ordenação
+  const getFilteredAndSortedTransactions = useMemo(() => {
+    const transactionsList = [];
+    
+    console.log('📊 Processando dailyTransactions para lista:', dailyTransactions);
+    
+    Object.entries(dailyTransactions).forEach(([date, dayData]) => {
+      // Receitas - ID é a chave da estrutura (que vem do SQLite)
+      Object.entries(dayData.income || {}).forEach(([id, transaction]) => {
+        console.log(`💚 Receita encontrada - ID: ${id}, Dados:`, transaction);
+        transactionsList.push({
+          id: parseInt(id), // Converter para number para garantir match com SQLite
+          date,
+          type: 'income',
+          amount: transaction.amount,
+          description: transaction.description,
+          category: transaction.category,
+          timestamp: transaction.timestamp
+        });
+      });
+      
+      // Despesas
+      Object.entries(dayData.expenses || {}).forEach(([id, transaction]) => {
+        console.log(`🔴 Despesa encontrada - ID: ${id}, Dados:`, transaction);
+        transactionsList.push({
+          id: parseInt(id), // Converter para number para garantir match com SQLite
+          date,
+          type: 'expenses',
+          amount: transaction.amount,
+          description: transaction.description,
+          category: transaction.category,
+          timestamp: transaction.timestamp
+        });
+      });
+    });
+
+    console.log('📋 Lista completa de transações:', transactionsList);
+
+    // Aplicar filtro de busca
+    let filteredTransactions = transactionsList;
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase().trim();
+      filteredTransactions = transactionsList.filter(t => 
+        (t.description || '').toLowerCase().includes(term) ||
+        (t.category || '').toLowerCase().includes(term)
+      );
+    }
+
+    // Aplicar ordenação
+    filteredTransactions.sort((a, b) => {
+      let comparison = 0;
+      
+      switch (sortBy) {
+        case 'date':
+          comparison = new Date(a.date) - new Date(b.date);
+          break;
+        case 'amount':
+          comparison = a.amount - b.amount;
+          break;
+        case 'category':
+          comparison = (a.category || '').localeCompare(b.category || '');
+          break;
+        case 'description':
+          comparison = (a.description || '').localeCompare(b.description || '');
+          break;
+        default:
+          comparison = 0;
+      }
+      
+      return sortOrder === 'desc' ? -comparison : comparison;
+    });
+
+    return filteredTransactions;
+  }, [dailyTransactions, searchTerm, sortBy, sortOrder, dataVersion]);
+
+  // Modal de Doação
   const DonationModal = () => {
     if (!showDonationModal) return null;
 
@@ -413,6 +592,61 @@ export default function PersonalFinanceFlow() {
     );
   };
 
+  // Modal de Exclusão
+  const DeleteModal = () => {
+    if (!showDeleteModal || !transactionToDelete) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
+          <div className="text-center mb-4">
+            <div className="text-4xl mb-2 text-red-500">⚠️</div>
+            <h3 className="text-lg font-semibold text-gray-800">
+              Excluir Transação
+            </h3>
+          </div>
+          
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+            <p className="text-sm text-gray-600 mb-2">
+              <strong>ID:</strong> {transactionToDelete.id}
+            </p>
+            <p className="text-sm text-gray-600 mb-2">
+              <strong>Data:</strong> {formatDate(transactionToDelete.date)}
+            </p>
+            <p className="text-sm text-gray-600 mb-2">
+              <strong>Tipo:</strong> {transactionToDelete.type === 'income' ? 'Entrada' : 'Saída'}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Descrição:</strong> {transactionToDelete.description}
+            </p>
+          </div>
+
+          <p className="text-gray-600 text-center mb-6">
+            Esta ação não pode ser desfeita. Deseja realmente excluir esta transação?
+          </p>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => {
+                setShowDeleteModal(false);
+                setTransactionToDelete(null);
+              }}
+              className="flex-1 bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={confirmDelete}
+              className="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700 font-medium"
+            >
+              Excluir
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Loading Screen
   if (isLoading) {
     return (
@@ -439,7 +673,6 @@ export default function PersonalFinanceFlow() {
             <p className="mt-2 text-sm text-blue-600">Progressive Web App</p>
           </div>
 
-          {/* Setup inicial */}
           {authMode === 'setup' && (
             <div className="bg-white rounded-lg shadow p-6 space-y-4">
               <h3 className="text-lg font-semibold text-gray-900">Configurar Sistema</h3>
@@ -479,7 +712,6 @@ export default function PersonalFinanceFlow() {
             </div>
           )}
 
-          {/* Login */}
           {authMode === 'login' && isSystemSetup && (
             <div className="bg-white rounded-lg shadow p-6 space-y-4">
               <h3 className="text-lg font-semibold text-gray-900">Entrar</h3>
@@ -514,7 +746,6 @@ export default function PersonalFinanceFlow() {
             </div>
           )}
 
-          {/* Alterar senha */}
           {authMode === 'change-password' && (
             <div className="bg-white rounded-lg shadow p-6 space-y-4">
               <h3 className="text-lg font-semibold text-gray-900">Alterar Senha</h3>
@@ -568,7 +799,6 @@ export default function PersonalFinanceFlow() {
             </div>
           )}
 
-          {/* Sistema precisa ser configurado */}
           {!isSystemSetup && authMode === 'login' && (
             <div className="bg-white rounded-lg shadow p-6 space-y-4 text-center">
               <h3 className="text-lg font-semibold text-gray-900">Sistema Não Configurado</h3>
@@ -584,7 +814,6 @@ export default function PersonalFinanceFlow() {
             </div>
           )}
 
-          {/* Informações sobre PWA */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="font-semibold text-blue-800">Progressive Web App</h4>
             <div className="text-sm text-blue-700 mt-2 space-y-1">
@@ -609,8 +838,20 @@ export default function PersonalFinanceFlow() {
       date: new Date().toISOString().split('T')[0]
     });
 
-    const handleSubmit = async () => {
-      if (newTransaction.amount && newTransaction.description) {
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      
+      if (!newTransaction.amount || !newTransaction.description) {
+        alert('Por favor, preencha valor e descrição.');
+        return;
+      }
+
+      if (parseFloat(newTransaction.amount) <= 0) {
+        alert('O valor deve ser maior que zero.');
+        return;
+      }
+
+      try {
         await addTransaction(
           newTransaction.type,
           newTransaction.amount,
@@ -618,6 +859,8 @@ export default function PersonalFinanceFlow() {
           newTransaction.category,
           newTransaction.date
         );
+        
+        // Limpar formulário após sucesso
         setNewTransaction({
           type: 'income',
           amount: '',
@@ -625,12 +868,19 @@ export default function PersonalFinanceFlow() {
           category: '',
           date: new Date().toISOString().split('T')[0]
         });
+        
+        alert('Transação adicionada com sucesso!');
+        
+      } catch (error) {
+        console.error('Erro no formulário:', error);
+        alert('Erro ao adicionar transação: ' + error.message);
       }
     };
 
     const todayTotals = getDailyTotals[newTransaction.date] || { income: 0, expenses: 0, balance: 0 };
     const totalIncome = Object.values(getDailyTotals).reduce((sum, day) => sum + day.income, 0);
     const totalExpenses = Object.values(getDailyTotals).reduce((sum, day) => sum + day.expenses, 0);
+    const filteredTransactions = getFilteredAndSortedTransactions;
 
     return (
       <div key={`dashboard-${dataVersion}`} className="space-y-6">
@@ -682,13 +932,13 @@ export default function PersonalFinanceFlow() {
         {/* Transaction Form */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Nova Transação</h3>
-          <div className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
                 <select
                   value={newTransaction.type}
-                  onChange={(e) => setNewTransaction({...newTransaction, type: e.target.value})}
+                  onChange={(e) => setNewTransaction({...newTransaction, type: e.target.value, category: ''})}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="income">Entrada</option>
@@ -709,46 +959,171 @@ export default function PersonalFinanceFlow() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Valor</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Valor *</label>
                 <input
                   type="number"
                   step="0.01"
+                  min="0.01"
                   value={newTransaction.amount}
                   onChange={(e) => setNewTransaction({...newTransaction, amount: e.target.value})}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="0,00"
+                  required
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Categoria</label>
-                <input
-                  type="text"
+                <select
                   value={newTransaction.category}
                   onChange={(e) => setNewTransaction({...newTransaction, category: e.target.value})}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Ex: Alimentação, Salário..."
-                />
+                >
+                  <option value="">Selecione uma categoria</option>
+                  {categories[newTransaction.type].map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Descrição</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Descrição *</label>
               <input
                 type="text"
                 value={newTransaction.description}
                 onChange={(e) => setNewTransaction({...newTransaction, description: e.target.value})}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Descrição da transação"
+                required
               />
             </div>
 
             <button
-              onClick={handleSubmit}
+              type="submit"
               className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
             >
               Adicionar Transação
             </button>
+          </form>
+        </div>
+
+        {/* FASE 1 - Busca e Ordenação */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Transações Recentes ({filteredTransactions.length})
+            </h3>
+            
+            <div className="flex flex-col sm:flex-row gap-3">
+              {/* Campo de Busca */}
+              <div className="relative">
+                <svg className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Buscar por descrição ou categoria"
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-64"
+                />
+              </div>
+              
+              {/* Ordenação */}
+              <select
+                value={`${sortBy}-${sortOrder}`}
+                onChange={(e) => {
+                  const [newSortBy, newSortOrder] = e.target.value.split('-');
+                  setSortBy(newSortBy);
+                  setSortOrder(newSortOrder);
+                }}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="date-desc">Data ↓ (mais recente)</option>
+                <option value="date-asc">Data ↑ (mais antiga)</option>
+                <option value="amount-desc">Valor ↓ (maior)</option>
+                <option value="amount-asc">Valor ↑ (menor)</option>
+                <option value="category-asc">Categoria A-Z</option>
+                <option value="category-desc">Categoria Z-A</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Lista de Transações */}
+          <div className="space-y-3 max-h-96 overflow-y-auto">
+            {filteredTransactions.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                {searchTerm ? 'Nenhuma transação encontrada para esta busca.' : 'Nenhuma transação encontrada.'}
+              </div>
+            ) : (
+              filteredTransactions.map((transaction) => (
+                <div key={`${transaction.date}-${transaction.id}`} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          transaction.type === 'income' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {transaction.type === 'income' ? 'Entrada' : 'Saída'}
+                        </span>
+                        <span className="text-sm text-gray-500">{formatDate(transaction.date)}</span>
+                        <span className="text-xs text-gray-400">ID: {transaction.id}</span>
+                      </div>
+                      <p className="font-medium text-gray-900 mt-1">
+                        {searchTerm ? (
+                          <span dangerouslySetInnerHTML={{
+                            __html: (transaction.description || '').replace(
+                              new RegExp(`(${searchTerm})`, 'gi'),
+                              '<mark class="bg-yellow-200">$1</mark>'
+                            )
+                          }} />
+                        ) : (
+                          transaction.description
+                        )}
+                      </p>
+                      <div className="flex items-center gap-4 mt-1">
+                        <span className="text-sm text-gray-600">
+                          {searchTerm ? (
+                            <span dangerouslySetInnerHTML={{
+                              __html: (transaction.category || 'Sem categoria').replace(
+                                new RegExp(`(${searchTerm})`, 'gi'),
+                                '<mark class="bg-yellow-200">$1</mark>'
+                              )
+                            }} />
+                          ) : (
+                            transaction.category || 'Sem categoria'
+                          )}
+                        </span>
+                        <span className={`font-semibold ${
+                          transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                          {formatCurrency(transaction.amount)}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Botão de Exclusão */}
+                    <button
+                      onClick={() => handleDeleteClick(
+                        transaction.id, 
+                        transaction.date, 
+                        transaction.type, 
+                        transaction.description
+                      )}
+                      className="ml-4 p-2 text-red-500 hover:bg-red-100 rounded-lg transition-colors"
+                      title="Excluir transação"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -853,7 +1228,6 @@ export default function PersonalFinanceFlow() {
 
     return (
       <div key={`patrimony-${dataVersion}`} className="space-y-6">
-        {/* Patrimony Summary */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Resumo do Patrimônio</h2>
           <div className="text-center">
@@ -862,7 +1236,6 @@ export default function PersonalFinanceFlow() {
           </div>
         </div>
 
-        {/* Initial Balances */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Saldos Iniciais por Investimento</h3>
           <div className="space-y-4">
@@ -888,7 +1261,6 @@ export default function PersonalFinanceFlow() {
           </button>
         </div>
 
-        {/* Add Movement */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Adicionar Movimentação</h3>
           <div className="space-y-4">
@@ -993,7 +1365,6 @@ export default function PersonalFinanceFlow() {
 
     return (
       <div key={`report-${dataVersion}-${selectedYear}`} className="space-y-6">
-        {/* Year Selector */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold text-gray-900">Relatório Anual {selectedYear}</h2>
@@ -1009,7 +1380,6 @@ export default function PersonalFinanceFlow() {
           </div>
         </div>
 
-        {/* Annual Summary */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Receitas Totais</h3>
@@ -1033,7 +1403,6 @@ export default function PersonalFinanceFlow() {
           </div>
         </div>
 
-        {/* Monthly Breakdown */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Evolução Mensal</h3>
           <div className="overflow-x-auto">
@@ -1073,7 +1442,7 @@ export default function PersonalFinanceFlow() {
     );
   };
 
-  // Configurações Component
+  // Configuration View Component
   const ConfigurationView = () => {
     const exportData = async () => {
       try {
@@ -1109,28 +1478,34 @@ export default function PersonalFinanceFlow() {
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">Backup e Exportação</h3>
               <p className="text-gray-600 mb-4">Faça backup dos seus dados financeiros</p>
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <button
+                  onClick={exportToCSV}
+                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium"
+                >
+                  Exportar CSV
+                </button>
                 <button
                   onClick={exportData}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors mr-4"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
                 >
-                  Exportar Dados (JSON)
+                  Exportar JSON
                 </button>
                 <button
                   onClick={downloadDBBackup}
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors mr-4"
+                  className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
                 >
                   Baixar Banco (.db)
                 </button>
                 <button
                   onClick={() => setAuthMode('change-password')}
-                  className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors mr-4"
+                  className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors font-medium"
                 >
                   Alterar Senha
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium"
                 >
                   Sair
                 </button>
@@ -1138,13 +1513,25 @@ export default function PersonalFinanceFlow() {
             </div>
 
             <div className="border-t pt-4">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Funcionalidades Fase 1</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                <p>✅ Exclusão de transações com logs</p>
+                <p>✅ Busca por descrição/categoria</p>
+                <p>✅ Ordenação flexível</p>
+                <p>✅ Export CSV completo</p>
+                <p>✅ Categorias predefinidas</p>
+                <p>✅ Validação de formulários</p>
+              </div>
+            </div>
+
+            <div className="border-t pt-4">
               <h3 className="text-lg font-medium text-gray-900 mb-2">Informações do Sistema</h3>
               <div className="space-y-2 text-sm text-gray-600">
-                <p>• Aplicativo: Progressive Web App (PWA)</p>
-                <p>• Banco de dados: SQLite WebAssembly</p>
-                <p>• Persistência: IndexedDB do navegador</p>
-                <p>• Funciona offline após carregamento inicial</p>
-                <p>• Dados salvos localmente no dispositivo</p>
+                <p>• Progressive Web App (PWA)</p>
+                <p>• SQLite WebAssembly</p>
+                <p>• Dados locais (IndexedDB)</p>
+                <p>• Funciona offline</p>
+                <p>• Versão: 1.0 + Fase 1 (DEBUG)</p>
               </div>
             </div>
           </div>
@@ -1153,10 +1540,9 @@ export default function PersonalFinanceFlow() {
     );
   };
 
-  // Main render (aplicação autenticada)
+  // Main render
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
@@ -1186,7 +1572,6 @@ export default function PersonalFinanceFlow() {
         </div>
       </header>
 
-      {/* Navigation */}
       <nav className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
@@ -1224,7 +1609,6 @@ export default function PersonalFinanceFlow() {
         </div>
       </nav>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {isConfigOpen && <ConfigurationView />}
         {!isConfigOpen && activeTab === 'dashboard' && <Dashboard />}
@@ -1232,8 +1616,8 @@ export default function PersonalFinanceFlow() {
         {!isConfigOpen && activeTab === 'annual-report' && <AnnualReportView />}
       </main>
 
-      {/* Modal de Doação */}
       <DonationModal />
+      <DeleteModal />
     </div>
   );
 }

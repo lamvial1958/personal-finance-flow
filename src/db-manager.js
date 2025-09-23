@@ -380,14 +380,64 @@
     return { message: 'Transaction added successfully' };
   }
 
+  // 🔧 ÚNICA CORREÇÃO: Função deleteTransaction
   async deleteTransaction(id) {
-    const result = this.db.run('DELETE FROM transactions WHERE id = ?', [id]);
-    await this.saveToIndexedDB();
+    console.log('🔍 DEBUG deleteTransaction - ID recebido:', id, 'tipo:', typeof id);
     
-    if (result.changes > 0) {
-      return { message: 'Transaction deleted successfully' };
-    } else {
+    // Listar TODAS as transações para debug
+    const allStmt = this.db.prepare('SELECT * FROM transactions');
+    const allTransactions = [];
+    while (allStmt.step()) {
+      allTransactions.push(allStmt.getAsObject());
+    }
+    allStmt.free();
+    console.log('🔍 DEBUG - TODAS as transações no banco:', allTransactions);
+    
+    // Verificar se transação existe antes de deletar
+    const checkStmt = this.db.prepare('SELECT * FROM transactions WHERE id = ?');
+    checkStmt.bind([id]);
+    let exists = null;
+    if (checkStmt.step()) {
+      exists = checkStmt.getAsObject();
+    }
+    checkStmt.free();
+    
+    console.log('🔍 DEBUG - Transação com ID', id, 'existe?', exists);
+    
+    if (!exists) {
       throw new Error('Transaction not found');
+    }
+    
+    // 🎯 CORREÇÃO: Usar exec() ao invés de run() que está retornando undefined
+    try {
+      const deleteSQL = `DELETE FROM transactions WHERE id = ${id}`;
+      console.log('🔍 DEBUG - SQL executado:', deleteSQL);
+      
+      this.db.exec(deleteSQL);
+      
+      // Verificar se foi realmente deletado
+      const checkAfterStmt = this.db.prepare('SELECT * FROM transactions WHERE id = ?');
+      checkAfterStmt.bind([id]);
+      let stillExists = false;
+      if (checkAfterStmt.step()) {
+        stillExists = checkAfterStmt.getAsObject();
+      }
+      checkAfterStmt.free();
+      
+      console.log('🔍 DEBUG - Transação ainda existe após DELETE?', stillExists);
+      
+      if (stillExists) {
+        throw new Error('Failed to delete transaction');
+      }
+      
+      await this.saveToIndexedDB();
+      console.log('✅ DEBUG - Transação deletada com sucesso!');
+      
+      return { message: 'Transaction deleted successfully' };
+      
+    } catch (error) {
+      console.error('❌ DEBUG - Erro no DELETE:', error);
+      throw new Error('Failed to delete transaction: ' + error.message);
     }
   }
 
