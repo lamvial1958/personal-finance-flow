@@ -31,6 +31,9 @@ export default function PersonalFinanceFlow() {
   const [showDonationModal, setShowDonationModal] = useState(false);
   const [donationStage, setDonationStage] = useState(null);
 
+  // Estados do sistema de avaliação GitHub Stars
+  const [showRatingModal, setShowRatingModal] = useState(false);
+
   // Estados FASE 1
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('date');
@@ -83,6 +86,16 @@ export default function PersonalFinanceFlow() {
     }
   }, [isAuthenticated]);
 
+  // Verificar avaliação GitHub Stars após 30 dias
+  useEffect(() => {
+    if (isAuthenticated) {
+      const timer = setTimeout(() => {
+        checkRatingStatus();
+      }, 7000); // 2 segundos após donation check
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated]);
+
   const checkDonationStatus = () => {
     const firstUse = localStorage.getItem('app_first_use');
     const donations = JSON.parse(localStorage.getItem('donation_status') || '{}');
@@ -119,6 +132,28 @@ export default function PersonalFinanceFlow() {
     }
   };
 
+  const checkRatingStatus = () => {
+    const firstUse = localStorage.getItem('app_first_use');
+    const ratingStatus = JSON.parse(localStorage.getItem('rating_status') || '{}');
+    
+    if (!firstUse) return;
+
+    const firstUseDate = new Date(firstUse);
+    const daysSinceFirstUse = Math.floor((new Date() - firstUseDate) / (1000 * 60 * 60 * 24));
+    
+    // Mostrar após 30 dias, se não foi dismissed e não foi mostrado recentemente
+    if (daysSinceFirstUse >= 30 && !ratingStatus.dismissed) {
+      const lastShown = ratingStatus.last_shown ? new Date(ratingStatus.last_shown) : null;
+      if (!lastShown || (new Date() - lastShown) / (1000 * 60 * 60 * 24) >= 7) {
+        setShowRatingModal(true);
+        localStorage.setItem('rating_status', JSON.stringify({
+          ...ratingStatus,
+          last_shown: new Date().toISOString()
+        }));
+      }
+    }
+  };
+
   const dismissDonationPermanently = () => {
     const donations = JSON.parse(localStorage.getItem('donation_status') || '{}');
     localStorage.setItem('donation_status', JSON.stringify({
@@ -126,6 +161,19 @@ export default function PersonalFinanceFlow() {
       [`day${donationStage}_dismissed`]: true
     }));
     setShowDonationModal(false);
+  };
+
+  const dismissRatingPermanently = () => {
+    const ratingStatus = JSON.parse(localStorage.getItem('rating_status') || '{}');
+    localStorage.setItem('rating_status', JSON.stringify({
+      ...ratingStatus,
+      dismissed: true
+    }));
+    setShowRatingModal(false);
+  };
+
+  const openGitHubRating = () => {
+    window.open('https://github.com/lamvial1958/personal-finance-flow', '_blank');
   };
 
   const copyPixToClipboard = async () => {
@@ -586,6 +634,70 @@ export default function PersonalFinanceFlow() {
 
           <p className="text-xs text-gray-400 text-center mt-4">
             Este app é totalmente gratuito e seus dados ficam no seu dispositivo
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  // Modal de Avaliação GitHub Stars
+  const RatingModal = () => {
+    if (!showRatingModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
+          <div className="text-center mb-4">
+            <div className="text-4xl mb-2">⭐</div>
+            <h3 className="text-lg font-semibold text-gray-800">
+              Gostou? Deixe uma ⭐ para ajudar outros a descobrir
+            </h3>
+          </div>
+          
+          <p className="text-gray-600 text-center mb-6">
+            Você está usando há mais de 30 dias! Se o aplicativo tem sido útil, 
+            uma avaliação no GitHub ajuda outras pessoas a encontrá-lo.
+          </p>
+
+          <div className="bg-yellow-50 rounded-lg p-4 mb-6 border border-yellow-200">
+            <div className="text-center">
+              <p className="text-sm text-gray-600 mb-2">
+                Clique no botão abaixo e depois na estrela ⭐
+              </p>
+              <p className="text-xs text-gray-500">
+                GitHub → Botão "⭐ Star" → Pronto!
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={() => {
+                openGitHubRating();
+                setShowRatingModal(false);
+              }}
+              className="w-full bg-yellow-600 text-white py-3 rounded hover:bg-yellow-700 font-medium"
+            >
+              ⭐ Avaliar no GitHub
+            </button>
+            
+            <button
+              onClick={() => setShowRatingModal(false)}
+              className="w-full bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300"
+            >
+              Lembrar mais tarde
+            </button>
+            
+            <button
+              onClick={dismissRatingPermanently}
+              className="w-full text-gray-500 py-2 text-sm hover:text-gray-700"
+            >
+              Não mostrar novamente
+            </button>
+          </div>
+
+          <p className="text-xs text-gray-400 text-center mt-4">
+            Leva apenas 10 segundos e ajuda muito o projeto
           </p>
         </div>
       </div>
@@ -1513,6 +1625,17 @@ export default function PersonalFinanceFlow() {
             </div>
 
             <div className="border-t pt-4">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Avaliação</h3>
+              <p className="text-gray-600 mb-4">Se você gostou do aplicativo, ajude outros a descobri-lo</p>
+              <button
+                onClick={openGitHubRating}
+                className="w-full bg-yellow-600 text-white py-3 px-4 rounded-lg hover:bg-yellow-700 transition-colors font-medium"
+              >
+                Gostou? Deixe uma ⭐ para ajudar outros a descobrir
+              </button>
+            </div>
+
+            <div className="border-t pt-4">
               <h3 className="text-lg font-medium text-gray-900 mb-2">Funcionalidades Fase 1</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
                 <p>✅ Exclusão de transações com logs</p>
@@ -1531,7 +1654,7 @@ export default function PersonalFinanceFlow() {
                 <p>• SQLite WebAssembly</p>
                 <p>• Dados locais (IndexedDB)</p>
                 <p>• Funciona offline</p>
-                <p>• Versão: 1.0 + Fase 1 (DEBUG)</p>
+                <p>• Versão: 1.1 + Avaliação GitHub Stars</p>
               </div>
             </div>
           </div>
@@ -1617,6 +1740,7 @@ export default function PersonalFinanceFlow() {
       </main>
 
       <DonationModal />
+      <RatingModal />
       <DeleteModal />
     </div>
   );
