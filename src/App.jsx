@@ -26,6 +26,10 @@ export default function PersonalFinanceFlow() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
+  // Estados do sistema de doação
+  const [showDonationModal, setShowDonationModal] = useState(false);
+  const [donationStage, setDonationStage] = useState(null); // 60 ou 90 dias
+
   // Inicializar banco de dados
   useEffect(() => {
     const initializeApp = async () => {
@@ -58,6 +62,82 @@ export default function PersonalFinanceFlow() {
     initializeApp();
   }, []);
 
+  // Verificar avisos de doação após autenticação
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Aguarda 5 segundos após login para verificar
+      const timer = setTimeout(() => {
+        checkDonationStatus();
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated]);
+
+  const checkDonationStatus = () => {
+    const firstUse = localStorage.getItem('app_first_use');
+    const donations = JSON.parse(localStorage.getItem('donation_status') || '{}');
+    
+    if (!firstUse) {
+      localStorage.setItem('app_first_use', new Date().toISOString());
+      return;
+    }
+
+    const firstUseDate = new Date(firstUse);
+    const daysSinceFirstUse = Math.floor((new Date() - firstUseDate) / (1000 * 60 * 60 * 24));
+    
+    // Para teste rápido, descomente a linha abaixo (usa minutos ao invés de dias):
+    // const daysSinceFirstUse = Math.floor((new Date() - firstUseDate) / (1000 * 60));
+    
+    if (daysSinceFirstUse >= 60 && !donations.day60_dismissed) {
+      // Só mostra uma vez por semana após 60 dias
+      const lastShown60 = donations.day60_last_shown ? new Date(donations.day60_last_shown) : null;
+      if (!lastShown60 || (new Date() - lastShown60) / (1000 * 60 * 60 * 24) >= 7) {
+        setDonationStage(60);
+        setShowDonationModal(true);
+        localStorage.setItem('donation_status', JSON.stringify({
+          ...donations,
+          day60_last_shown: new Date().toISOString()
+        }));
+      }
+    }
+    else if (daysSinceFirstUse >= 90 && !donations.day90_dismissed) {
+      const lastShown90 = donations.day90_last_shown ? new Date(donations.day90_last_shown) : null;
+      if (!lastShown90 || (new Date() - lastShown90) / (1000 * 60 * 60 * 24) >= 7) {
+        setDonationStage(90);
+        setShowDonationModal(true);
+        localStorage.setItem('donation_status', JSON.stringify({
+          ...donations,
+          day90_last_shown: new Date().toISOString()
+        }));
+      }
+    }
+  };
+
+  const dismissDonationPermanently = () => {
+    const donations = JSON.parse(localStorage.getItem('donation_status') || '{}');
+    localStorage.setItem('donation_status', JSON.stringify({
+      ...donations,
+      [`day${donationStage}_dismissed`]: true
+    }));
+    setShowDonationModal(false);
+  };
+
+  const copyPixToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText('lamvial@outlook.com');
+      alert('PIX copiado para a área de transferência!');
+    } catch (err) {
+      const textArea = document.createElement('textarea');
+      textArea.value = 'lamvial@outlook.com';
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      alert('PIX copiado para a área de transferência!');
+    }
+  };
+
   // Carregar dados quando autenticado
   const loadAllData = useCallback(async () => {
     try {
@@ -82,7 +162,7 @@ export default function PersonalFinanceFlow() {
       console.log('✅ Dados carregados do SQLite WebAssembly');
       
     } catch (error) {
-      console.error('❌ Erro ao carregar dados:', error);
+      console.error('⚠️ Erro ao carregar dados:', error);
       setConnectionStatus('Erro ao carregar dados');
       
       React.startTransition(() => {
@@ -262,6 +342,76 @@ export default function PersonalFinanceFlow() {
     
     return initialTotal + movementsTotal + liquidBalance;
   }, [initialBalances, investmentMovements, getDailyTotals, dataVersion]);
+
+  // Componente Modal de Doação
+  const DonationModal = () => {
+    if (!showDonationModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
+          <div className="text-center mb-4">
+            <div className="text-4xl mb-2">💙</div>
+            <h3 className="text-lg font-semibold text-gray-800">
+              {donationStage === 60 ? 'Você está usando há 2 meses!' : 'Você está usando há 3 meses!'}
+            </h3>
+          </div>
+          
+          <p className="text-gray-600 text-center mb-6">
+            Se você está gostando do programa, ajude a mantê-lo e melhorá-lo. 
+            A doação de qualquer valor ajuda no desenvolvimento de novas funcionalidades.
+          </p>
+
+          <div className="bg-blue-50 rounded-lg p-4 mb-6 border border-blue-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">PIX:</p>
+                <p className="font-mono text-lg font-semibold text-blue-800">
+                  lamvial@outlook.com
+                </p>
+              </div>
+              <button
+                onClick={copyPixToClipboard}
+                className="bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700"
+              >
+                Copiar
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={() => {
+                copyPixToClipboard();
+                setShowDonationModal(false);
+              }}
+              className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700 font-medium"
+            >
+              💚 Obrigado, vou considerar!
+            </button>
+            
+            <button
+              onClick={() => setShowDonationModal(false)}
+              className="w-full bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300"
+            >
+              Lembrar mais tarde
+            </button>
+            
+            <button
+              onClick={dismissDonationPermanently}
+              className="w-full text-gray-500 py-2 text-sm hover:text-gray-700"
+            >
+              Não mostrar novamente
+            </button>
+          </div>
+
+          <p className="text-xs text-gray-400 text-center mt-4">
+            Este app é totalmente gratuito e seus dados ficam no seu dispositivo
+          </p>
+        </div>
+      </div>
+    );
+  };
 
   // Loading Screen
   if (isLoading) {
@@ -1081,6 +1231,9 @@ export default function PersonalFinanceFlow() {
         {!isConfigOpen && activeTab === 'patrimony' && <PatrimonyView />}
         {!isConfigOpen && activeTab === 'annual-report' && <AnnualReportView />}
       </main>
+
+      {/* Modal de Doação */}
+      <DonationModal />
     </div>
   );
 }
