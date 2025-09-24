@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/personal-finance-flow/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="V&M Personal Finance - Aplicativo de controle financeiro pessoal" />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="V&M Finance" />
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="/personal-finance-flow/icon-192.png" />
+    <link rel="manifest" href="/personal-finance-flow/manifest.json" />
+    
+    <title>V&M Personal Finance</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+      /* Loading animation */
+      .loading-spinner {
+        border: 4px solid #f3f4f6;
+        border-top: 4px solid #2563eb;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* Custom scrollbar */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 3px;
+      }
+      
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+      }
+      
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+      
+      /* PWA Install Button */
+      .install-button {
+        display: none;
+      }
+      
+      .install-button.show {
+        display: inline-flex;
+      }
+    </style>
+    <script type="module" crossorigin src="/personal-finance-flow/assets/index-CulKfe69.js"></script>
+    <link rel="modulepreload" crossorigin href="/personal-finance-flow/assets/sql.js-Cpj98o6Y.js">
+  <link rel="manifest" href="/personal-finance-flow/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/personal-finance-flow/registerSW.js"></script></head>
+  <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 bg-white flex items-center justify-center z-50">
+      <div class="text-center">
+        <div class="loading-spinner mx-auto mb-4"></div>
+        <h2 class="text-xl font-semibold text-gray-700">V&M Personal Finance</h2>
+        <p class="text-gray-500 mt-2">Carregando aplicativo...</p>
+      </div>
+    </div>
+    
+    <!-- App Root -->
+    <div id="root"></div>
+    
+    <!-- PWA Install Prompt -->
+    <div id="install-prompt" class="fixed bottom-4 right-4 bg-blue-600 text-white p-4 rounded-lg shadow-lg hidden">
+      <div class="flex items-center space-x-3">
+        <div>
+          <p class="font-medium">Instalar Aplicativo</p>
+          <p class="text-sm opacity-90">Adicione à tela inicial para acesso rápido</p>
+        </div>
+        <div class="flex space-x-2">
+          <button id="install-yes" class="bg-white text-blue-600 px-3 py-1 rounded text-sm font-medium">
+            Instalar
+          </button>
+          <button id="install-no" class="text-white opacity-75 hover:opacity-100 text-sm">
+            Agora não
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    
+    <!-- PWA Install Script -->
+    <script>
+      let deferredPrompt;
+      
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show install prompt after app loads
+        setTimeout(() => {
+          const installPrompt = document.getElementById('install-prompt');
+          if (installPrompt) {
+            installPrompt.classList.remove('hidden');
+          }
+        }, 5000);
+      });
+      
+      document.addEventListener('DOMContentLoaded', () => {
+        const installYes = document.getElementById('install-yes');
+        const installNo = document.getElementById('install-no');
+        const installPrompt = document.getElementById('install-prompt');
+        
+        if (installYes) {
+          installYes.addEventListener('click', async () => {
+            if (deferredPrompt) {
+              deferredPrompt.prompt();
+              const { outcome } = await deferredPrompt.userChoice;
+              deferredPrompt = null;
+            }
+            installPrompt.classList.add('hidden');
+          });
+        }
+        
+        if (installNo) {
+          installNo.addEventListener('click', () => {
+            installPrompt.classList.add('hidden');
+          });
+        }
+      });
+      
+      // Hide loading screen when app loads
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const loadingScreen = document.getElementById('loading-screen');
+          if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+          }
+        }, 1000);
+      });
+    </script>
+  </body>
+</html>
