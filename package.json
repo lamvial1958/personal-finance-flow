@@ -1,9 +1,9 @@
 {
   "name": "vm-personal-finance-pwa",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.2.0",
   "type": "module",
-  "description": "V&M Personal Finance - Progressive Web App",
+  "description": "V&M Personal Finance - Progressive Web App com funcionalidade OFX",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -14,7 +14,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sql.js": "^1.8.0",
-    "papaparse": "5.4.1"
+    "papaparse": "5.4.1",
+    "fast-xml-parser": "^4.3.2",
+    "xmlbuilder2": "^3.1.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

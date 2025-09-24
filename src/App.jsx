@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import Papa from 'papaparse';
 import dbManager from './db-manager.js';
+import ofxManager from './ofx-manager.js';
 
 export default function PersonalFinanceFlow() {
   // Estados de autenticação
@@ -40,6 +41,13 @@ export default function PersonalFinanceFlow() {
   const [sortOrder, setSortOrder] = useState('desc');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [transactionToDelete, setTransactionToDelete] = useState(null);
+
+  // Estados OFX - NOVOS
+  const [isImportingOFX, setIsImportingOFX] = useState(false);
+  const [isExportingOFX, setIsExportingOFX] = useState(false);
+  const [showOFXImportModal, setShowOFXImportModal] = useState(false);
+  const [ofxImportResults, setOFXImportResults] = useState(null);
+  const [pendingOFXTransactions, setPendingOFXTransactions] = useState([]);
 
   // Categorias predefinidas
   const categories = {
@@ -210,10 +218,10 @@ export default function PersonalFinanceFlow() {
         setConnectionStatus('Conectado');
       });
 
-      console.log('✅ Dados carregados do SQLite WebAssembly');
+      console.log('Dados carregados do SQLite WebAssembly');
       
     } catch (error) {
-      console.error('⚠️ Erro ao carregar dados:', error);
+      console.error('Erro ao carregar dados:', error);
       setConnectionStatus('Erro ao carregar dados');
       
       React.startTransition(() => {
@@ -298,22 +306,22 @@ export default function PersonalFinanceFlow() {
 
   // FASE 1 - Exclusão de transações
   const handleDeleteClick = (transactionId, date, type, description) => {
-    console.log('🗑️ Preparando exclusão:', { transactionId, date, type, description });
+    console.log('Preparando exclusão:', { transactionId, date, type, description });
     setTransactionToDelete({ id: transactionId, date, type, description });
     setShowDeleteModal(true);
   };
 
   const confirmDelete = async () => {
     try {
-      console.log('🗑️ Iniciando exclusão - ID:', transactionToDelete.id);
-      console.log('🗑️ Estrutura atual dailyTransactions:', dailyTransactions);
+      console.log('Iniciando exclusão - ID:', transactionToDelete.id);
+      console.log('Estrutura atual dailyTransactions:', dailyTransactions);
       
       await dbManager.deleteTransaction(transactionToDelete.id);
-      console.log('✅ Exclusão realizada no banco');
+      console.log('Exclusão realizada no banco');
       
       // Recarregar dados FRESH do banco
       const freshTransactions = await dbManager.getTransactions();
-      console.log('📊 Dados recarregados:', freshTransactions);
+      console.log('Dados recarregados:', freshTransactions);
       
       React.startTransition(() => {
         setDailyTransactions(freshTransactions || {});
@@ -325,7 +333,7 @@ export default function PersonalFinanceFlow() {
       alert('Transação excluída com sucesso!');
       
     } catch (error) {
-      console.error('❌ Erro ao excluir transação:', error);
+      console.error('Erro ao excluir transação:', error);
       alert('Erro ao excluir transação: ' + error.message);
     }
   };
@@ -390,6 +398,201 @@ export default function PersonalFinanceFlow() {
     }
   };
 
+  // OFX - Import NOVO
+  const handleOFXImport = async () => {
+    try {
+      // Criar input file oculto
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.ofx,.qfx';
+      input.style.display = 'none';
+      
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        console.log('Arquivo OFX selecionado:', file.name, file.size, 'bytes');
+        
+        setIsImportingOFX(true);
+        
+        try {
+          // Ler arquivo
+          const content = await readFileContent(file);
+          console.log('Conteúdo lido, processando...');
+          
+          // Validar se é OFX
+          if (!ofxManager.isValidOFX(content)) {
+            throw new Error('Arquivo não é um OFX válido');
+          }
+          
+          // Importar via OFX Manager
+          const importedTransactions = await ofxManager.importOFX(content);
+          console.log('Transações importadas:', importedTransactions.length);
+          
+          if (importedTransactions.length === 0) {
+            alert('Nenhuma transação encontrada no arquivo OFX.');
+            return;
+          }
+          
+          // Converter transações existentes para verificar duplicatas
+          const existingTransactions = convertDailyTransactionsToList();
+          
+          // Detectar duplicatas
+          const duplicateResults = ofxManager.detectDuplicates(importedTransactions, existingTransactions);
+          
+          // Mostrar modal de confirmação
+          setOFXImportResults(duplicateResults);
+          setPendingOFXTransactions(importedTransactions);
+          setShowOFXImportModal(true);
+          
+        } catch (error) {
+          console.error('Erro no import OFX:', error);
+          alert('Erro ao importar arquivo OFX: ' + error.message);
+        } finally {
+          setIsImportingOFX(false);
+        }
+      };
+      
+      // Trigger file picker
+      document.body.appendChild(input);
+      input.click();
+      document.body.removeChild(input);
+      
+    } catch (error) {
+      console.error('Erro ao iniciar import OFX:', error);
+      alert('Erro ao iniciar importação OFX.');
+      setIsImportingOFX(false);
+    }
+  };
+
+  // OFX - Export NOVO
+  const handleOFXExport = async () => {
+    try {
+      setIsExportingOFX(true);
+      
+      // Converter transações para formato lista
+      const transactionsList = convertDailyTransactionsToList();
+      
+      if (transactionsList.length === 0) {
+        alert('Nenhuma transação encontrada para exportar.');
+        return;
+      }
+      
+      console.log('Exportando', transactionsList.length, 'transações para OFX');
+      
+      // Gerar OFX
+      const ofxContent = await ofxManager.exportOFX(transactionsList, {
+        bankId: '000',
+        accountId: 'PERSONAL_FINANCE'
+      });
+      
+      // Download
+      const blob = new Blob([ofxContent], { type: 'application/x-ofx;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `transacoes_financeiras_${new Date().toISOString().split('T')[0]}.ofx`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      alert('Arquivo OFX exportado com sucesso!');
+      
+    } catch (error) {
+      console.error('Erro ao exportar OFX:', error);
+      alert('Erro ao exportar dados para OFX: ' + error.message);
+    } finally {
+      setIsExportingOFX(false);
+    }
+  };
+
+  // Funções auxiliares para OFX
+  const readFileContent = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.onerror = (e) => reject(new Error('Erro ao ler arquivo'));
+      reader.readAsText(file, 'utf-8');
+    });
+  };
+
+  const convertDailyTransactionsToList = () => {
+    const list = [];
+    Object.entries(dailyTransactions).forEach(([date, dayData]) => {
+      // Receitas
+      Object.entries(dayData.income || {}).forEach(([id, transaction]) => {
+        list.push({
+          id: parseInt(id),
+          date,
+          type: 'income',
+          amount: transaction.amount,
+          description: transaction.description,
+          category: transaction.category,
+          fitid: transaction.fitid || null
+        });
+      });
+      // Despesas
+      Object.entries(dayData.expenses || {}).forEach(([id, transaction]) => {
+        list.push({
+          id: parseInt(id),
+          date,
+          type: 'expenses',
+          amount: transaction.amount,
+          description: transaction.description,
+          category: transaction.category,
+          fitid: transaction.fitid || null
+        });
+      });
+    });
+    return list;
+  };
+
+  // Confirmar importação OFX
+  const confirmOFXImport = async (importType) => {
+    try {
+      let transactionsToImport = [];
+      
+      if (importType === 'all') {
+        transactionsToImport = pendingOFXTransactions;
+      } else if (importType === 'unique') {
+        transactionsToImport = ofxImportResults.unique;
+      } else {
+        return; // Cancelado
+      }
+      
+      console.log('Importando', transactionsToImport.length, 'transações OFX');
+      
+      // Salvar no banco
+      for (const transaction of transactionsToImport) {
+        await dbManager.addTransaction(
+          transaction.date,
+          transaction.type,
+          transaction.amount,
+          transaction.description,
+          transaction.category
+        );
+      }
+      
+      // Recarregar dados
+      const freshTransactions = await dbManager.getTransactions();
+      
+      React.startTransition(() => {
+        setDailyTransactions(freshTransactions || {});
+        setDataVersion(prev => prev + 1);
+      });
+      
+      // Limpar estado
+      setShowOFXImportModal(false);
+      setOFXImportResults(null);
+      setPendingOFXTransactions([]);
+      
+      alert(`${transactionsToImport.length} transações importadas com sucesso!`);
+      
+    } catch (error) {
+      console.error('Erro ao confirmar import OFX:', error);
+      alert('Erro ao salvar transações importadas: ' + error.message);
+    }
+  };
+
   // Funções de formatação
   const formatCurrency = useCallback((value) => {
     if (typeof value !== 'number' || isNaN(value)) return '$ 0.00';
@@ -407,24 +610,24 @@ export default function PersonalFinanceFlow() {
   const addTransaction = useCallback(async (type, amount, description, category, date) => {
     try {
       const dateKey = date || new Date().toISOString().split('T')[0];
-      console.log('💰 Adicionando transação:', { type, amount, description, category, dateKey });
+      console.log('Adicionando transação:', { type, amount, description, category, dateKey });
       
       await dbManager.addTransaction(dateKey, type, parseFloat(amount), description, category);
-      console.log('✅ Transação salva no banco');
+      console.log('Transação salva no banco');
       
       // SEMPRE recarregar dados fresh do banco após inserção
       const freshTransactions = await dbManager.getTransactions();
-      console.log('📊 Dados recarregados após inserção:', freshTransactions);
+      console.log('Dados recarregados após inserção:', freshTransactions);
       
       React.startTransition(() => {
         setDailyTransactions(freshTransactions || {});
         setDataVersion(prev => prev + 1);
       });
       
-      console.log('✅ Interface atualizada');
+      console.log('Interface atualizada');
       
     } catch (error) {
-      console.error('❌ Erro ao adicionar transação:', error);
+      console.error('Erro ao adicionar transação:', error);
       throw error; // Re-throw para ser capturado no formulário
     }
   }, []);
@@ -499,12 +702,12 @@ export default function PersonalFinanceFlow() {
   const getFilteredAndSortedTransactions = useMemo(() => {
     const transactionsList = [];
     
-    console.log('📊 Processando dailyTransactions para lista:', dailyTransactions);
+    console.log('Processando dailyTransactions para lista:', dailyTransactions);
     
     Object.entries(dailyTransactions).forEach(([date, dayData]) => {
       // Receitas - ID é a chave da estrutura (que vem do SQLite)
       Object.entries(dayData.income || {}).forEach(([id, transaction]) => {
-        console.log(`💚 Receita encontrada - ID: ${id}, Dados:`, transaction);
+        console.log(`Receita encontrada - ID: ${id}, Dados:`, transaction);
         transactionsList.push({
           id: parseInt(id), // Converter para number para garantir match com SQLite
           date,
@@ -518,7 +721,7 @@ export default function PersonalFinanceFlow() {
       
       // Despesas
       Object.entries(dayData.expenses || {}).forEach(([id, transaction]) => {
-        console.log(`🔴 Despesa encontrada - ID: ${id}, Dados:`, transaction);
+        console.log(`Despesa encontrada - ID: ${id}, Dados:`, transaction);
         transactionsList.push({
           id: parseInt(id), // Converter para number para garantir match com SQLite
           date,
@@ -531,7 +734,7 @@ export default function PersonalFinanceFlow() {
       });
     });
 
-    console.log('📋 Lista completa de transações:', transactionsList);
+    console.log('Lista completa de transações:', transactionsList);
 
     // Aplicar filtro de busca
     let filteredTransactions = transactionsList;
@@ -754,6 +957,98 @@ export default function PersonalFinanceFlow() {
               Excluir
             </button>
           </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Modal de Importação OFX - NOVO
+  const OFXImportModal = () => {
+    if (!showOFXImportModal || !ofxImportResults) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg p-6 max-w-lg w-full shadow-xl max-h-96 overflow-y-auto">
+          <div className="text-center mb-4">
+            <div className="text-4xl mb-2">📥</div>
+            <h3 className="text-lg font-semibold text-gray-800">
+              Importação OFX
+            </h3>
+          </div>
+          
+          <div className="mb-6">
+            <div className="bg-blue-50 rounded-lg p-4 mb-4 border border-blue-200">
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <p className="text-2xl font-bold text-blue-600">{ofxImportResults.total}</p>
+                  <p className="text-sm text-gray-600">Total</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-green-600">{ofxImportResults.uniqueCount}</p>
+                  <p className="text-sm text-gray-600">Novas</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-orange-600">{ofxImportResults.duplicateCount}</p>
+                  <p className="text-sm text-gray-600">Duplicadas</p>
+                </div>
+              </div>
+            </div>
+
+            {ofxImportResults.duplicateCount > 0 && (
+              <div className="bg-orange-50 rounded-lg p-3 mb-4 border border-orange-200">
+                <p className="text-sm text-orange-800">
+                  <strong>Duplicatas encontradas:</strong> {ofxImportResults.duplicateCount} transações 
+                  já existem no sistema (baseado no ID do banco).
+                </p>
+              </div>
+            )}
+            
+            {ofxImportResults.uniqueCount > 0 && (
+              <div className="bg-green-50 rounded-lg p-3 mb-4 border border-green-200">
+                <p className="text-sm text-green-800">
+                  <strong>Transações novas:</strong> {ofxImportResults.uniqueCount} transações 
+                  serão adicionadas ao seu sistema.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <p className="text-gray-600 text-center mb-6">
+            Como você deseja prosseguir com a importação?
+          </p>
+
+          <div className="flex flex-col gap-3">
+            {ofxImportResults.uniqueCount > 0 && (
+              <button
+                onClick={() => confirmOFXImport('unique')}
+                className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700 font-medium"
+              >
+                📥 Importar Apenas Novas ({ofxImportResults.uniqueCount})
+              </button>
+            )}
+            
+            <button
+              onClick={() => confirmOFXImport('all')}
+              className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 font-medium"
+            >
+              📥 Importar Todas ({ofxImportResults.total})
+            </button>
+            
+            <button
+              onClick={() => {
+                setShowOFXImportModal(false);
+                setOFXImportResults(null);
+                setPendingOFXTransactions([]);
+              }}
+              className="w-full bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300"
+            >
+              Cancelar
+            </button>
+          </div>
+
+          <p className="text-xs text-gray-400 text-center mt-4">
+            Transações duplicadas são identificadas pelo ID único do banco (FITID)
+          </p>
         </div>
       </div>
     );
@@ -1554,7 +1849,7 @@ export default function PersonalFinanceFlow() {
     );
   };
 
-  // Configuration View Component
+  // Configuration View Component - ATUALIZADO COM OFX
   const ConfigurationView = () => {
     const exportData = async () => {
       try {
@@ -1586,8 +1881,37 @@ export default function PersonalFinanceFlow() {
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Configurações</h2>
           
-          <div className="space-y-4">
+          <div className="space-y-6">
+            {/* NOVA SEÇÃO OFX */}
             <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Funcionalidade OFX</h3>
+              <p className="text-gray-600 mb-4">
+                Importe transações de arquivos .ofx/.qfx dos bancos ou exporte seus dados em formato OFX
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  onClick={handleOFXImport}
+                  disabled={isImportingOFX}
+                  className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isImportingOFX ? 'Importando...' : '📥 Importar OFX'}
+                </button>
+                <button
+                  onClick={handleOFXExport}
+                  disabled={isExportingOFX}
+                  className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isExportingOFX ? 'Exportando...' : '📤 Exportar OFX'}
+                </button>
+              </div>
+              <div className="mt-3 text-xs text-gray-500 space-y-1">
+                <p>• Compatível com Itaú, Bradesco, Santander, Banco do Brasil</p>
+                <p>• Importação detecta duplicatas automaticamente</p>
+                <p>• Categorização inteligente baseada na descrição</p>
+              </div>
+            </div>
+
+            <div className="border-t pt-4">
               <h3 className="text-lg font-medium text-gray-900 mb-2">Backup e Exportação</h3>
               <p className="text-gray-600 mb-4">Faça backup dos seus dados financeiros</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -1636,7 +1960,7 @@ export default function PersonalFinanceFlow() {
             </div>
 
             <div className="border-t pt-4">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Funcionalidades Fase 1</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Funcionalidades Implementadas</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
                 <p>✅ Exclusão de transações com logs</p>
                 <p>✅ Busca por descrição/categoria</p>
@@ -1644,6 +1968,8 @@ export default function PersonalFinanceFlow() {
                 <p>✅ Export CSV completo</p>
                 <p>✅ Categorias predefinidas</p>
                 <p>✅ Validação de formulários</p>
+                <p>✅ Import/Export OFX</p>
+                <p>✅ Detecção de duplicatas</p>
               </div>
             </div>
 
@@ -1654,7 +1980,7 @@ export default function PersonalFinanceFlow() {
                 <p>• SQLite WebAssembly</p>
                 <p>• Dados locais (IndexedDB)</p>
                 <p>• Funciona offline</p>
-                <p>• Versão: 1.1 + Avaliação GitHub Stars</p>
+                <p>• Versão: 1.2 + Funcionalidade OFX</p>
               </div>
             </div>
           </div>
@@ -1679,7 +2005,7 @@ export default function PersonalFinanceFlow() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">V&M Personal Finance</h1>
-                <p className="text-sm text-blue-600">Progressive Web App</p>
+                <p className="text-sm text-blue-600">Progressive Web App + OFX</p>
               </div>
             </div>
             <button
@@ -1742,6 +2068,7 @@ export default function PersonalFinanceFlow() {
       <DonationModal />
       <RatingModal />
       <DeleteModal />
+      <OFXImportModal />
     </div>
   );
 }
