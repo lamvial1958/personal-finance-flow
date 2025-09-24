@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/personal-finance-flow/dev-sw.js?dev-sw', { scope: '/personal-finance-flow/', type: 'classic' })

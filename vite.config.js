@@ -22,28 +22,6 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'icon-192.png', 'icon-512.png'],
-      manifest: {
-        name: 'V&M Personal Finance',
-        short_name: 'V&M Finance',
-        description: 'Aplicativo de controle financeiro pessoal',
-        theme_color: '#2563eb',
-        background_color: '#ffffff',
-        display: 'standalone',
-        scope: '/',
-        start_url: '/',
-        icons: [
-          {
-            src: 'icon-192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'icon-512.png',
-            sizes: '512x512',
-            type: 'image/png'
-          }
-        ]
-      },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,wasm}'],
         runtimeCaching: [
@@ -59,6 +37,59 @@ export default defineConfig({
             }
           }
         ]
+      },
+      manifest: {
+        name: 'V&M Personal Finance',
+        short_name: 'V&M Finance',
+        description: 'Aplicativo de controle financeiro pessoal com funcionalidade OFX',
+        theme_color: '#2563eb',
+        background_color: '#ffffff',
+        display: 'standalone',
+        orientation: 'portrait-primary',
+        scope: '/',
+        start_url: '/',
+        id: 'vm-personal-finance',
+        categories: ['finance', 'productivity', 'business'],
+        lang: 'pt-BR',
+        dir: 'ltr',
+        icons: [
+          {
+            src: 'icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable'
+          },
+          {
+            src: 'icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
+          },
+          {
+            src: 'favicon.ico',
+            sizes: '64x64 32x32 24x24 16x16',
+            type: 'image/x-icon',
+            purpose: 'any'
+          }
+        ],
+        screenshots: [
+          {
+            src: 'icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            form_factor: 'narrow'
+          }
+        ],
+        prefer_related_applications: false,
+        edge_side_panel: {
+          preferred_width: 400
+        },
+        launch_handler: {
+          client_mode: 'navigate-existing'
+        }
+      },
+      devOptions: {
+        enabled: true
       }
     })
   ],

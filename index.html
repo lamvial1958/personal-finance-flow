@@ -3,18 +3,39 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
     
     <!-- PWA Meta Tags -->
-    <meta name="description" content="V&M Personal Finance - Aplicativo de controle financeiro pessoal" />
+    <meta name="description" content="V&M Personal Finance - Aplicativo de controle financeiro pessoal com funcionalidade OFX" />
     <meta name="theme-color" content="#2563eb" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="V&M Finance" />
+    
+    <!-- iOS Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="V&M Finance" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    
+    <!-- Android Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
     
     <!-- Icons -->
     <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
     <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Windows Metro Tags -->
+    <meta name="msapplication-TileColor" content="#2563eb" />
+    <meta name="msapplication-TileImage" content="/icon-192.png" />
+    <meta name="msapplication-config" content="none" />
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
     
     <title>V&M Personal Finance</title>
     
@@ -63,6 +84,37 @@
       
       .install-button.show {
         display: inline-flex;
+      }
+      
+      /* Mobile optimizations */
+      @media (max-width: 768px) {
+        body {
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          -khtml-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+          -webkit-tap-highlight-color: transparent;
+        }
+        
+        input, textarea, select {
+          -webkit-user-select: auto;
+          -moz-user-select: auto;
+          -ms-user-select: auto;
+          user-select: auto;
+        }
+      }
+      
+      /* PWA display mode detection */
+      @media (display-mode: standalone) {
+        body {
+          -webkit-app-region: drag;
+        }
+        
+        button, input, select, textarea, a {
+          -webkit-app-region: no-drag;
+        }
       }
     </style>
   </head>
@@ -116,6 +168,35 @@
         }, 5000);
       });
       
+      // iOS detection for install prompt
+      const isIos = () => {
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        return /iphone|ipad|ipod/.test(userAgent);
+      };
+      
+      const isInStandaloneMode = () => {
+        return (window.matchMedia('(display-mode: standalone)').matches) || 
+               (window.navigator.standalone) || 
+               document.referrer.includes('android-app://');
+      };
+      
+      // Show iOS install instructions
+      if (isIos() && !isInStandaloneMode()) {
+        setTimeout(() => {
+          const installPrompt = document.getElementById('install-prompt');
+          if (installPrompt) {
+            const content = installPrompt.querySelector('div > div:first-child');
+            if (content) {
+              content.innerHTML = `
+                <p class="font-medium">Instalar no iOS</p>
+                <p class="text-sm opacity-90">Toque em "Compartilhar" e depois "Adicionar à Tela de Início"</p>
+              `;
+            }
+            installPrompt.classList.remove('hidden');
+          }
+        }, 5000);
+      }
+      
       document.addEventListener('DOMContentLoaded', () => {
         const installYes = document.getElementById('install-yes');
         const installNo = document.getElementById('install-no');
@@ -128,13 +209,17 @@
               const { outcome } = await deferredPrompt.userChoice;
               deferredPrompt = null;
             }
-            installPrompt.classList.add('hidden');
+            if (installPrompt) {
+              installPrompt.classList.add('hidden');
+            }
           });
         }
         
         if (installNo) {
           installNo.addEventListener('click', () => {
-            installPrompt.classList.add('hidden');
+            if (installPrompt) {
+              installPrompt.classList.add('hidden');
+            }
           });
         }
       });
@@ -148,6 +233,19 @@
           }
         }, 1000);
       });
+      
+      // Register service worker for iOS
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
     </script>
   </body>
 </html>

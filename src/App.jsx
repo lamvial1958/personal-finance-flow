@@ -1849,7 +1849,7 @@ export default function PersonalFinanceFlow() {
     );
   };
 
-  // Configuration View Component - ATUALIZADO COM OFX
+  // Configuration View Component - ATUALIZADO COM OFX E NAVEGAÇÃO MELHORADA
   const ConfigurationView = () => {
     const exportData = async () => {
       try {
@@ -1878,8 +1878,20 @@ export default function PersonalFinanceFlow() {
 
     return (
       <div className="space-y-6">
+        {/* Cabeçalho com botão voltar */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Configurações</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900">Configurações</h2>
+            <button
+              onClick={() => setIsConfigOpen(false)}
+              className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+              </svg>
+              <span>Voltar</span>
+            </button>
+          </div>
           
           <div className="space-y-6">
             {/* NOVA SEÇÃO OFX */}
@@ -2025,9 +2037,12 @@ export default function PersonalFinanceFlow() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
             <button
-              onClick={() => setActiveTab('dashboard')}
+              onClick={() => {
+                setActiveTab('dashboard');
+                setIsConfigOpen(false);
+              }}
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'dashboard'
+                activeTab === 'dashboard' && !isConfigOpen
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
@@ -2035,9 +2050,12 @@ export default function PersonalFinanceFlow() {
               Painel
             </button>
             <button
-              onClick={() => setActiveTab('patrimony')}
+              onClick={() => {
+                setActiveTab('patrimony');
+                setIsConfigOpen(false);
+              }}
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'patrimony'
+                activeTab === 'patrimony' && !isConfigOpen
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
@@ -2045,9 +2063,12 @@ export default function PersonalFinanceFlow() {
               Patrimônio
             </button>
             <button
-              onClick={() => setActiveTab('annual-report')}
+              onClick={() => {
+                setActiveTab('annual-report');
+                setIsConfigOpen(false);
+              }}
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'annual-report'
+                activeTab === 'annual-report' && !isConfigOpen
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
