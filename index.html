@@ -7,12 +7,11 @@
     
     <!-- PWA Meta Tags -->
     <meta name="description" content="V&M Personal Finance - Aplicativo de controle financeiro pessoal com funcionalidade OFX" />
-    <meta name="theme-color" content="#2563eb" />
+    <meta name="theme-color" content="#2563eb" id="theme-color-meta" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="application-name" content="V&M Finance" />
     
     <!-- iOS Meta Tags -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="V&M Finance" />
     <meta name="apple-touch-fullscreen" content="yes" />
@@ -35,22 +34,39 @@
     <meta name="msapplication-config" content="none" />
     
     <!-- Preload Critical Resources -->
-    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     
     <title>V&M Personal Finance</title>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
     <style>
-      /* Loading animation */
+      /* Critical CSS para loading inicial */
+      #loading-screen {
+        position: fixed;
+        inset: 0;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        font-family: 'Inter', system-ui, sans-serif;
+      }
+      
+      .loading-content {
+        text-align: center;
+      }
+      
       .loading-spinner {
+        width: 40px;
+        height: 40px;
         border: 4px solid #f3f4f6;
         border-top: 4px solid #2563eb;
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
         animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
       }
       
       @keyframes spin {
@@ -58,73 +74,112 @@
         100% { transform: rotate(360deg); }
       }
       
-      /* Custom scrollbar */
-      .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
+      .loading-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
       }
       
-      .custom-scrollbar::-webkit-scrollbar-track {
-        background: #f1f5f9;
-        border-radius: 3px;
+      .loading-subtitle {
+        color: #6b7280;
+        font-size: 0.875rem;
       }
       
-      .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 3px;
-      }
-      
-      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-      }
-      
-      /* PWA Install Button */
-      .install-button {
+      /* PWA Install Prompt Styles */
+      #install-prompt {
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+        background: #2563eb;
+        color: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         display: none;
+        max-width: 320px;
+        font-family: 'Inter', system-ui, sans-serif;
       }
       
-      .install-button.show {
-        display: inline-flex;
+      #install-prompt.show {
+        display: block;
       }
       
-      /* Mobile optimizations */
-      @media (max-width: 768px) {
-        body {
-          -webkit-touch-callout: none;
-          -webkit-user-select: none;
-          -khtml-user-select: none;
-          -moz-user-select: none;
-          -ms-user-select: none;
-          user-select: none;
-          -webkit-tap-highlight-color: transparent;
+      .install-content {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      
+      .install-text h4 {
+        font-weight: 500;
+        margin: 0 0 0.25rem;
+      }
+      
+      .install-text p {
+        font-size: 0.875rem;
+        opacity: 0.9;
+        margin: 0;
+      }
+      
+      .install-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+      }
+      
+      .install-btn {
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+      }
+      
+      .install-btn-primary {
+        background: white;
+        color: #2563eb;
+      }
+      
+      .install-btn-primary:hover {
+        background: #f3f4f6;
+      }
+      
+      .install-btn-secondary {
+        background: transparent;
+        color: white;
+        opacity: 0.75;
+      }
+      
+      .install-btn-secondary:hover {
+        opacity: 1;
+      }
+      
+      /* Dark mode para loading screen */
+      @media (prefers-color-scheme: dark) {
+        #loading-screen {
+          background: #111827;
         }
         
-        input, textarea, select {
-          -webkit-user-select: auto;
-          -moz-user-select: auto;
-          -ms-user-select: auto;
-          user-select: auto;
-        }
-      }
-      
-      /* PWA display mode detection */
-      @media (display-mode: standalone) {
-        body {
-          -webkit-app-region: drag;
+        .loading-title {
+          color: #f9fafb;
         }
         
-        button, input, select, textarea, a {
-          -webkit-app-region: no-drag;
+        .loading-subtitle {
+          color: #9ca3af;
         }
       }
     </style>
   </head>
   <body>
     <!-- Loading Screen -->
-    <div id="loading-screen" class="fixed inset-0 bg-white flex items-center justify-center z-50">
-      <div class="text-center">
-        <div class="loading-spinner mx-auto mb-4"></div>
-        <h2 class="text-xl font-semibold text-gray-700">V&M Personal Finance</h2>
-        <p class="text-gray-500 mt-2">Carregando aplicativo...</p>
+    <div id="loading-screen">
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <h2 class="loading-title">V&M Personal Finance</h2>
+        <p class="loading-subtitle">Carregando aplicativo...</p>
       </div>
     </div>
     
@@ -132,20 +187,20 @@
     <div id="root"></div>
     
     <!-- PWA Install Prompt -->
-    <div id="install-prompt" class="fixed bottom-4 right-4 bg-blue-600 text-white p-4 rounded-lg shadow-lg hidden">
-      <div class="flex items-center space-x-3">
-        <div>
-          <p class="font-medium">Instalar Aplicativo</p>
-          <p class="text-sm opacity-90">Adicione à tela inicial para acesso rápido</p>
+    <div id="install-prompt">
+      <div class="install-content">
+        <div class="install-text">
+          <h4>Instalar Aplicativo</h4>
+          <p>Adicione à tela inicial para acesso rápido</p>
         </div>
-        <div class="flex space-x-2">
-          <button id="install-yes" class="bg-white text-blue-600 px-3 py-1 rounded text-sm font-medium">
-            Instalar
-          </button>
-          <button id="install-no" class="text-white opacity-75 hover:opacity-100 text-sm">
-            Agora não
-          </button>
-        </div>
+      </div>
+      <div class="install-buttons">
+        <button id="install-yes" class="install-btn install-btn-primary">
+          Instalar
+        </button>
+        <button id="install-no" class="install-btn install-btn-secondary">
+          Agora não
+        </button>
       </div>
     </div>
     
@@ -155,6 +210,22 @@
     <script>
       let deferredPrompt;
       
+      // Theme color dinâmico baseado na preferência do sistema
+      function updateThemeColor() {
+        const metaThemeColor = document.getElementById('theme-color-meta');
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          metaThemeColor.setAttribute('content', '#1f2937'); // gray-800
+        } else {
+          metaThemeColor.setAttribute('content', '#2563eb'); // blue-600
+        }
+      }
+      
+      // Aplicar theme color inicial
+      updateThemeColor();
+      
+      // Escutar mudanças na preferência de cor
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateThemeColor);
+      
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
@@ -163,7 +234,7 @@
         setTimeout(() => {
           const installPrompt = document.getElementById('install-prompt');
           if (installPrompt) {
-            installPrompt.classList.remove('hidden');
+            installPrompt.classList.add('show');
           }
         }, 5000);
       });
@@ -185,14 +256,14 @@
         setTimeout(() => {
           const installPrompt = document.getElementById('install-prompt');
           if (installPrompt) {
-            const content = installPrompt.querySelector('div > div:first-child');
-            if (content) {
-              content.innerHTML = `
-                <p class="font-medium">Instalar no iOS</p>
-                <p class="text-sm opacity-90">Toque em "Compartilhar" e depois "Adicionar à Tela de Início"</p>
+            const textElement = installPrompt.querySelector('.install-text');
+            if (textElement) {
+              textElement.innerHTML = `
+                <h4>Instalar no iOS</h4>
+                <p>Toque em "Compartilhar" e depois "Adicionar à Tela de Início"</p>
               `;
             }
-            installPrompt.classList.remove('hidden');
+            installPrompt.classList.add('show');
           }
         }, 5000);
       }
@@ -210,7 +281,7 @@
               deferredPrompt = null;
             }
             if (installPrompt) {
-              installPrompt.classList.add('hidden');
+              installPrompt.classList.remove('show');
             }
           });
         }
@@ -218,7 +289,7 @@
         if (installNo) {
           installNo.addEventListener('click', () => {
             if (installPrompt) {
-              installPrompt.classList.add('hidden');
+              installPrompt.classList.remove('show');
             }
           });
         }
@@ -234,8 +305,12 @@
         }, 1000);
       });
       
-      // Register service worker for iOS
-      if ('serviceWorker' in navigator) {
+      // Register service worker apenas em produção ou localhost
+      if ('serviceWorker' in navigator && (
+        window.location.hostname === 'localhost' || 
+        window.location.protocol === 'https:' && 
+        !window.location.hostname.includes('claudeusercontent.com')
+      )) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
             .then((registration) => {

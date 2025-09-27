@@ -34,7 +34,7 @@ self.addEventListener('install', (event) => {
   // Skip waiting para ativar imediatamente
   self.skipWaiting();
   
-  // Só fazer cache inicial se não for desenvolvimento
+  // CORREÇÃO: Não fazer cache inicial em desenvolvimento
   if (!isDevelopment()) {
     event.waitUntil(
       caches.open(CACHE_NAME)
@@ -55,9 +55,22 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = request.url;
   
-  // Em desenvolvimento, não interceptar recursos do Vite
-  if (isDevelopment() && isViteResource(url)) {
-    return; // Deixa o Vite lidar com esses recursos
+  // CORREÇÃO CRÍTICA: Em desenvolvimento, ignorar TODOS os requests problemáticos
+  if (isDevelopment()) {
+    // Ignorar recursos do Vite
+    if (isViteResource(url)) {
+      return;
+    }
+    
+    // Ignorar requests para paths que não existem em desenvolvimento
+    if (url.includes('/personal-finance-flow/')) {
+      return;
+    }
+    
+    // Ignorar requests de módulos ES
+    if (url.includes('.js?') || url.includes('.jsx?') || url.includes('.ts?') || url.includes('.tsx?')) {
+      return;
+    }
   }
   
   // Não cachear requests POST, PUT, DELETE
@@ -65,40 +78,39 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // Strategy: Cache First para recursos estáticos, Network First para páginas
+  // Strategy simplificada para desenvolvimento
   event.respondWith(
     caches.match(request)
       .then((response) => {
-        // Se encontrou no cache
+        // Se encontrou no cache, usar cache
         if (response) {
-          // Para recursos estáticos (imagens, CSS, JS), retorna do cache
-          if (isStaticAsset(url)) {
-            return response;
-          }
-          
-          // Para páginas HTML, tenta network primeiro em desenvolvimento
-          if (isDevelopment() && isHTMLRequest(request)) {
-            return fetch(request).catch(() => response);
-          }
-          
           return response;
         }
         
-        // Se não encontrou no cache, busca na network
+        // Se não encontrou no cache, buscar na network
         return fetch(request)
           .then((networkResponse) => {
-            // Só cacheia em produção ou recursos específicos
+            // CORREÇÃO: Só cachear em produção
             if (!isDevelopment() && shouldCache(request, networkResponse)) {
               const responseToCache = networkResponse.clone();
               caches.open(CACHE_NAME)
                 .then((cache) => {
                   cache.put(request, responseToCache);
+                })
+                .catch(() => {
+                  // Silenciosamente ignorar erros de cache em desenvolvimento
                 });
             }
             return networkResponse;
           })
           .catch((error) => {
-            // Se network falha e estamos offline, tenta servir página offline
+            // CORREÇÃO: Em desenvolvimento, não tentar servir fallbacks
+            if (isDevelopment()) {
+              console.log('SW fetch failed in dev mode:', url, error);
+              throw error; // Deixa o browser lidar com isso
+            }
+            
+            // Em produção, tentar servir página offline
             if (isHTMLRequest(request)) {
               return caches.match('/') || new Response('App offline', {
                 status: 503,
@@ -107,6 +119,13 @@ self.addEventListener('fetch', (event) => {
             }
             throw error;
           });
+      })
+      .catch((error) => {
+        // CORREÇÃO: Em desenvolvimento, log e re-throw
+        if (isDevelopment()) {
+          console.log('SW cache match failed in dev:', url, error);
+        }
+        throw error;
       })
   );
 });

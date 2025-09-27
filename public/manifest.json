@@ -1,36 +1,48 @@
 {
   "name": "V&M Personal Finance",
   "short_name": "V&M Finance",
-  "description": "Aplicativo de controle financeiro pessoal",
+  "description": "Aplicativo de controle financeiro pessoal com funcionalidade OFX",
   "theme_color": "#2563eb",
   "background_color": "#ffffff",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "scope": "/personal-finance-flow/",
-  "start_url": "/personal-finance-flow/",
+  "scope": "/",
+  "start_url": "/",
   "categories": ["finance", "productivity", "utilities"],
   "icons": [
     {
-      "src": "/personal-finance-flow/favicon.ico",
+      "src": "/favicon.ico",
       "sizes": "48x48",
       "type": "image/x-icon"
     },
     {
-      "src": "/personal-finance-flow/icon-192.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "maskable any"
+      "purpose": "any"
     },
     {
-      "src": "/personal-finance-flow/icon-512.png",
+      "src": "/icon-192.png",
+      "sizes": "192x192", 
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable any"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png", 
+      "purpose": "maskable"
     }
   ],
   "screenshots": [
     {
-      "src": "/personal-finance-flow/icon-512.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "form_factor": "wide",
@@ -42,35 +54,38 @@
       "name": "Dashboard",
       "short_name": "Dashboard",
       "description": "Acessar painel principal",
-      "url": "/personal-finance-flow/?tab=dashboard",
+      "url": "/?tab=dashboard",
       "icons": [
         {
-          "src": "/personal-finance-flow/icon-192.png",
-          "sizes": "192x192"
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
         }
       ]
     },
     {
       "name": "Patrimônio",
-      "short_name": "Patrimônio",
+      "short_name": "Patrimônio", 
       "description": "Gerenciar patrimônio",
-      "url": "/personal-finance-flow/?tab=patrimony",
+      "url": "/?tab=patrimony",
       "icons": [
         {
-          "src": "/personal-finance-flow/icon-192.png",
-          "sizes": "192x192"
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
         }
       ]
     },
     {
       "name": "Relatórios",
       "short_name": "Relatórios",
-      "description": "Ver relatórios anuais",
-      "url": "/personal-finance-flow/?tab=reports",
+      "description": "Ver relatórios anuais", 
+      "url": "/?tab=reports",
       "icons": [
         {
-          "src": "/personal-finance-flow/icon-192.png",
-          "sizes": "192x192"
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
         }
       ]
     }
