@@ -1,48 +1,143 @@
 # Roadmap de Melhorias - V&M Personal Finance
 
 ## Status Atual
-**Versão**: 1.4.0 - PWA com Gráficos Interativos + Modo Escuro Implementado  
+**Versão**: 1.5.0 - Edição + Filtros Avançados (Parcialmente Implementada)  
 **Deploy**: https://lamvial1958.github.io/personal-finance-flow/  
 **Última atualização**: Setembro 2025  
-**Status**: ✅ Fase 1 CONCLUÍDA | ✅ Versão 1.2.0 OFX IMPLEMENTADA | ✅ CORREÇÕES CRÍTICAS APLICADAS | ✅ Fase 2 CONCLUÍDA | ✅ Modo Escuro IMPLEMENTADO | ✅ Gráficos Interativos IMPLEMENTADOS
+**Status**: ✅ Fase 1 CONCLUÍDA | ✅ Versão 1.2.0 OFX IMPLEMENTADA | ✅ CORREÇÕES CRÍTICAS APLICADAS | ✅ Fase 2 CONCLUÍDA | ✅ Modo Escuro IMPLEMENTADO | ✅ Gráficos Interativos IMPLEMENTADOS | ✅ VERSÃO 1.4.0 COMPLETA | ✅ EDIÇÃO DE TRANSAÇÕES IMPLEMENTADA | ✅ FILTROS AVANÇADOS IMPLEMENTADOS
 
 ---
 
-## ✅ GRÁFICOS INTERATIVOS IMPLEMENTADOS (Setembro 2025)
+## ✅ VERSÃO 1.5.0 - 66% IMPLEMENTADA (Setembro 2025)
 
-### Funcionalidade Completa: Análise Visual de Dados
-**Severidade**: ALTA - Sistema completo de visualização financeira  
-**Implementação**: ChartsView + useCharts + Recharts + Integração Navigation  
-**Impacto**: Interface moderna com análise gráfica profissional  
+### Funcionalidades Avançadas de Usabilidade - EM PROGRESSO
+**Severidade**: ALTA - Completar funcionalidades críticas de edição e personalização  
+**Implementação**: Base V1.4.0 + Edição + Filtros + Categorias Personalizáveis  
+**Impacto**: Sistema completo de gestão financeira com edição e análise customizada  
 
-### ✅ Implementações Realizadas:
-1. **ChartsView.jsx**: Interface principal com 4 abas especializadas
-2. **useCharts.js**: Hook para processamento de dados e formatação
-3. **Recharts Integration**: Biblioteca profissional de gráficos instalada
-4. **App.jsx**: Navegação expandida com aba "Análise"
-5. **AppContext.jsx**: Inicialização automática de dados corrigida
-6. **Modo Escuro**: Cores dinâmicas por tema implementadas
+### ✅ Conquistas da Versão 1.5.0 (Implementadas):
 
-### 📊 Recursos Implementados:
-- ✅ Sistema de abas: Visão Geral, Tendências, Categorias, Evolução
-- ✅ Filtros de período: 1m, 3m, 6m, 12m, todos
-- ✅ Gráficos Recharts: LineChart, BarChart, PieChart, AreaChart
-- ✅ Tooltips customizados com formatação brasileira
-- ✅ Estados de loading e "nenhum dado encontrado"
-- ✅ Suporte completo a modo escuro/claro
-- ✅ Responsividade mobile/desktop
-- ✅ Verificações defensivas para dados
+#### ✅ 1.5.1 Edição de Transações (6 dias) - CONCLUÍDA
+- **O que**: Modal para editar transações existentes
+- **Status**: ✅ **IMPLEMENTADO E FUNCIONAL**
+- **Funcionalidades**:
+  - EditModal.jsx auto-gerenciado com dados preenchidos
+  - updateTransaction() no db-manager.js implementado
+  - useTransactions.js expandido com estado de edição
+  - Botão "editar" na lista de transações do Dashboard
+  - Validação completa de dados
+  - Atualização automática de gráficos após edição
+  - Suporte completo ao modo escuro
+  - Zero breaking changes com funcionalidades existentes
+
+#### ✅ 1.5.2 Filtros Avançados (5 dias) - CONCLUÍDA  
+- **O que**: Sistema expandido de filtros para análise detalhada
+- **Status**: ✅ **IMPLEMENTADO E FUNCIONAL**
+- **Funcionalidades**:
+  - Filtros por período específico (data inicial/final)
+  - Filtros por faixas de valor (mínimo/máximo)
+  - Filtros por múltiplas categorias simultaneamente
+  - Filtros por tipo de transação
+  - Combinação de filtros com busca textual
+  - Interface de filtros avançados no Dashboard
+  - Filtros rápidos pré-definidos
+  - Integração automática com gráficos
+  - Persistência de filtros aplicados via localStorage
+  - Suporte ao modo escuro
+  - Validação em tempo real
+  - Indicadores visuais de filtros ativos
+
+#### 🔄 1.5.3 Categorias Personalizáveis (8 dias) - PRÓXIMA IMPLEMENTAÇÃO
+- **O que**: Sistema flexível de categorias definidas pelo usuário
+- **Complexidade**: Média-Alta - Nova tabela + CRUD + migração de dados
+- **Impacto**: ALTO - Personalização avançada + análise customizada
+- **Implementação Planejada**: 
+  - Nova tabela custom_categories no SQLite
+  - CRUD completo de categorias personalizadas
+  - Interface de gerenciamento de categorias
+  - Migração das categorias hardcoded existentes
+  - Preservar compatibilidade com importação OFX
+  - Cores personalizadas para gráficos de categoria
+  - Integração automática com gráficos e filtros
+  - Categorias padrão + categorias do usuário
+  - Sistema de ícones para categorias
+  - Suporte completo ao modo escuro
+
+### 📊 Progresso V1.5.0:
+- ✅ **Edição de Transações**: 100% implementada e funcional
+- ✅ **Filtros Avançados**: 100% implementada e funcional  
+- 🔄 **Categorias Personalizáveis**: 0% implementada - PRÓXIMA
+
+**Status Geral V1.5.0**: 66% concluída (11 de 19 dias planejados)
 
 ---
 
-## ✅ CORREÇÕES CRÍTICAS APLICADAS (Setembro 2025)
+## 🎯 PRÓXIMA IMPLEMENTAÇÃO: CATEGORIAS PERSONALIZÁVEIS
 
-### Problema Identificado: Re-renders Massivos
+### Objetivo: Completar V1.5.0 com Sistema de Categorias Flexível
+**Prioridade**: ALTA - Última funcionalidade crítica da V1.5.0  
+**Base Técnica**: Arquitetura modular V1.4.0 + edição + filtros preparados  
+**Impacto**: Sistema completo de gestão financeira personalizada  
+
+### 📋 FUNCIONALIDADE RESTANTE V1.5.0:
+
+#### 🏷️ 1.5.3 Categorias Personalizáveis (8 dias) - PRÓXIMA PRIORIDADE
+**Justificativa**: Personalização avançada + análise customizada  
+**Complexidade Técnica**: 
+- **db-manager.js**: Nova tabela + CRUD completo - 2 dias
+- **useCategories.js**: Hook dedicado para categorias - 2 dias
+- **CategoryManager.jsx**: Interface de gerenciamento - 2 dias
+- **Migração**: Dados existentes + compatibilidade OFX - 1 dia
+- **Gráficos**: Integração cores + categorias customizadas - 1 dia
+
+### Integração com Base Existente V1.4.0 + Edição + Filtros:
+- **Aproveitamento de 95%** da arquitetura modular implementada
+- **Gráficos automáticos**: Atualização instantânea com novas categorias
+- **Filtros avançados**: Integração automática com categorias personalizadas
+- **Tema universal**: Modo escuro aplicado automaticamente
+- **Performance mantida**: React.memo + useMemo preservados
+- **Zero breaking changes**: 100% compatibilidade com funcionalidades existentes
+
+---
+
+## ✅ HISTÓRICO DE IMPLEMENTAÇÕES CONCLUÍDAS
+
+### ✅ VERSÃO 1.4.0 COMPLETAMENTE IMPLEMENTADA (Setembro 2025)
+
+#### Funcionalidade Completa: Sistema Enterprise com Análise Visual
+**Severidade**: ALTA - Aplicação enterprise-grade completa  
+**Implementação**: Arquitetura Modular + Modo Escuro + Gráficos Interativos + Performance Otimizada  
+**Impacto**: Aplicação moderna com análise financeira profissional e UX premium  
+
+#### ✅ Conquistas da Versão 1.4.0:
+1. **App.jsx Modularizado**: 89KB → 6.1KB (94% redução) + navegação expandida
+2. **Arquitetura Enterprise**: Componentes especializados + hooks customizados
+3. **Sistema de Gráficos**: ChartsView + useCharts + Recharts integrado
+4. **Modo Escuro Completo**: ThemeContext + persistência + Tailwind dark mode
+5. **Performance Otimizada**: Zero loops circulares + React.memo implementado
+6. **Campo Descrição Opcional**: Formulário flexibilizado conforme solicitado
+7. **Navegação Expandida**: Aba "Análise" com sistema completo de visualização
+
+#### 📊 Recursos Implementados e Funcionando:
+- ✅ **Sistema de gráficos completo**: 4 abas especializadas (Visão Geral, Tendências, Categorias, Evolução)
+- ✅ **Filtros de período dinâmicos**: 1m, 3m, 6m, 12m, todos
+- ✅ **Gráficos Recharts profissionais**: LineChart, BarChart, PieChart, AreaChart
+- ✅ **Tooltips customizados**: Formatação brasileira automática (R$)
+- ✅ **Estados de interface**: Loading e "nenhum dado encontrado" implementados
+- ✅ **Modo escuro/claro universal**: Cores dinâmicas em todos os componentes
+- ✅ **Responsividade total**: Mobile/desktop otimizado para gráficos
+- ✅ **Performance enterprise**: useMemo para grandes datasets
+- ✅ **Verificações defensivas**: Tratamento robusto de dados undefined
+- ✅ **Inicialização automática**: AppContext carrega dados automaticamente
+
+### ✅ CORREÇÕES CRÍTICAS APLICADAS (Setembro 2025)
+
+#### Problema Identificado: Re-renders Massivos
 **Severidade**: CRÍTICA - Input de senha perdendo foco a cada keystroke  
 **Causa Raiz**: Loops circulares entre useAuth() e useApp() no App.jsx  
 **Impacto**: Database Manager re-inicializando 4+ vezes por digitação  
 
-### ✅ Correções Implementadas:
+#### ✅ Correções Implementadas:
 1. **App.jsx**: Removido double hook calls (useAuth + useApp simultâneos)
 2. **useAuth.js**: Eliminados loops de useEffect com loadAllData  
 3. **AppContext.jsx**: Estados de formulário removidos do Context global
@@ -50,16 +145,12 @@
 5. **Service Worker**: Ignorar paths problemáticos em desenvolvimento
 6. **Vite Config**: Base path alinhado com ambiente de desenvolvimento
 
-### 📊 Resultados:
+#### 📊 Resultados:
 - ✅ Input de senha mantém foco durante digitação
 - ✅ Database Manager inicializa apenas 1 vez
 - ✅ Zero loops de re-render
 - ✅ Performance restaurada
 - ✅ PWA funcional sem interferências
-
----
-
-## Cronograma Proposto
 
 ### ✅ FASE 1 - Melhorias Rápidas (CONCLUÍDA)
 **Prioridade: ALTA | Complexidade: BAIXA | Status: ✅ IMPLEMENTADA**
@@ -159,8 +250,6 @@
 
 **✅ Total Versão 1.2.0**: 13 dias úteis - **CONCLUÍDA EM SETEMBRO 2025**
 
----
-
 ### ✅ FASE 2 - Modularização URGENTE (CONCLUÍDA)
 **Prioridade: CRÍTICA | Complexidade: MÉDIA | Status: ✅ CONCLUÍDA**
 
@@ -178,6 +267,7 @@
   - `components/Configuration/` - Tela de configurações
   - `components/Reports/` - Relatórios anuais
   - `components/Auth/` - Sistema de autenticação isolado
+  - `components/Charts/` - Sistema de gráficos
 
 #### ✅ 2.2 Hooks Customizados (4 dias) - CONCLUÍDO
 - **O que**: Extrair lógica de negócio para hooks reutilizáveis
@@ -186,10 +276,11 @@
 - **Status**: ✅ **CONCLUÍDO**
 - **Implementação**:
   - ✅ `useAuth.js` - Autenticação com useRef, loops eliminados
-  - ✅ `useTransactions.js` - CRUD de transações
+  - ✅ `useTransactions.js` - CRUD de transações + filtros avançados
   - ✅ `useOFX.js` - Funcionalidades OFX isoladas
   - ✅ `useModals.js` - Estados de modais centralizados
   - ✅ `useTheme.js` - Gerenciamento de tema
+  - ✅ `useCharts.js` - Processamento de dados para gráficos
 
 #### ✅ 2.3 Otimizações de Performance (3 dias) - CONCLUÍDO
 - **O que**: React.memo, useMemo, useCallback otimizados
@@ -205,8 +296,8 @@
 
 **✅ Total Fase 2**: 13 dias úteis - **CONCLUÍDA EM SETEMBRO 2025**
 
-### ✅ FASE 3 - Melhorias de Interface (EM ANDAMENTO)
-**Prioridade: MÉDIA-ALTA | Complexidade: MÉDIA | Status: 🔄 50% CONCLUÍDA**
+### ✅ FASE 3 - Melhorias de Interface (CONCLUÍDA)
+**Prioridade: MÉDIA-ALTA | Complexidade: MÉDIA | Status: ✅ 100% CONCLUÍDA**
 
 #### ✅ 3.1 Modo Escuro/Claro (4 dias) - CONCLUÍDO
 - **O que**: Toggle entre temas com persistência
@@ -244,32 +335,29 @@
   - ✅ Responsividade mobile/desktop
   - ✅ Performance otimizada com useMemo
 
-#### 🔄 3.3 Edição de Transações (6 dias) - PRÓXIMO
-- **O que**: Modal para editar transações existentes
-- **Complexidade**: Média - Reutilizar formulário atual + integração gráficos
-- **Impacto**: Alto - Correção de dados essencial + atualização visual
-- **Status**: 🔄 **PRÓXIMO PARA IMPLEMENTAÇÃO**
-- **Implementação Planejada**: 
-  - Modal edit reutilizando TransactionForm
-  - updateTransaction no db-manager
-  - Validações completas
-  - Histórico de alterações
-  - Atualização automática dos gráficos após edição
-  - Suporte completo ao modo escuro
+**✅ Total Fase 3**: 9 dias úteis - **100% CONCLUÍDA EM SETEMBRO 2025**
 
-#### 📋 3.4 Categorias Personalizáveis (7 dias) - PLANEJADO
-- **O que**: Sistema de categorias definidas pelo usuário
-- **Complexidade**: Média-Alta - Nova tabela no SQLite + CRUD + gráficos
-- **Impacto**: Alto - Personalização avançada + análise customizada
-- **Implementação Planejada**: 
-  - CRUD completo de categorias customizadas
-  - Migração das categorias existentes
-  - Interface de gerenciamento
-  - Preservar compatibilidade OFX
-  - Integração automática com gráficos
-  - Cores personalizadas para gráficos de categoria
+---
 
-**Total Fase 3**: 22 dias úteis - **🔄 50% CONCLUÍDA (2/4 funcionalidades implementadas)**
+## Cronograma Consolidado ATUALIZADO
+
+| Fase | Duração | Status | Funcionalidades Principais |
+|------|---------|--------|---------------------------|
+| **✅ Fase 1** | ~~2-3 semanas~~ | **CONCLUÍDA** | Exclusão, Busca, Ordenação, Export CSV, Categorias |
+| **✅ V1.2.0** | ~~2 semanas~~ | **CONCLUÍDA** | Import/Export OFX, Duplicatas, UX, PWA Mobile |
+| **✅ Correções** | ~~3 dias~~ | **CONCLUÍDA** | **Re-renders, Input Focus, Loops, Performance** |
+| **✅ Fase 2** | ~~1-2 semanas~~ | **CONCLUÍDA** | **Modularização, Hooks, Performance, Arquitetura** |
+| **✅ Fase 3** | ~~3-4 semanas~~ | **CONCLUÍDA** | **✅ Modo Escuro + ✅ Gráficos Interativos** |
+| **🔄 V1.5.0** | ~~3-4 semanas~~ | **66% IMPLEMENTADA** | **✅ Edição + ✅ Filtros + 🔄 Categorias Personalizáveis** |
+| **📋 Fase 4** | 4-5 semanas | PLANEJADA | Metas, Calculadora, Alertas, Import CSV, i18n |
+| **📋 Fase 5** | 2-3 semanas | PLANEJADA | Paginação, Service Worker, Testes |
+| **📋 Fase 6** | 6-8 semanas | PLANEJADA | Sincronização Local P2P |
+
+**Total estimado restante**: 8 dias (V1.5.0) + 9-16 semanas (Fases 4-6)
+
+---
+
+## 📋 FASES FUTURAS PLANEJADAS
 
 ### 📋 FASE 4 - Funcionalidades Avançadas (4-5 semanas)
 **Prioridade: MÉDIA | Complexidade: MÉDIA-ALTA | Status: 📋 PLANEJADA**
@@ -432,25 +520,6 @@
 
 ---
 
-## Cronograma Consolidado ATUALIZADO
-
-| Fase | Duração | Status | Funcionalidades Principais |
-|------|---------|--------|---------------------------|
-| **✅ Fase 1** | ~~2-3 semanas~~ | **CONCLUÍDA** | Exclusão, Busca, Ordenação, Export CSV, Categorias |
-| **✅ V1.2.0** | ~~2 semanas~~ | **CONCLUÍDA** | Import/Export OFX, Duplicatas, UX, PWA Mobile |
-| **✅ Correções** | ~~3 dias~~ | **CONCLUÍDA** | **Re-renders, Input Focus, Loops, Performance** |
-| **✅ Fase 2** | ~~1-2 semanas~~ | **CONCLUÍDA** | **Modularização, Hooks, Performance, Arquitetura** |
-| **✅ Fase 3.1** | ~~4 dias~~ | **CONCLUÍDA** | **Modo Escuro/Claro Completo** |
-| **✅ Fase 3.2** | ~~5 dias~~ | **CONCLUÍDA** | **Gráficos Interativos Recharts** |
-| **🔄 Fase 3** | 3-4 semanas | **50% CONCLUÍDA** | **✅ Modo Escuro** | **✅ Gráficos** | 🔄 Edição | 📋 Categorias |
-| **📋 Fase 4** | 4-5 semanas | PLANEJADA | Metas, Calculadora, Alertas, Import CSV, i18n |
-| **📋 Fase 5** | 2-3 semanas | PLANEJADA | Paginação, Service Worker, Testes |
-| **📋 Fase 6** | 6-8 semanas | PLANEJADA | Sincronização Local P2P |
-
-**Total estimado restante**: 11-17 semanas (2.5-4 meses)
-
----
-
 ## Priorização Recomendada ATUALIZADA
 
 ### ✅ CONCLUÍDO - CRÍTICO (ROI Altíssimo)
@@ -460,10 +529,12 @@
 4. **✅ Performance Otimizada** - React.memo, useMemo, useCallback implementados
 5. **✅ Modo Escuro Completo** - ThemeContext, persistência, Tailwind dark mode
 6. **✅ Gráficos Interativos** - ChartsView, Recharts, análise visual completa
+7. **✅ Campo Descrição Opcional** - Flexibilidade do formulário implementada
+8. **✅ Edição de Transações** - Funcionalidade crítica + atualização gráficos
+9. **✅ Filtros Avançados** - Sistema expandido + integração gráficos
 
-### Implementar IMEDIATAMENTE (ROI Altíssimo)
-1. **🔄 Edição de Transações** - Funcionalidade crítica faltante + atualização gráficos
-2. **Categorias personalizáveis** - Expandir sistema atual robusto + gráficos customizados
+### 🎯 Implementar IMEDIATAMENTE - Completar V1.5.0 (ROI Altíssimo)
+1. **🏷️ Categorias Personalizáveis** - Sistema flexível + gráficos customizados + última funcionalidade V1.5.0
 
 ### Implementar Primeiro (ROI Alto)
 1. **Import CSV** - Complementar funcionalidade OFX completa + análise expandida
@@ -483,29 +554,42 @@
 
 ## Considerações Técnicas ATUALIZADAS
 
-### Estado Atual ESTÁVEL + GRÁFICOS
-- ✅ **Versão 1.4.0 enterprise** com OFX + Modularização + Modo Escuro + Gráficos Interativos
+### Estado Atual ESTÁVEL + GRÁFICOS + EDIÇÃO + FILTROS
+- ✅ **Versão 1.5.0 66% implementada** com OFX + Modularização + Modo Escuro + Gráficos + Edição + Filtros
 - ✅ **Arquitetura modular** completa - hooks customizados, componentes especializados
 - ✅ **Sistema de gráficos** completo - ChartsView + useCharts + Recharts
+- ✅ **Edição de transações** funcional - EditModal + updateTransaction + validação
+- ✅ **Filtros avançados** implementados - AdvancedFilters + persistência + integração
+- ✅ **Campo descrição opcional** - Formulário flexibilizado conforme solicitado
 - ✅ **Zero breaking changes** em todas implementações
 - ✅ **Performance otimizada** - re-renders eliminados, memorização implementada
 - ✅ **7 bancos brasileiros** testados e compatíveis + visualização
-- ✅ **PWA mobile** completo com modo escuro + gráficos responsivos
+- ✅ **PWA mobile** completo com modo escuro + gráficos responsivos + filtros
 - ✅ **Deploy automatizado** via GitHub Actions
 
 ### Conquistas Arquiteturais
 - ✅ **App.jsx modularizado** 89KB → 235 linhas + componentes separados + navegação expandida
 - ✅ **Context API otimizado** - AppContext + ThemeContext especializados + inicialização automática
 - ✅ **Hooks enterprise** - useAuth, useTransactions, useOFX, useModals, useTheme, useCharts
-- ✅ **Estados localizados** - autenticação, formulários, temas, gráficos isolados
+- ✅ **Estados localizados** - autenticação, formulários, temas, gráficos, filtros isolados
 - ✅ **Zero loops circulares** - useRef, memorização, dependências otimizadas
 - ✅ **Performance restaurada** - Database Manager inicialização única + carregamento automático
 - ✅ **Sistema de visualização** - Gráficos profissionais com Recharts + modo escuro
+- ✅ **Sistema de filtros** - Filtros avançados com persistência + integração automática
+
+### Base Sólida para Categorias Personalizáveis
+- **🏷️ Categorias**: Database preparado + CRUD patterns + gráficos customizáveis
+- **🎨 Tema**: Sistema universal aplicado automaticamente
+- **📊 Gráficos**: Atualização automática após modificações
+- **🔍 Filtros**: Integração automática com novas categorias
+- **⚡ Performance**: Arquitetura otimizada preservada
 
 ### Tecnologias Implementadas e Aprovadas
 - **✅ Modularização**: Context API + Custom Hooks - IMPLEMENTADO
 - **✅ Temas**: CSS Variables + Tailwind Dark Mode - IMPLEMENTADO
 - **✅ Gráficos**: Recharts + useCharts - IMPLEMENTADO
+- **✅ Edição**: EditModal + updateTransaction - IMPLEMENTADO
+- **✅ Filtros**: AdvancedFilters + persistência - IMPLEMENTADO
 - **Testes**: Jest + Testing Library - CONFIGURADO
 - **i18n**: React i18next - PREPARADO
 - **Performance**: React.memo + useMemo - ✅ IMPLEMENTADO
@@ -513,7 +597,7 @@
 ### Compatibilidade Garantida
 - ✅ **SQLite WebAssembly** - Base sólida mantida e otimizada
 - ✅ **Funcionalidades OFX** - 100% preservadas na modularização + gráficos
-- ✅ **PWA offline** - Funcionalidade completa + modo escuro + gráficos
+- ✅ **PWA offline** - Funcionalidade completa + modo escuro + gráficos + filtros
 - ✅ **Deploy GitHub Pages** - Pipeline mantido e testado
 - ✅ **Dados locais** - Privacidade preservada com performance otimizada + visualização
 
@@ -522,58 +606,94 @@
 ## Próximos Passos Imediatos
 
 ### Decisão Atualizada - Setembro 2025
-1. **🎯 Próxima implementação**: Fase 3.3 - Edição de Transações (6 dias)
-2. **📅 Cronograma**: 1-1.5 semanas (6 dias úteis)
-3. **🔧 Base técnica**: useTransactions hook pronto, modais com tema, gráficos para atualização
-4. **🗃️ Arquitetura**: Aproveitar modal patterns + theme integration + chart updates
-5. **📊 Funcionalidades**: Modal de edição + validação + atualização gráficos automática
+1. **🎯 Próxima implementação**: Categorias Personalizáveis (completar V1.5.0)
+2. **📅 Cronograma**: 8 dias úteis restantes
+3. **🔧 Base técnica**: Arquitetura V1.4.0 + edição + filtros + tema + gráficos
+4. **🗃️ Implementação**: Nova tabela SQLite + CRUD + interface + migração
+5. **📊 Integração**: Gráficos, filtros e tema aplicados automaticamente
 
-### Validações Necessárias
-1. **🧪 Testes** gráficos em todos os dispositivos e temas
-2. **📱 Responsividade** mobile/desktop/tablet para gráficos
-3. **🎨 Consistência** visual entre temas claro/escuro nos charts
-4. **⚡ Performance** com grandes volumes de dados OFX nos gráficos
-5. **🔄 Integração** com dados existentes sem quebrar funcionalidades + atualização visual
+### Validações Necessárias para Completar V1.5.0
+1. **🧪 Testes** de categorias personalizáveis + validação + migração
+2. **🎨 Interface** de gerenciamento de categorias + cores + ícones
+3. **🏷️ CRUD** completo funcionando + compatibilidade OFX
+4. **📱 Responsividade** mobile/desktop para nova funcionalidade
+5. **🎨 Consistência** visual entre temas + gráficos atualizados
+6. **⚡ Performance** preservada com novas funcionalidades
+7. **🔄 Integração** perfeita com base V1.5.0 existente
 
 ---
 
 ## Métricas de Sucesso Atualizadas
 
-### Versão 1.4.0 - Gráficos Interativos + Modo Escuro ✅
+### Versão 1.5.0 - Edição + Filtros + Categorias - 66% IMPLEMENTADA
 - **5/5 funcionalidades Fase 1** implementadas + 1 bônus
 - **7/7 funcionalidades OFX** implementadas
 - **7+ bancos brasileiros** compatíveis e testados
 - **6/6 componentes principais** modularizados
-- **6/6 hooks customizados** implementados (incluindo useCharts)
+- **7/7 hooks customizados** implementados (incluindo useCharts + filtros)
 - **✅ Modo escuro completo** - ThemeContext + Tailwind + persistência
 - **✅ Gráficos interativos** - ChartsView + Recharts + 4 abas + filtros
+- **✅ Campo descrição opcional** - Flexibilidade implementada
+- **✅ Edição de transações** - EditModal + updateTransaction + validação
+- **✅ Filtros avançados** - AdvancedFilters + persistência + integração
+- **🔄 Categorias personalizáveis** - 0% implementada (próxima)
 - **0 funcionalidades quebradas** (100% compatibilidade)
 - **✅ Performance enterprise** - re-renders eliminados, memorização ativa
-- **✅ Análise visual** - Sistema completo de visualização de dados
-
-### Fase 3 - Interface Moderna 50% Concluída
-- **✅ Sistema de temas completo** - claro/escuro com transições
-- **✅ PersistÃncia localStorage** - preferências mantidas
-- **✅ Suporte responsivo** - mobile/desktop otimizado
-- **✅ Sistema de gráficos completo** - 4 tipos de visualização + filtros
-- **✅ Navegação expandida** - aba "Análise" integrada
-- **🔄 Edição transações** - próxima implementação
-- **📋 Categorias customizáveis** - planejada
+- **✅ Análise visual** - Sistema completo de visualização + filtros
 
 ### Qualidade Técnica Enterprise
 - **Arquitetura modular** com separação de responsabilidades
-- **Hooks customizados** reutilizáveis e testáveis (incluindo gráficos)
+- **Hooks customizados** reutilizáveis e testáveis (incluindo filtros)
 - **Context API otimizado** sem loops ou vazamentos + inicialização automática
 - **Performance monitorada** - useMemo, useCallback, React.memo
-- **PWA completa** com modo escuro nativo + gráficos responsivos
-- **Sistema de visualização** profissional com Recharts
+- **PWA completa** com modo escuro nativo + gráficos + filtros responsivos
+- **Sistema de visualização** profissional com Recharts + filtros integrados
+- **Sistema de filtros** avançado com persistência e validação
 
 ---
 
 ## Documentação de Mudanças
 
+### Versão 1.5.0 (Setembro 2025) 🔄 66% CONCLUÍDA
+**Edição + Filtros Avançados + Categorias Personalizáveis:**
+
+#### ✅ Edição de Transações - IMPLEMENTADA:
+- EditModal.jsx auto-gerenciado implementado
+- updateTransaction() no db-manager.js criado
+- useTransactions.js expandido com estado de edição
+- Botão "editar" na lista de transações adicionado
+- Validação completa de dados implementada
+- Atualização automática de gráficos após edição
+- Suporte completo ao modo escuro
+
+#### ✅ Filtros Avançados - IMPLEMENTADA:
+- AdvancedFilters.jsx componente especializado criado
+- Sistema de filtros por período, valor, categoria, tipo
+- Filtros rápidos pré-definidos implementados
+- Interface colapsável integrada ao Dashboard
+- Persistência automática via localStorage
+- Integração automática com gráficos existentes
+- Validação em tempo real
+- Indicadores visuais de filtros ativos
+
+#### 🔄 Categorias Personalizáveis - PRÓXIMA:
+- Nova tabela custom_categories no SQLite (planejada)
+- CRUD completo de categorias personalizadas (planejada)
+- Interface de gerenciamento de categorias (planejada)
+- Migração das categorias hardcoded existentes (planejada)
+- Cores personalizadas para gráficos (planejada)
+- Sistema de ícones para categorias (planejada)
+
+**Arquivos Criados/Modificados V1.5.0:**
+- `src/context/AppContext.jsx` - Estados de filtros avançados + edição
+- `src/hooks/useTransactions.js` - Lógica de edição + filtros combinados
+- `src/components/Dashboard/Dashboard.jsx` - Interface de filtros + edição integrada
+- `src/components/Dashboard/AdvancedFilters.jsx` - Componente de filtros avançados
+- `src/components/Modals/EditModal.jsx` - Modal de edição auto-gerenciado
+- `src/db-manager.js` - Método updateTransaction implementado
+
 ### Versão 1.4.0 (Setembro 2025) ✅ CONCLUÍDA
-**Gráficos Interativos + Modularização Enterprise + Modo Escuro:**
+**Gráficos Interativos + Modularização Enterprise + Modo Escuro + Descrição Opcional:**
 - ChartsView.jsx implementado com 4 abas especializadas
 - useCharts.js hook criado para processamento de dados
 - Recharts library instalada e integrada
@@ -584,40 +704,18 @@
 - Estados de loading e vazios implementados
 - Verificações defensivas para dados undefined
 - Performance otimizada com useMemo
-
-**Arquivos Criados/Modificados:**
-- `src/components/Charts/ChartsView.jsx` - Interface principal de gráficos
-- `src/hooks/useCharts.js` - Hook de processamento de dados
-- `src/App.jsx` - Navegação expandida com aba "Análise"
-- `src/context/AppContext.jsx` - Inicialização automática corrigida
-- `package.json` - Dependência recharts adicionada
-
-### Versão 1.3.0 (Setembro 2025) ✅ CONCLUÍDA
-**ModularizaÃ§Ã£o Enterprise + Modo Escuro Implementado:**
-- App.jsx refatorado de 89KB para 205 linhas + componentes modulares
-- Hooks customizados implementados: useAuth, useTransactions, useOFX, useModals, useTheme
-- Context API otimizado: AppContext + ThemeContext especializados
-- Sistema de temas completo: claro/escuro com persistência e transições
-- Performance enterprise: React.memo, useMemo, useCallback otimizados
-- Zero breaking changes: 100% funcionalidades OFX preservadas
-
-### Versão 1.5.0 - Edição de Transações (Planejada Q4 2025)
-**Sistema de Edição Completo:**
-- Modal de edição de transações
-- Validação completa de dados
-- Histórico de alterações
-- Atualização automática de gráficos
-- Suporte completo ao modo escuro
+- Campo descrição tornado opcional no formulário
 
 **Funcionalidades Mantidas:**
-- 100% das funcionalidades modularizadas + gráficos preservadas
+- 100% das funcionalidades V1.4.0 preservadas
 - Sistema de temas funcionando em todas as interfaces
-- Gráficos atualizando automaticamente após edições
+- Gráficos atualizando automaticamente após edições/filtros
 - Performance otimizada para grandes volumes de dados
+- Arquitetura modular expandida sem breaking changes
 
 ---
 
 *Documento atualizado em: Setembro 2025*  
-*Versão: 6.0 - Pós Gráficos Interativos Completos + Modo Escuro Implementado*  
-*Próxima revisão: Após implementação de Edição de Transações*  
-*Status: ✅ FASE 2 CONCLUÍDA | ✅ FASE 3.1 CONCLUÍDA | ✅ FASE 3.2 CONCLUÍDA | 🔄 EDIÇÃO DE TRANSAÇÕES PRÓXIMO*
+*Versão: 8.0 - Pós Implementação Edição + Filtros Avançados*  
+*Próxima revisão: Após implementação de Categorias Personalizáveis*  
+*Status: ✅ VERSÃO 1.4.0 COMPLETA | 🔄 VERSÃO 1.5.0 66% IMPLEMENTADA | 🏷️ CATEGORIAS PERSONALIZÁVEIS PRÓXIMA*

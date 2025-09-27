@@ -1,9 +1,9 @@
 {
   "name": "vm-personal-finance-pwa",
   "private": true,
-  "version": "1.3.0",
+  "version": "1.5.0",
   "type": "module",
-  "description": "V&M Personal Finance - Progressive Web App com funcionalidade OFX + Arquitetura Modular + Tema",
+  "description": "V&M Personal Finance - Progressive Web App com OFX + Arquitetura Modular + Tema + Gráficos + Edição + Filtros Avançados",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

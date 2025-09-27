@@ -42,12 +42,28 @@ export const AppProvider = ({ children }) => {
   // Estados do sistema de avaliação GitHub Stars
   const [showRatingModal, setShowRatingModal] = useState(false);
 
-  // Estados FASE 1
+  // Estados FASE 1 + EDIÇÃO
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('date');
   const [sortOrder, setSortOrder] = useState('desc');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [transactionToDelete, setTransactionToDelete] = useState(null);
+  
+  // Estados de edição
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [transactionToEdit, setTransactionToEdit] = useState(null);
+
+  // ✅ NOVO: Estados de filtros avançados
+  const [advancedFilters, setAdvancedFilters] = useState({
+    dateStart: '',
+    dateEnd: '',
+    amountMin: '',
+    amountMax: '',
+    selectedCategories: [],
+    selectedTypes: [],
+    isActive: false
+  });
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   // Estados OFX
   const [isImportingOFX, setIsImportingOFX] = useState(false);
@@ -61,6 +77,97 @@ export const AppProvider = ({ children }) => {
     income: ['Salário', 'Freelance', 'Investimentos', 'Vendas', 'Prêmio', 'Outros'],
     expenses: ['Alimentação', 'Transporte', 'Moradia', 'Saúde', 'Educação', 'Lazer', 'Compras', 'Outros']
   };
+
+  // ✅ NOVO: Função para atualizar filtros avançados
+  const updateAdvancedFilters = useCallback((filterUpdate) => {
+    setAdvancedFilters(prev => {
+      const newFilters = { ...prev, ...filterUpdate };
+      
+      // Verificar se há filtros ativos
+      const hasActiveFilters = !!(
+        newFilters.dateStart ||
+        newFilters.dateEnd ||
+        newFilters.amountMin ||
+        newFilters.amountMax ||
+        newFilters.selectedCategories.length > 0 ||
+        newFilters.selectedTypes.length > 0
+      );
+      
+      newFilters.isActive = hasActiveFilters;
+      return newFilters;
+    });
+  }, []);
+
+  // ✅ NOVO: Função para limpar todos os filtros
+  const clearAdvancedFilters = useCallback(() => {
+    setAdvancedFilters({
+      dateStart: '',
+      dateEnd: '',
+      amountMin: '',
+      amountMax: '',
+      selectedCategories: [],
+      selectedTypes: [],
+      isActive: false
+    });
+  }, []);
+
+  // ✅ NOVO: Função para aplicar filtro de categoria
+  const toggleCategoryFilter = useCallback((category) => {
+    updateAdvancedFilters({
+      selectedCategories: advancedFilters.selectedCategories.includes(category)
+        ? advancedFilters.selectedCategories.filter(c => c !== category)
+        : [...advancedFilters.selectedCategories, category]
+    });
+  }, [advancedFilters.selectedCategories, updateAdvancedFilters]);
+
+  // ✅ NOVO: Função para aplicar filtro de tipo
+  const toggleTypeFilter = useCallback((type) => {
+    updateAdvancedFilters({
+      selectedTypes: advancedFilters.selectedTypes.includes(type)
+        ? advancedFilters.selectedTypes.filter(t => t !== type)
+        : [...advancedFilters.selectedTypes, type]
+    });
+  }, [advancedFilters.selectedTypes, updateAdvancedFilters]);
+
+  // ✅ NOVO: Função para salvar filtros no localStorage
+  const saveFiltersToStorage = useCallback(() => {
+    try {
+      localStorage.setItem('advancedFilters', JSON.stringify(advancedFilters));
+    } catch (error) {
+      console.log('Erro ao salvar filtros:', error);
+    }
+  }, [advancedFilters]);
+
+  // ✅ NOVO: Função para carregar filtros do localStorage
+  const loadFiltersFromStorage = useCallback(() => {
+    try {
+      const saved = localStorage.getItem('advancedFilters');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setAdvancedFilters({
+          dateStart: parsed.dateStart || '',
+          dateEnd: parsed.dateEnd || '',
+          amountMin: parsed.amountMin || '',
+          amountMax: parsed.amountMax || '',
+          selectedCategories: parsed.selectedCategories || [],
+          selectedTypes: parsed.selectedTypes || [],
+          isActive: parsed.isActive || false
+        });
+      }
+    } catch (error) {
+      console.log('Erro ao carregar filtros:', error);
+    }
+  }, []);
+
+  // ✅ NOVO: Efeito para salvar filtros automaticamente
+  useEffect(() => {
+    saveFiltersToStorage();
+  }, [saveFiltersToStorage]);
+
+  // ✅ NOVO: Efeito para carregar filtros na inicialização
+  useEffect(() => {
+    loadFiltersFromStorage();
+  }, [loadFiltersFromStorage]);
 
   // Função de formatação de moeda
   const formatCurrency = useCallback((value) => {
@@ -124,7 +231,7 @@ export const AppProvider = ({ children }) => {
     }
   }, []);
 
-  // ✅ CORREÇÃO CRÍTICA: useEffect para carregar dados na inicialização
+  // useEffect para carregar dados na inicialização
   useEffect(() => {
     console.log('🚀 AppContext - Componente montado, carregando dados...');
     loadAllData();
@@ -152,6 +259,31 @@ export const AppProvider = ({ children }) => {
       
     } catch (error) {
       console.error('Erro ao adicionar transação:', error);
+      throw error;
+    }
+  }, []);
+
+  // Atualizar transação
+  const updateTransaction = useCallback(async (transactionId, updatedFields) => {
+    try {
+      console.log('Atualizando transação ID:', transactionId, 'com campos:', updatedFields);
+      
+      await dbManager.updateTransaction(transactionId, updatedFields);
+      console.log('Atualização realizada no banco');
+      
+      // Recarregar dados FRESH do banco
+      const freshTransactions = await dbManager.getTransactions();
+      console.log('Dados recarregados:', freshTransactions);
+      
+      React.startTransition(() => {
+        setDailyTransactions(freshTransactions || {});
+        setDataVersion(prev => prev + 1);
+      });
+      
+      console.log('Interface atualizada após edição');
+      
+    } catch (error) {
+      console.error('Erro ao atualizar transação:', error);
       throw error;
     }
   }, []);
@@ -318,7 +450,7 @@ export const AppProvider = ({ children }) => {
     return totalPatrimony;
   }, [initialBalances, investmentMovements, getDailyTotals, dataVersion]);
 
-  // Transações filtradas e ordenadas
+  // ✅ ATUALIZADO: Transações filtradas e ordenadas com filtros avançados
   const getFilteredAndSortedTransactions = useMemo(() => {
     const transactionsList = [];
     
@@ -350,14 +482,51 @@ export const AppProvider = ({ children }) => {
       });
     });
 
-    // Aplicar filtro de busca
+    // ✅ NOVO: Aplicar filtros avançados
     let filteredTransactions = transactionsList;
+
+    // Filtro de busca textual
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase().trim();
-      filteredTransactions = transactionsList.filter(t => 
+      filteredTransactions = filteredTransactions.filter(t => 
         (t.description || '').toLowerCase().includes(term) ||
         (t.category || '').toLowerCase().includes(term)
       );
+    }
+
+    // ✅ NOVO: Filtros avançados
+    if (advancedFilters.isActive) {
+      // Filtro por período
+      if (advancedFilters.dateStart) {
+        filteredTransactions = filteredTransactions.filter(t => t.date >= advancedFilters.dateStart);
+      }
+      if (advancedFilters.dateEnd) {
+        filteredTransactions = filteredTransactions.filter(t => t.date <= advancedFilters.dateEnd);
+      }
+      
+      // Filtro por valor
+      if (advancedFilters.amountMin) {
+        const minAmount = parseFloat(advancedFilters.amountMin);
+        filteredTransactions = filteredTransactions.filter(t => t.amount >= minAmount);
+      }
+      if (advancedFilters.amountMax) {
+        const maxAmount = parseFloat(advancedFilters.amountMax);
+        filteredTransactions = filteredTransactions.filter(t => t.amount <= maxAmount);
+      }
+      
+      // Filtro por categorias selecionadas
+      if (advancedFilters.selectedCategories.length > 0) {
+        filteredTransactions = filteredTransactions.filter(t => 
+          advancedFilters.selectedCategories.includes(t.category || 'Sem categoria')
+        );
+      }
+      
+      // Filtro por tipos selecionados
+      if (advancedFilters.selectedTypes.length > 0) {
+        filteredTransactions = filteredTransactions.filter(t => 
+          advancedFilters.selectedTypes.includes(t.type)
+        );
+      }
     }
 
     // Aplicar ordenação
@@ -385,7 +554,7 @@ export const AppProvider = ({ children }) => {
     });
 
     return filteredTransactions;
-  }, [dailyTransactions, searchTerm, sortBy, sortOrder, dataVersion]);
+  }, [dailyTransactions, searchTerm, sortBy, sortOrder, advancedFilters, dataVersion]);
 
   // Valor do contexto
   const value = {
@@ -408,12 +577,20 @@ export const AppProvider = ({ children }) => {
     donationStage, setDonationStage,
     showRatingModal, setShowRatingModal,
     
-    // Estados Fase 1
+    // Estados Fase 1 + Edição
     searchTerm, setSearchTerm,
     sortBy, setSortBy,
     sortOrder, setSortOrder,
     showDeleteModal, setShowDeleteModal,
     transactionToDelete, setTransactionToDelete,
+    
+    // Estados de edição
+    showEditModal, setShowEditModal,
+    transactionToEdit, setTransactionToEdit,
+    
+    // ✅ NOVO: Estados de filtros avançados
+    advancedFilters, setAdvancedFilters,
+    showAdvancedFilters, setShowAdvancedFilters,
     
     // Estados OFX
     isImportingOFX, setIsImportingOFX,
@@ -430,10 +607,19 @@ export const AppProvider = ({ children }) => {
     formatDate,
     loadAllData,
     addTransaction,
+    updateTransaction,
     updateInitialBalances,
     addInvestmentMovement,
     deleteTransaction,
     exportToCSV,
+    
+    // ✅ NOVO: Funções de filtros avançados
+    updateAdvancedFilters,
+    clearAdvancedFilters,
+    toggleCategoryFilter,
+    toggleTypeFilter,
+    saveFiltersToStorage,
+    loadFiltersFromStorage,
     
     // Cálculos
     getDailyTotals,

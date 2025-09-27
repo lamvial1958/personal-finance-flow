@@ -380,6 +380,72 @@
     return { message: 'Transaction added successfully' };
   }
 
+  // ✅ NOVO: Método updateTransaction
+  async updateTransaction(id, updatedFields) {
+    console.log('🔍 DEBUG updateTransaction - ID recebido:', id, 'campos:', updatedFields);
+    
+    // Verificar se transação existe antes de atualizar
+    const checkStmt = this.db.prepare('SELECT * FROM transactions WHERE id = ?');
+    checkStmt.bind([id]);
+    let exists = null;
+    if (checkStmt.step()) {
+      exists = checkStmt.getAsObject();
+    }
+    checkStmt.free();
+    
+    console.log('🔍 DEBUG - Transação com ID', id, 'existe?', exists);
+    
+    if (!exists) {
+      throw new Error('Transaction not found');
+    }
+    
+    // Construir query de UPDATE dinamicamente
+    const allowedFields = ['date', 'type', 'amount', 'description', 'category'];
+    const updateFields = [];
+    const updateValues = [];
+    
+    Object.entries(updatedFields).forEach(([field, value]) => {
+      if (allowedFields.includes(field)) {
+        updateFields.push(`${field} = ?`);
+        updateValues.push(value);
+      }
+    });
+    
+    if (updateFields.length === 0) {
+      throw new Error('No valid fields to update');
+    }
+    
+    // Adicionar ID no final dos valores para WHERE clause
+    updateValues.push(id);
+    
+    try {
+      const updateSQL = `UPDATE transactions SET ${updateFields.join(', ')} WHERE id = ?`;
+      console.log('🔍 DEBUG - SQL executado:', updateSQL, 'valores:', updateValues);
+      
+      this.db.run(updateSQL, updateValues);
+      
+      // Verificar se foi realmente atualizado
+      const checkAfterStmt = this.db.prepare('SELECT * FROM transactions WHERE id = ?');
+      checkAfterStmt.bind([id]);
+      let updatedTransaction = null;
+      if (checkAfterStmt.step()) {
+        updatedTransaction = checkAfterStmt.getAsObject();
+      }
+      checkAfterStmt.free();
+      
+      console.log('🔍 DEBUG - Transação após UPDATE:', updatedTransaction);
+      
+      await this.saveToIndexedDB();
+      console.log('✅ DEBUG - Transação atualizada com sucesso!');
+      
+      return { message: 'Transaction updated successfully', transaction: updatedTransaction };
+      
+    } catch (error) {
+      console.error('❌ DEBUG - Erro no UPDATE:', error);
+      throw new Error('Failed to update transaction: ' + error.message);
+    }
+  }
+
   // 🔧 ÚNICA CORREÇÃO: Função deleteTransaction
   async deleteTransaction(id) {
     console.log('🔍 DEBUG deleteTransaction - ID recebido:', id, 'tipo:', typeof id);

@@ -1,16 +1,13 @@
 /**
- * App.jsx - Personal Finance Flow (Com Suporte a Tema + Gráficos)
- * Loops de re-render ELIMINADOS + Modo Escuro/Claro + Análise Gráfica
+ * App.jsx - Personal Finance Flow (Com Suporte a Tema + Gráficos + Edição)
+ * Loops de re-render ELIMINADOS + Modo Escuro/Claro + Análise Gráfica + Edição de Transações
  * 
- * NOVA FUNCIONALIDADE v1.3.0:
- * - ThemeProvider integrado
- * - Suporte completo a modo escuro
- * - Classes Tailwind dark mode
- * - Meta theme-color dinâmico
- * - ChartsView para análise gráfica interativa
+ * NOVA FUNCIONALIDADE v1.5.0:
+ * - EditModal integrado
+ * - Funcionalidade completa de edição de transações
  * 
  * Localização: C:\Personal_Finance_Flow\src\App.jsx
- * Versão: 1.3.0 - Modo Escuro + Gráficos Integrados
+ * Versão: 1.5.0 - Edição de Transações Integrada
  */
 
 import React, { useState, useEffect } from 'react';
@@ -32,6 +29,7 @@ import ChartsView from './components/Charts/ChartsView';
 
 // Componentes de modais
 import DeleteModal from './components/Modals/DeleteModal';
+import EditModal from './components/Modals/EditModal';
 import OFXImportModal from './components/Modals/OFXImportModal';
 import DonationModal from './components/Modals/DonationModal';
 import RatingModal from './components/Modals/RatingModal';
@@ -220,12 +218,13 @@ const AuthenticatedApp = () => {
       <DonationModal />
       <RatingModal />
       <DeleteModal />
+      <EditModal />
       <OFXImportModal />
     </div>
   );
 };
 
-// ✅ COMPONENTE RAIZ (ARQUITETURA COM TEMA + GRÁFICOS)
+// ✅ COMPONENTE RAIZ (ARQUITETURA COM TEMA + GRÁFICOS + EDIÇÃO)
 export default function App() {
   return (
     <ThemeProvider>
