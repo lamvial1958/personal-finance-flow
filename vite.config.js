@@ -73,19 +73,19 @@ export default defineConfig(({ command, mode }) => {
           dir: 'ltr',
           icons: [
             {
-              src: 'icon-192.png',
+              src: isProduction ? '/personal-finance-flow/icon-192.png' : '/icon-192.png',
               sizes: '192x192',
               type: 'image/png',
               purpose: 'any maskable'
             },
             {
-              src: 'icon-512.png',
+              src: isProduction ? '/personal-finance-flow/icon-512.png' : '/icon-512.png',
               sizes: '512x512',
               type: 'image/png',
               purpose: 'any maskable'
             },
             {
-              src: 'favicon.ico',
+              src: isProduction ? '/personal-finance-flow/favicon.ico' : '/favicon.ico',
               sizes: '64x64 32x32 24x24 16x16',
               type: 'image/x-icon',
               purpose: 'any'
