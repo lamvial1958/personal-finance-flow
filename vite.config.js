@@ -13,7 +13,7 @@ export default defineConfig(({ command, mode }) => {
     base: isProduction ? '/personal-finance-flow/' : '/',
     
     plugins: [
-      // ✅ CORRIGIDO: Configuração React sem jsxImportSource problemático
+      // CORRIGIDO: Configuração React sem jsxImportSource problemático
       react({
         // Configuração otimizada para Vite 7.x
         fastRefresh: true
@@ -33,6 +33,8 @@ export default defineConfig(({ command, mode }) => {
         includeAssets: ['favicon.ico', 'icon-192.png', 'icon-512.png'],
         disable: !isProduction,
         workbox: {
+          skipWaiting: true,
+          clientsClaim: true,
           globPatterns: ['**/*.{js,css,html,ico,png,svg,wasm}'],
           runtimeCaching: [
             {
@@ -58,7 +60,7 @@ export default defineConfig(({ command, mode }) => {
         manifest: {
           name: 'V&M Personal Finance',
           short_name: 'V&M Finance',
-          description: 'Aplicativo de controle financeiro pessoal com funcionalidade OFX',
+          description: 'Aplicativo de controle financeiro pessoal com OFX + Gráficos + Edição + Filtros Avançados + Modo Escuro',
           theme_color: '#2563eb',
           background_color: '#ffffff',
           display: 'standalone',
@@ -93,7 +95,7 @@ export default defineConfig(({ command, mode }) => {
       })
     ],
     
-    // ✅ CORRIGIDO: Configuração de servidor otimizada para Vite 7.x
+    // CORRIGIDO: Configuração de servidor otimizada para Vite 7.x
     server: {
       // Configuração HMR otimizada para prevenir re-renders
       hmr: {
@@ -111,7 +113,7 @@ export default defineConfig(({ command, mode }) => {
       devSourcemap: !isProduction
     },
     
-    // ✅ CORRIGIDO: optimizeDeps limpo para Vite 7.x
+    // CORRIGIDO: optimizeDeps limpo para Vite 7.x
     optimizeDeps: {
       exclude: ['sql.js']
     },
@@ -140,7 +142,7 @@ export default defineConfig(({ command, mode }) => {
       cssMinify: isProduction ? 'esbuild' : false
     },
     
-    // ✅ REMOVIDO: Configuração esbuild problemática que injetava React duplicado
+    // REMOVIDO: Configuração esbuild problemática que injetava React duplicado
     // esbuild: {
     //   jsxInject: `import React from 'react'`  // ← Esta linha causava o problema
     // },

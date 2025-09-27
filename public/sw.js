@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vm-finance-v1';
+const CACHE_NAME = 'vm-finance-v1.5.0';
 const urlsToCache = [
   '/',
   '/manifest.json',
@@ -47,8 +47,21 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  // Claim todos os clientes imediatamente
-  event.waitUntil(self.clients.claim());
+  // Claim todos os clientes imediatamente + limpeza de caches antigos
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          // Limpar caches antigos (v1, v1.4.0, etc.)
+          if (cacheName !== CACHE_NAME && cacheName.startsWith('vm-finance-')) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => {
+      return self.clients.claim();
+    })
+  );
 });
 
 self.addEventListener('fetch', (event) => {
