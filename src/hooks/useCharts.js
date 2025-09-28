@@ -1,18 +1,21 @@
 /**
- * useCharts Hook - Personal Finance Flow (Refatorado)
- * Gerencia dados e lógica para gráficos interativos
+ * useCharts Hook - Personal Finance Flow
+ * Gerencia dados e lógica para gráficos interativos com categorias dinâmicas
  * 
- * COMPATIBILIDADE: ChartsView.jsx
- * Interface ajustada para aceitar (transactions, selectedPeriod)
+ * CORREÇÃO: Compatibilidade com categorias personalizáveis
+ * - Aceita categorias dinâmicas como parâmetro
+ * - Processa corretamente dados de categorias customizadas
+ * - Mantém compatibilidade com ChartsView.jsx
+ * - Performance otimizada com memoização
  * 
  * Localização: C:\Personal_Finance_Flow\src\hooks\useCharts.js
- * Versão: 1.1.0 - Compatível com ChartsView
+ * Versão: Categorias Dinâmicas Integradas
  * Atualizado: Setembro 2025
  */
 
-import { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 
-export const useCharts = (transactions = [], selectedPeriod = '6m') => {
+export const useCharts = (transactions = {}, selectedPeriod = '6m', categories = null) => {
   
   // Opções de período (mantidas do hook original)
   const periodOptions = [
@@ -72,7 +75,7 @@ export const useCharts = (transactions = [], selectedPeriod = '6m') => {
     }
   }, []);
 
-  // Converter transações do formato Context para array processável
+  // ✅ CORREÇÃO: Converter transações do formato Context para array processável
   const processedTransactions = useMemo(() => {
     if (!transactions || typeof transactions !== 'object') {
       return [];
@@ -113,8 +116,40 @@ export const useCharts = (transactions = [], selectedPeriod = '6m') => {
       }
     });
 
+    // ✅ NOVO: Log de debug para verificar transações processadas
+    if (result.length > 0) {
+      console.log(`📊 useCharts - ${result.length} transações processadas`, {
+        receitas: result.filter(t => t.type === 'income').length,
+        despesas: result.filter(t => t.type === 'expenses').length,
+        categorias: [...new Set(result.map(t => t.category))].length
+      });
+    }
+
     return result;
   }, [transactions]);
+
+  // ✅ NOVO: Obter todas as categorias disponíveis (dinâmicas + das transações)
+  const availableCategories = useMemo(() => {
+    // Começar com categorias das transações existentes
+    const transactionCategories = [...new Set(
+      processedTransactions
+        .map(t => t.category)
+        .filter(cat => cat && cat !== 'Sem categoria')
+    )];
+
+    // Se temos categorias dinâmicas, incluí-las
+    if (categories) {
+      const dynamicCategories = [
+        ...(categories.income || []),
+        ...(categories.expenses || [])
+      ].map(cat => typeof cat === 'string' ? cat : cat.name);
+
+      // Combinar e remover duplicatas
+      return [...new Set([...transactionCategories, ...dynamicCategories])];
+    }
+
+    return transactionCategories;
+  }, [processedTransactions, categories]);
 
   // Filtrar transações por período
   const filteredTransactions = useMemo(() => {
@@ -140,15 +175,18 @@ export const useCharts = (transactions = [], selectedPeriod = '6m') => {
         startDate = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
     }
 
-    return processedTransactions.filter(transaction => {
+    const filtered = processedTransactions.filter(transaction => {
       const transactionDate = new Date(transaction.date);
       return transactionDate >= startDate && transactionDate <= now;
     });
+
+    console.log(`📊 useCharts - Filtro ${selectedPeriod}: ${filtered.length} transações no período`);
+    return filtered;
   }, [processedTransactions, selectedPeriod]);
 
   // DADOS PARA CHARTVIEW (nomes compatíveis)
   
-  // monthlyData - Evolução mensal (era monthlyEvolutionData)
+  // monthlyData - Evolução mensal
   const monthlyData = useMemo(() => {
     const monthlyDataMap = {};
 
@@ -173,50 +211,70 @@ export const useCharts = (transactions = [], selectedPeriod = '6m') => {
     });
 
     // Calcular saldo e ordenar por data
-    return Object.entries(monthlyDataMap)
+    const result = Object.entries(monthlyDataMap)
       .map(([monthKey, data]) => ({
         ...data,
         saldo: data.receitas - data.despesas,
         monthKey
       }))
       .sort((a, b) => a.monthKey.localeCompare(b.monthKey));
+
+    console.log(`📊 useCharts - Dados mensais: ${result.length} meses processados`);
+    return result;
   }, [filteredTransactions]);
 
-  // categoryData - Gastos por categoria (era expensesByCategoryData)
+  // ✅ CORRIGIDO: categoryData - Gastos por categoria com verificação aprimorada
   const categoryData = useMemo(() => {
     const categoryDataMap = {};
 
-    filteredTransactions
-      .filter(transaction => transaction.type === 'expenses')
-      .forEach(transaction => {
-        const category = transaction.category || 'Sem categoria';
-        if (!categoryDataMap[category]) {
-          categoryDataMap[category] = {
-            categoria: category,
-            valor: 0,
-            transacoes: 0
-          };
-        }
-        categoryDataMap[category].valor += transaction.amount;
-        categoryDataMap[category].transacoes += 1;
-      });
+    // Filtrar apenas despesas com categoria válida
+    const expenseTransactions = filteredTransactions.filter(transaction => 
+      transaction.type === 'expenses' && 
+      transaction.category && 
+      transaction.category.trim() !== '' &&
+      transaction.category !== 'Sem categoria'
+    );
 
-    return Object.values(categoryDataMap)
+    console.log(`📊 useCharts - Despesas com categoria: ${expenseTransactions.length} de ${filteredTransactions.filter(t => t.type === 'expenses').length} despesas`);
+
+    expenseTransactions.forEach(transaction => {
+      const category = transaction.category.trim();
+      if (!categoryDataMap[category]) {
+        categoryDataMap[category] = {
+          categoria: category,
+          valor: 0,
+          transacoes: 0
+        };
+      }
+      categoryDataMap[category].valor += transaction.amount;
+      categoryDataMap[category].transacoes += 1;
+    });
+
+    const result = Object.values(categoryDataMap)
+      .filter(cat => cat.valor > 0) // Só categorias com valor > 0
       .sort((a, b) => b.valor - a.valor)
       .slice(0, 8); // Top 8 categorias
+
+    console.log(`📊 useCharts - Categorias processadas: ${result.length}`, 
+      result.map(cat => `${cat.categoria}: R$ ${cat.valor.toFixed(2)}`));
+
+    return result;
   }, [filteredTransactions]);
 
-  // evolutionData - Evolução patrimonial (era patrimonialEvolutionData)
+  // evolutionData - Evolução patrimonial
   const evolutionData = useMemo(() => {
     let patrimonioAcumulado = 0;
 
-    return monthlyData.map(data => {
+    const result = monthlyData.map(data => {
       patrimonioAcumulado += data.saldo;
       return {
         mes: data.mes,
         patrimonio: patrimonioAcumulado
       };
     });
+
+    console.log(`📊 useCharts - Evolução patrimonial: ${result.length} pontos de dados`);
+    return result;
   }, [monthlyData]);
 
   // Estatísticas adicionais
@@ -236,9 +294,10 @@ export const useCharts = (transactions = [], selectedPeriod = '6m') => {
       totalDespesas,
       saldoTotal,
       transacoesTotal: filteredTransactions.length,
-      mesesAnalisados: monthlyData.length
+      mesesAnalisados: monthlyData.length,
+      categoriasUnicas: availableCategories.length
     };
-  }, [filteredTransactions, monthlyData]);
+  }, [filteredTransactions, monthlyData, availableCategories]);
 
   // Função de formatação para tooltips
   const formatTooltipValue = useCallback((value, name) => {
@@ -248,9 +307,28 @@ export const useCharts = (transactions = [], selectedPeriod = '6m') => {
     return [value, name];
   }, [formatCurrency]);
 
-  // Verificação de dados disponíveis
-  const hasData = filteredTransactions.length > 0;
+  // ✅ CORREÇÃO: Verificação de dados disponíveis mais rigorosa
+  const hasData = useMemo(() => {
+    const hasTransactions = filteredTransactions.length > 0;
+    const hasCategories = categoryData.length > 0;
+    
+    console.log(`📊 useCharts - Verificação de dados: transações=${hasTransactions}, categorias=${hasCategories}`);
+    return hasTransactions;
+  }, [filteredTransactions, categoryData]);
+
   const hasMonthlyData = monthlyData.length > 0;
+  const hasCategoryData = categoryData.length > 0;
+
+  // ✅ NOVO: Debug do estado atual
+  React.useEffect(() => {
+    if (categories) {
+      console.log('📊 useCharts - Categorias dinâmicas recebidas:', {
+        income: categories.income?.length || 0,
+        expenses: categories.expenses?.length || 0,
+        available: availableCategories.length
+      });
+    }
+  }, [categories, availableCategories]);
 
   // RETORNO COMPATÍVEL COM CHARTVIEW
   return {
@@ -271,6 +349,10 @@ export const useCharts = (transactions = [], selectedPeriod = '6m') => {
     formatTooltipValue,
     hasData,
     hasMonthlyData,
+    hasCategoryData, // ✅ NOVO: Estado específico para dados de categoria
+    
+    // ✅ NOVO: Informações sobre categorias
+    availableCategories,
     
     // Estado atual
     selectedPeriod,

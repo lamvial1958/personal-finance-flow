@@ -1,18 +1,20 @@
 /**
- * ConfigurationView.jsx - Configurações com Suporte a Tema
+ * ConfigurationView.jsx - Configurações com Suporte a Tema + CategoryManager
  * 
- * NOVA FUNCIONALIDADE v1.3.0:
- * - ThemeToggle integrado
- * - Classes dark mode aplicadas
- * - Seção de Aparência adicionada
+ * NOVA FUNCIONALIDADE:
+ * - CategoryManager integrado
+ * - Seção de Categorias Personalizáveis
+ * - ThemeToggle preservado
+ * - Todas funcionalidades V1.3.0 mantidas
  * 
  * Localização: C:\Personal_Finance_Flow\src\components\Configuration\ConfigurationView.jsx
- * Versão: 1.3.0 - Modo Escuro Integrado
+ * Sistema de Categorias Personalizáveis Integrado
  */
 
 import React from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import ThemeToggle from './ThemeToggle';
+import CategoryManager from './CategoryManager';
 
 const ConfigurationView = ({ onClose }) => {
   const { isDark } = useTheme();
@@ -81,9 +83,14 @@ const ConfigurationView = ({ onClose }) => {
         </div>
         
         <div className="space-y-8">
-          {/* NOVA SEÇÃO: Aparência e Tema */}
+          {/* SEÇÃO: Aparência e Tema */}
           <div className="border-b border-gray-200 dark:border-gray-700 pb-6">
             <ThemeToggle />
+          </div>
+
+          {/* NOVA SEÇÃO: Categorias Personalizáveis */}
+          <div className="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <CategoryManager />
           </div>
 
           {/* Seção OFX */}
@@ -180,14 +187,16 @@ const ConfigurationView = ({ onClose }) => {
                 <p className="text-green-600 dark:text-green-400">✅ Busca por descrição/categoria</p>
                 <p className="text-green-600 dark:text-green-400">✅ Ordenação flexível</p>
                 <p className="text-green-600 dark:text-green-400">✅ Export CSV completo</p>
-                <p className="text-green-600 dark:text-green-400">✅ Categorias predefinidas</p>
+                <p className="text-green-600 dark:text-green-400">✅ Edição de transações</p>
+                <p className="text-green-600 dark:text-green-400">✅ Filtros avançados</p>
               </div>
               <div className="space-y-1">
                 <p className="text-green-600 dark:text-green-400">✅ Import/Export OFX</p>
                 <p className="text-green-600 dark:text-green-400">✅ Detecção de duplicatas</p>
                 <p className="text-green-600 dark:text-green-400">✅ Modularização completa</p>
                 <p className="text-green-600 dark:text-green-400">✅ PWA offline funcional</p>
-                <p className="text-blue-600 dark:text-blue-400">🆕 Modo Escuro/Claro</p>
+                <p className="text-green-600 dark:text-green-400">✅ Modo Escuro/Claro</p>
+                <p className="text-blue-600 dark:text-blue-400">🆕 Categorias Personalizáveis</p>
               </div>
             </div>
           </div>
@@ -215,7 +224,7 @@ const ConfigurationView = ({ onClose }) => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">Versão:</span>
-                  <span className="text-blue-600 dark:text-blue-400">1.3.0 - Modular + Tema</span>
+                  <span className="text-blue-600 dark:text-blue-400">Categorias Personalizáveis</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">Tema atual:</span>

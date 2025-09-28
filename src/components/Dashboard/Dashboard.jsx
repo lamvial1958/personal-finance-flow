@@ -2,8 +2,13 @@
  * Dashboard Component - Personal Finance Flow
  * Componente principal do painel com resumo, transações, filtros avançados e funcionalidades Fase 1 + Edição
  * 
+ * CORREÇÃO: Integração com categorias dinâmicas do AppContext
+ * - Categorias personalizáveis no formulário
+ * - Sincronização automática com CategoryManager
+ * - Compatibilidade total com sistema
+ * 
  * Localização: C:\Personal_Finance_Flow\src\components\Dashboard\Dashboard.jsx
- * Versão: 1.5.0 - Filtros avançados integrados
+ * Versão: Categorias Dinâmicas Integradas
  * ATUALIZAÇÃO: Interface de filtros avançados + componente AdvancedFilters integrado
  * Criado: Setembro 2025
  */
@@ -19,7 +24,9 @@ const Dashboard = () => {
     dailyTransactions,
     investmentMovements,
     getCurrentPatrimony,
-    dataVersion
+    dataVersion,
+    // ✅ NOVO: Categorias dinâmicas do AppContext
+    categories: dynamicCategories
   } = useApp();
 
   const {
@@ -30,7 +37,7 @@ const Dashboard = () => {
     sortOrder,
     todayStats,
     transactionStats,
-    categories,
+    // Removido: categories (não precisamos mais das estáticas)
     sortOptions,
     
     // ✅ NOVO: Estados de filtros avançados
@@ -68,6 +75,28 @@ const Dashboard = () => {
     transactionCount
   } = useTransactions();
 
+  // ✅ CORREÇÃO: Usar APENAS categorias dinâmicas do AppContext
+  const categoryOptions = useMemo(() => {
+    // Sempre usar categorias dinâmicas - sem fallback
+    if (dynamicCategories && dynamicCategories[newTransaction.type]) {
+      // Retornar apenas os nomes das categorias (compatibilidade com formato atual)
+      return dynamicCategories[newTransaction.type].map(cat => 
+        typeof cat === 'string' ? cat : cat.name
+      );
+    }
+    
+    // Se não há categorias dinâmicas, retornar array vazio
+    return [];
+  }, [dynamicCategories, newTransaction.type]);
+
+  // Logs de debug para verificar integração
+  React.useEffect(() => {
+    if (dynamicCategories) {
+      console.log('📝 Dashboard - Categorias dinâmicas disponíveis:', dynamicCategories);
+      console.log('📝 Dashboard - Categorias para tipo atual:', categoryOptions);
+    }
+  }, [dynamicCategories, categoryOptions]);
+
   // Correção: useCallback para prevenir re-criação de funções
   const handleTypeChange = useCallback((e) => {
     updateTransactionField('type', e.target.value);
@@ -96,11 +125,6 @@ const Dashboard = () => {
   const handleSortChange = useCallback((e) => {
     updateSortCriteria(e.target.value);
   }, [updateSortCriteria]);
-
-  // Memoizar opções de categoria para evitar re-renders
-  const categoryOptions = useMemo(() => {
-    return categories[newTransaction.type] || [];
-  }, [categories, newTransaction.type]);
 
   // Cards de status financeiro
   const StatusCards = useMemo(() => (
@@ -161,7 +185,7 @@ const Dashboard = () => {
     </div>
   ), [todayStats, getCurrentPatrimony, formatCurrency, hasActiveFilters, transactionStats]);
 
-  // Formulário de nova transação memoizado
+  // ✅ FORMULÁRIO ATUALIZADO: Agora usa categorias dinâmicas
   const TransactionForm = useMemo(() => (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Nova Transação</h3>
@@ -211,7 +235,15 @@ const Dashboard = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Categoria</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Categoria
+              {/* ✅ NOVO: Indicador de categorias dinâmicas */}
+              {dynamicCategories && (
+                <span className="ml-2 px-2 py-0.5 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full">
+                  Personalizáveis
+                </span>
+              )}
+            </label>
             <select
               value={newTransaction.category}
               onChange={handleCategoryChange}
@@ -222,6 +254,12 @@ const Dashboard = () => {
                 <option key={cat} value={cat}>{cat}</option>
               ))}
             </select>
+            {/* ✅ NOVO: Debug info (remover em produção) */}
+            {process.env.NODE_ENV === 'development' && categoryOptions.length > 0 && (
+              <p className="text-xs text-gray-500 mt-1">
+                {categoryOptions.length} categorias disponíveis (incluindo personalizadas)
+              </p>
+            )}
           </div>
         </div>
 
@@ -259,7 +297,8 @@ const Dashboard = () => {
     handleDateChange,
     handleAmountChange,
     handleCategoryChange,
-    handleDescriptionChange
+    handleDescriptionChange,
+    dynamicCategories
   ]);
 
   // ✅ ATUALIZADO: Controles de busca e ordenação com filtros avançados
@@ -532,6 +571,15 @@ const Dashboard = () => {
           <span className="text-gray-600 dark:text-gray-400">Investimentos:</span>
           <span className="text-gray-900 dark:text-gray-100 font-medium">{Object.keys(investmentMovements).length} movimentos</span>
         </div>
+        {/* ✅ NOVO: Status das categorias dinâmicas */}
+        {dynamicCategories && (
+          <div className="flex justify-between items-center">
+            <span className="text-gray-600 dark:text-gray-400">Categorias:</span>
+            <span className="text-blue-600 dark:text-blue-400 font-medium">
+              {(dynamicCategories.income?.length || 0) + (dynamicCategories.expenses?.length || 0)} personalizáveis
+            </span>
+          </div>
+        )}
         {/* ✅ NOVO: Status dos filtros */}
         {hasActiveFilters && (
           <div className="flex justify-between items-center">
@@ -541,7 +589,7 @@ const Dashboard = () => {
         )}
       </div>
     </div>
-  ), [connectionStatus, dailyTransactions, investmentMovements, hasActiveFilters, activeFiltersCount]);
+  ), [connectionStatus, dailyTransactions, investmentMovements, hasActiveFilters, activeFiltersCount, dynamicCategories]);
 
   // Render principal
   return (

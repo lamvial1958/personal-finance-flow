@@ -3,7 +3,7 @@
  * Componente de filtros avançados para análise detalhada de transações
  * 
  * Localização: C:\Personal_Finance_Flow\src\components\Dashboard\AdvancedFilters.jsx
- * Versão: 1.5.0 - Filtros avançados V1.5.0
+ * Versão: Filtros avançados
  * Criado: Setembro 2025
  */
 

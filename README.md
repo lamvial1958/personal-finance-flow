@@ -2,7 +2,7 @@
 
 **Link do Aplicativo:** https://lamvial1958.github.io/personal-finance-flow/
 
-**Versão Atual:** 1.5.0 (66% implementada) - Edição + Filtros Avançados
+**Versão Atual:** 1.5.1 (100% implementada) - Sistema Completo com Categorias Personalizáveis
 
 ## 🚀 O que é este aplicativo?
 
@@ -16,7 +16,11 @@ O V&M Personal Finance é um **Progressive Web App (PWA)** - um aplicativo web q
 
 ## ⭐ Funcionalidades Implementadas (V1.5.0)
 
-### ✅ Sistema Completo de Gestão Financeira
+### ✅ Sistema Completo de Gestão Financeira (V1.5.1)
+- **Categorias Personalizáveis**: Sistema flexível de categorias definidas pelo usuário
+- **Auto-Update PWA**: Atualizações automáticas seamless
+- **Edição de Transações**: Sistema completo implementado
+- **Filtros Avançados**: Interface profissional implementada
 - **Dashboard Inteligente**: Visão resumida com totais e estatísticas
 - **Busca Avançada**: Localização instantânea de transações
 - **Ordenação Flexível**: 6 critérios diferentes (data, valor, categoria)

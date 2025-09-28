@@ -3,7 +3,7 @@
  * Gerencia toda a lógica de transações, busca, ordenação, exclusão, edição e filtros avançados
  * 
  * Localização: C:\Personal_Finance_Flow\src\hooks\useTransactions.js
- * Versão: 1.5.0 - Filtros avançados implementados
+ * Versão: Filtros avançados implementados
  * Criado: Setembro 2025
  */
 

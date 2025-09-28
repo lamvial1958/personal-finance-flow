@@ -1,4 +1,19 @@
-import React, { useState, useMemo } from 'react';
+/**
+ * ChartsView.jsx - Gráficos Interativos com Categorias Dinâmicas
+ * Personal Finance Flow - Sistema de Categorias Personalizáveis
+ * 
+ * CORREÇÕES:
+ * - Integração com categorias dinâmicas do AppContext
+ * - Performance otimizada (React.memo + useMemo)
+ * - Logs de debug removidos para evitar re-renders excessivos
+ * - Compatibilidade com sistema de categorias personalizáveis
+ * - Processamento de dados corrigido para categorias customizadas
+ * 
+ * Localização: C:\Personal_Finance_Flow\src\components\Charts\ChartsView.jsx
+ * Categorias Personalizáveis Integradas
+ */
+
+import React, { useState, useMemo, useCallback } from 'react';
 import { useCharts } from '../../hooks/useCharts';
 import { useTheme } from '../../hooks/useTheme';
 import { useApp } from '../../context/AppContext';
@@ -20,21 +35,25 @@ import {
   ResponsiveContainer
 } from 'recharts';
 
-const ChartsView = () => {
-  const { dailyTransactions } = useApp();
+const ChartsView = React.memo(() => {
+  const { dailyTransactions, categories } = useApp(); // Incluindo categorias dinâmicas
   const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedPeriod, setSelectedPeriod] = useState('12m');
 
-  // Verificação defensiva e debugging
-  const transactions = dailyTransactions || {};
+  // Verificação defensiva
+  const transactions = useMemo(() => dailyTransactions || {}, [dailyTransactions]);
   
-  // Debug logs para verificar estrutura de dados
-  console.log('🔍 ChartsView DEBUG - dailyTransactions:', dailyTransactions);
-  console.log('🔍 ChartsView DEBUG - transactions type:', typeof transactions);
-  console.log('🔍 ChartsView DEBUG - transactions keys:', Object.keys(transactions));
-  console.log('🔍 ChartsView DEBUG - sample transaction:', Object.values(transactions)[0]);
+  // Debug reduzido - apenas logs essenciais
+  const transactionCount = useMemo(() => Object.keys(transactions).length, [transactions]);
+  
+  React.useEffect(() => {
+    if (transactionCount > 0) {
+      console.log(`📊 ChartsView - ${transactionCount} dias de transações carregados`);
+    }
+  }, [transactionCount]);
 
+  // Integração com hook useCharts (passa categorias dinâmicas)
   const {
     monthlyData,
     categoryData,
@@ -43,60 +62,13 @@ const ChartsView = () => {
     formatCurrency,
     getChartColors,
     hasData
-  } = useCharts(transactions, selectedPeriod);
+  } = useCharts(transactions, selectedPeriod, categories);
 
   const isDark = theme === 'dark';
   const colors = getChartColors(isDark);
 
-  // Estado de loading/sem dados
-  if (!hasData) {
-    return (
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="text-center py-16">
-          <div className="text-6xl mb-4">📊</div>
-          <h2 className={`text-2xl font-bold mb-2 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>
-            Nenhum dado encontrado
-          </h2>
-          <p className={`text-lg mb-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-            Adicione algumas transações para ver os gráficos
-          </p>
-          <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-            Vá para o Painel e adicione receitas ou despesas, ou importe dados OFX
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // Dados formatados para diferentes gráficos com verificação defensiva
-  const formattedMonthlyData = useMemo(() => {
-    if (!monthlyData || !Array.isArray(monthlyData)) {
-      console.log('⚠️ ChartsView - monthlyData não é array:', monthlyData);
-      return [];
-    }
-    
-    return monthlyData.map(item => ({
-      ...item,
-      receitas: parseFloat(item.receitas) || 0,
-      despesas: Math.abs(parseFloat(item.despesas)) || 0,
-      saldo: parseFloat(item.saldo) || 0
-    }));
-  }, [monthlyData]);
-
-  const formattedCategoryData = useMemo(() => {
-    if (!categoryData || !Array.isArray(categoryData)) {
-      console.log('⚠️ ChartsView - categoryData não é array:', categoryData);
-      return [];
-    }
-    
-    return categoryData.filter(item => item.valor > 0).map(item => ({
-      ...item,
-      valor: Math.abs(parseFloat(item.valor))
-    }));
-  }, [categoryData]);
-
-  // Componente do Tooltip customizado
-  const CustomTooltip = ({ active, payload, label }) => {
+  // Componente do Tooltip customizado - memoizado
+  const CustomTooltip = useCallback(({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
         <div className={`
@@ -116,10 +88,37 @@ const ChartsView = () => {
       );
     }
     return null;
-  };
+  }, [isDark, formatCurrency]);
 
-  // Componente de filtros de período
-  const PeriodFilters = () => (
+  // Dados formatados memoizados para melhor performance
+  const formattedMonthlyData = useMemo(() => {
+    if (!monthlyData || !Array.isArray(monthlyData)) {
+      return [];
+    }
+    
+    return monthlyData.map(item => ({
+      ...item,
+      receitas: parseFloat(item.receitas) || 0,
+      despesas: Math.abs(parseFloat(item.despesas)) || 0,
+      saldo: parseFloat(item.saldo) || 0
+    }));
+  }, [monthlyData]);
+
+  const formattedCategoryData = useMemo(() => {
+    if (!categoryData || !Array.isArray(categoryData)) {
+      return [];
+    }
+    
+    return categoryData
+      .filter(item => item.valor > 0)
+      .map(item => ({
+        ...item,
+        valor: Math.abs(parseFloat(item.valor))
+      }));
+  }, [categoryData]);
+
+  // Componente de filtros de período - memoizado
+  const PeriodFilters = useMemo(() => (
     <div className="flex flex-wrap gap-2 mb-6">
       {periodOptions.map(option => (
         <button
@@ -141,10 +140,10 @@ const ChartsView = () => {
         </button>
       ))}
     </div>
-  );
+  ), [periodOptions, selectedPeriod, isDark]);
 
-  // Componente de abas
-  const TabNavigation = () => {
+  // Componente de abas - memoizado
+  const TabNavigation = useMemo(() => {
     const tabs = [
       { id: 'overview', label: 'Visão Geral', icon: '📊' },
       { id: 'trends', label: 'Tendências', icon: '📈' },
@@ -176,10 +175,30 @@ const ChartsView = () => {
         ))}
       </div>
     );
-  };
+  }, [activeTab, isDark]);
 
-  // Gráfico de visão geral (Receitas vs Despesas)
-  const OverviewChart = () => (
+  // Estado de loading/sem dados
+  if (!hasData) {
+    return (
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="text-center py-16">
+          <div className="text-6xl mb-4">📊</div>
+          <h2 className={`text-2xl font-bold mb-2 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>
+            Nenhum dado encontrado
+          </h2>
+          <p className={`text-lg mb-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+            Adicione algumas transações para ver os gráficos
+          </p>
+          <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+            Vá para o Painel e adicione receitas ou despesas, ou importe dados OFX
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Gráfico de visão geral (Receitas vs Despesas) - memoizado
+  const OverviewChart = useMemo(() => (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Gráfico de linha mensal */}
@@ -276,92 +295,100 @@ const ChartsView = () => {
         </div>
       </div>
     </div>
-  );
+  ), [formattedMonthlyData, isDark, colors, formatCurrency, CustomTooltip]);
 
-  // Gráfico de categorias (Pizza)
-  const CategoriesChart = () => (
-    <div className={`
-      p-6 rounded-xl shadow-sm border
-      ${isDark 
-        ? 'bg-gray-800 border-gray-700' 
-        : 'bg-white border-gray-200'
-      }
-    `}>
-      <h3 className={`
-        text-lg font-semibold mb-4
-        ${isDark ? 'text-gray-100' : 'text-gray-900'}
+  // Gráfico de categorias (Pizza) - corrigido para categorias dinâmicas
+  const CategoriesChart = useMemo(() => {
+    // Verificação adicional para categorias dinâmicas
+    const hasCategoryData = formattedCategoryData.length > 0;
+    
+    return (
+      <div className={`
+        p-6 rounded-xl shadow-sm border
+        ${isDark 
+          ? 'bg-gray-800 border-gray-700' 
+          : 'bg-white border-gray-200'
+        }
       `}>
-        Gastos por Categoria
-      </h3>
-      
-      {formattedCategoryData.length > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <ResponsiveContainer width="100%" height={400}>
-            <PieChart>
-              <Pie
-                data={formattedCategoryData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(1)}%`}
-                outerRadius={120}
-                fill="#8884d8"
-                dataKey="valor"
-              >
-                {formattedCategoryData.map((entry, index) => (
-                  <Cell 
-                    key={`cell-${index}`} 
-                    fill={colors.categories[index % colors.categories.length]} 
-                  />
-                ))}
-              </Pie>
-              <Tooltip 
-                formatter={(value) => [formatCurrency(value), 'Valor']}
-                labelStyle={{ color: isDark ? '#f3f4f6' : '#111827' }}
-                contentStyle={{
-                  backgroundColor: isDark ? '#1f2937' : '#ffffff',
-                  border: `1px solid ${isDark ? '#374151' : '#d1d5db'}`,
-                  borderRadius: '8px'
-                }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+        <h3 className={`
+          text-lg font-semibold mb-4
+          ${isDark ? 'text-gray-100' : 'text-gray-900'}
+        `}>
+          Gastos por Categoria
+        </h3>
+        
+        {hasCategoryData ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ResponsiveContainer width="100%" height={400}>
+              <PieChart>
+                <Pie
+                  data={formattedCategoryData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(1)}%`}
+                  outerRadius={120}
+                  fill="#8884d8"
+                  dataKey="valor"
+                >
+                  {formattedCategoryData.map((entry, index) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={colors.categories[index % colors.categories.length]} 
+                    />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value) => [formatCurrency(value), 'Valor']}
+                  labelStyle={{ color: isDark ? '#f3f4f6' : '#111827' }}
+                  contentStyle={{
+                    backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                    border: `1px solid ${isDark ? '#374151' : '#d1d5db'}`,
+                    borderRadius: '8px'
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
 
-          <div className="space-y-3">
-            {formattedCategoryData.map((item, index) => (
-              <div
-                key={item.categoria}
-                className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700"
-              >
-                <div className="flex items-center gap-3">
-                  <div 
-                    className="w-4 h-4 rounded-full"
-                    style={{ backgroundColor: colors.categories[index % colors.categories.length] }}
-                  />
-                  <span className="font-medium text-gray-900 dark:text-gray-100">
-                    {item.categoria}
+            <div className="space-y-3">
+              {formattedCategoryData.map((item, index) => (
+                <div
+                  key={item.categoria}
+                  className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700"
+                >
+                  <div className="flex items-center gap-3">
+                    <div 
+                      className="w-4 h-4 rounded-full"
+                      style={{ backgroundColor: colors.categories[index % colors.categories.length] }}
+                    />
+                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                      {item.categoria}
+                    </span>
+                  </div>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">
+                    {formatCurrency(item.valor)}
                   </span>
                 </div>
-                <span className="font-semibold text-gray-900 dark:text-gray-100">
-                  {formatCurrency(item.valor)}
-                </span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">📊</div>
-          <p className="text-gray-500 dark:text-gray-400">
-            Nenhum dado de categoria encontrado para o período selecionado
-          </p>
-        </div>
-      )}
-    </div>
-  );
+        ) : (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">📊</div>
+            <p className="text-gray-500 dark:text-gray-400 mb-2">
+              Nenhum dado de categoria encontrado para o período selecionado
+            </p>
+            <p className="text-sm text-gray-400 dark:text-gray-500">
+              Certifique-se de que suas transações têm categorias definidas
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  }, [formattedCategoryData, isDark, colors, formatCurrency]);
 
-  // Gráfico de evolução patrimonial
-  const EvolutionChart = () => (
+  // Gráfico de evolução patrimonial - memoizado
+  const EvolutionChart = useMemo(() => (
     <div className={`
       p-6 rounded-xl shadow-sm border
       ${isDark 
@@ -403,23 +430,23 @@ const ChartsView = () => {
         </AreaChart>
       </ResponsiveContainer>
     </div>
-  );
+  ), [evolutionData, isDark, colors, formatCurrency, CustomTooltip]);
 
   // Renderizar conteúdo baseado na aba ativa
-  const renderActiveTab = () => {
+  const renderActiveTab = useCallback(() => {
     switch (activeTab) {
       case 'overview':
-        return <OverviewChart />;
+        return OverviewChart;
       case 'trends':
-        return <OverviewChart />; // Mesmo que overview por agora
+        return OverviewChart; // Mesmo que overview por agora
       case 'categories':
-        return <CategoriesChart />;
+        return CategoriesChart;
       case 'evolution':
-        return <EvolutionChart />;
+        return EvolutionChart;
       default:
-        return <OverviewChart />;
+        return OverviewChart;
     }
-  };
+  }, [activeTab, OverviewChart, CategoriesChart, EvolutionChart]);
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
@@ -448,17 +475,26 @@ const ChartsView = () => {
           `}>
             <div className="text-sm text-gray-500 dark:text-gray-400">Total Transações</div>
             <div className="font-semibold text-gray-900 dark:text-gray-100">
-              {Object.keys(transactions).length || 0}
+              {transactionCount}
+            </div>
+          </div>
+          <div className={`
+            px-4 py-2 rounded-lg text-center
+            ${isDark ? 'bg-gray-800' : 'bg-gray-50'}
+          `}>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Categorias</div>
+            <div className="font-semibold text-gray-900 dark:text-gray-100">
+              {(categories?.income?.length || 0) + (categories?.expenses?.length || 0)}
             </div>
           </div>
         </div>
       </div>
 
       {/* Filtros de período */}
-      <PeriodFilters />
+      {PeriodFilters}
 
       {/* Navegação por abas */}
-      <TabNavigation />
+      {TabNavigation}
 
       {/* Conteúdo do gráfico ativo */}
       <div className="min-h-[500px]">
@@ -473,11 +509,14 @@ const ChartsView = () => {
           : 'text-gray-400 border-gray-200'
         }
       `}>
-        Dados baseados nas suas transações importadas • Período: {selectedPeriod} • 
-        Atualizados em tempo real
+        Dados baseados nas suas transações • Período: {selectedPeriod} • 
+        Categorias dinâmicas ativas • Atualizado em tempo real
       </div>
     </div>
   );
-};
+});
+
+// Display name para debugging
+ChartsView.displayName = 'ChartsView';
 
 export default ChartsView;

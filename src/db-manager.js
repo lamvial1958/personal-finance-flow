@@ -34,11 +34,14 @@
       // Create tables if they don't exist
       await this.createTables();
       
+      // NOVO: Migrar categorias padrão se necessário
+      await this.migrateDefaultCategories();
+      
       // Save to IndexedDB after initialization
       await this.saveToIndexedDB();
       
       this.isInitialized = true;
-      console.log('✅ Database Manager inicializado com script loading');
+      console.log('✅ Database Manager inicializado com sistema de categorias');
       
     } catch (error) {
       console.error('❌ Erro ao inicializar banco de dados:', error);
@@ -100,6 +103,21 @@
         amount REAL NOT NULL,
         description TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`,
+
+      // NOVO: Custom categories table
+      `CREATE TABLE IF NOT EXISTS custom_categories (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        type TEXT NOT NULL CHECK (type IN ('income', 'expenses')),
+        color TEXT DEFAULT '#6b7280',
+        icon TEXT DEFAULT 'tag',
+        is_default BOOLEAN DEFAULT 0,
+        is_active BOOLEAN DEFAULT 1,
+        sort_order INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(name, type)
       )`
     ];
 
@@ -107,8 +125,418 @@
       this.db.run(sql);
     });
 
-    console.log('✅ Tabelas criadas/verificadas');
+    console.log('✅ Tabelas criadas/verificadas incluindo custom_categories');
   }
+
+  // NOVO: Migração automática das categorias padrão
+  async migrateDefaultCategories() {
+    try {
+      // Verificar se já foram migradas
+      const checkStmt = this.db.prepare('SELECT COUNT(*) as count FROM custom_categories WHERE is_default = 1');
+      checkStmt.step();
+      const result = checkStmt.getAsObject();
+      checkStmt.free();
+
+      if (result.count > 0) {
+        console.log('✅ Categorias padrão já migradas');
+        return;
+      }
+
+      console.log('🔄 Migrando categorias padrão para sistema personalizável...');
+
+      // Categorias padrão do sistema atual
+      const defaultCategories = [
+        // Receitas
+        { name: 'Salário', type: 'income', color: '#10b981', icon: 'briefcase', sort_order: 1 },
+        { name: 'Freelance', type: 'income', color: '#8b5cf6', icon: 'laptop', sort_order: 2 },
+        { name: 'Investimentos', type: 'income', color: '#f59e0b', icon: 'trending-up', sort_order: 3 },
+        { name: 'Vendas', type: 'income', color: '#06b6d4', icon: 'shopping-bag', sort_order: 4 },
+        { name: 'Prêmio', type: 'income', color: '#eab308', icon: 'award', sort_order: 5 },
+        { name: 'Outros', type: 'income', color: '#6b7280', icon: 'plus-circle', sort_order: 99 },
+        
+        // Despesas
+        { name: 'Alimentação', type: 'expenses', color: '#ef4444', icon: 'utensils', sort_order: 1 },
+        { name: 'Transporte', type: 'expenses', color: '#3b82f6', icon: 'car', sort_order: 2 },
+        { name: 'Moradia', type: 'expenses', color: '#8b5cf6', icon: 'home', sort_order: 3 },
+        { name: 'Saúde', type: 'expenses', color: '#ec4899', icon: 'heart', sort_order: 4 },
+        { name: 'Educação', type: 'expenses', color: '#10b981', icon: 'book-open', sort_order: 5 },
+        { name: 'Lazer', type: 'expenses', color: '#f59e0b', icon: 'smile', sort_order: 6 },
+        { name: 'Compras', type: 'expenses', color: '#06b6d4', icon: 'shopping-cart', sort_order: 7 },
+        { name: 'Outros', type: 'expenses', color: '#6b7280', icon: 'minus-circle', sort_order: 99 }
+      ];
+
+      // Inserir categorias padrão
+      defaultCategories.forEach(category => {
+        this.db.run(
+          `INSERT INTO custom_categories (name, type, color, icon, is_default, sort_order) 
+           VALUES (?, ?, ?, ?, 1, ?)`,
+          [category.name, category.type, category.color, category.icon, category.sort_order]
+        );
+      });
+
+      console.log('✅ Categorias padrão migradas com sucesso');
+
+    } catch (error) {
+      console.error('❌ Erro na migração de categorias:', error);
+      // Não falhar a inicialização por causa da migração
+    }
+  }
+
+  // NOVO: Métodos CRUD para categorias personalizáveis
+
+  /**
+   * Obter todas as categorias ou filtradas por tipo
+   * @param {string} type - 'income', 'expenses' ou null para todas
+   * @param {boolean} activeOnly - Se true, retorna apenas categorias ativas
+   * @returns {Array} Lista de categorias
+   */
+  async getCategories(type = null, activeOnly = true) {
+    try {
+      let sql = 'SELECT * FROM custom_categories';
+      const conditions = [];
+      const params = [];
+
+      if (activeOnly) {
+        conditions.push('is_active = 1');
+      }
+
+      if (type) {
+        conditions.push('type = ?');
+        params.push(type);
+      }
+
+      if (conditions.length > 0) {
+        sql += ' WHERE ' + conditions.join(' AND ');
+      }
+
+      sql += ' ORDER BY sort_order ASC, name ASC';
+
+      const stmt = this.db.prepare(sql);
+      if (params.length > 0) {
+        stmt.bind(params);
+      }
+
+      const categories = [];
+      while (stmt.step()) {
+        categories.push(stmt.getAsObject());
+      }
+      stmt.free();
+
+      return categories;
+
+    } catch (error) {
+      console.error('❌ Erro ao obter categorias:', error);
+      throw new Error('Falha ao carregar categorias: ' + error.message);
+    }
+  }
+
+  /**
+   * Obter categorias organizadas por tipo (formato compatível com sistema atual)
+   * @returns {Object} { income: Array, expenses: Array }
+   */
+  async getCategoriesGrouped() {
+    try {
+      const allCategories = await this.getCategories();
+      
+      const grouped = {
+        income: [],
+        expenses: []
+      };
+
+      allCategories.forEach(category => {
+        if (category.type === 'income' || category.type === 'expenses') {
+          grouped[category.type].push(category.name);
+        }
+      });
+
+      return grouped;
+
+    } catch (error) {
+      console.error('❌ Erro ao agrupar categorias:', error);
+      throw new Error('Falha ao agrupar categorias: ' + error.message);
+    }
+  }
+
+  /**
+   * Adicionar nova categoria personalizada
+   * @param {Object} categoryData - Dados da categoria
+   * @returns {Object} Resultado da operação
+   */
+  async addCategory(categoryData) {
+    try {
+      const { name, type, color = '#6b7280', icon = 'tag', sortOrder = 0 } = categoryData;
+
+      // Validações
+      if (!name || !name.trim()) {
+        throw new Error('Nome da categoria é obrigatório');
+      }
+
+      if (!['income', 'expenses'].includes(type)) {
+        throw new Error('Tipo deve ser "income" ou "expenses"');
+      }
+
+      const trimmedName = name.trim();
+
+      // Verificar se categoria já existe para este tipo
+      const existsStmt = this.db.prepare('SELECT id FROM custom_categories WHERE LOWER(name) = LOWER(?) AND type = ?');
+      existsStmt.bind([trimmedName, type]);
+      const exists = existsStmt.step();
+      existsStmt.free();
+
+      if (exists) {
+        throw new Error(`Categoria "${trimmedName}" já existe para ${type === 'income' ? 'receitas' : 'despesas'}`);
+      }
+
+      // Inserir nova categoria
+      this.db.run(
+        `INSERT INTO custom_categories (name, type, color, icon, is_default, sort_order) 
+         VALUES (?, ?, ?, ?, 0, ?)`,
+        [trimmedName, type, color, icon, sortOrder]
+      );
+
+      await this.saveToIndexedDB();
+
+      console.log('✅ Nova categoria adicionada:', trimmedName);
+      return { 
+        success: true, 
+        message: `Categoria "${trimmedName}" criada com sucesso`,
+        category: { name: trimmedName, type, color, icon }
+      };
+
+    } catch (error) {
+      console.error('❌ Erro ao adicionar categoria:', error);
+      throw new Error('Falha ao criar categoria: ' + error.message);
+    }
+  }
+
+  /**
+   * Atualizar categoria existente
+   * @param {number} categoryId - ID da categoria
+   * @param {Object} updateData - Dados para atualizar
+   * @returns {Object} Resultado da operação
+   */
+  async updateCategory(categoryId, updateData) {
+    try {
+      // Verificar se categoria existe
+      const checkStmt = this.db.prepare('SELECT * FROM custom_categories WHERE id = ?');
+      checkStmt.bind([categoryId]);
+      let existingCategory = null;
+      if (checkStmt.step()) {
+        existingCategory = checkStmt.getAsObject();
+      }
+      checkStmt.free();
+
+      if (!existingCategory) {
+        throw new Error('Categoria não encontrada');
+      }
+
+      // Validar dados de atualização
+      const allowedFields = ['name', 'color', 'icon', 'sort_order', 'is_active'];
+      const updateFields = [];
+      const updateValues = [];
+
+      Object.entries(updateData).forEach(([field, value]) => {
+        if (allowedFields.includes(field) && value !== undefined) {
+          if (field === 'name' && (!value || !value.trim())) {
+            throw new Error('Nome da categoria não pode estar vazio');
+          }
+          
+          updateFields.push(`${field} = ?`);
+          updateValues.push(field === 'name' ? value.trim() : value);
+        }
+      });
+
+      if (updateFields.length === 0) {
+        throw new Error('Nenhum campo válido para atualizar');
+      }
+
+      // Verificar duplicatas se nome está sendo alterado
+      if (updateData.name && updateData.name.trim() !== existingCategory.name) {
+        const duplicateStmt = this.db.prepare(
+          'SELECT id FROM custom_categories WHERE LOWER(name) = LOWER(?) AND type = ? AND id != ?'
+        );
+        duplicateStmt.bind([updateData.name.trim(), existingCategory.type, categoryId]);
+        const hasDuplicate = duplicateStmt.step();
+        duplicateStmt.free();
+
+        if (hasDuplicate) {
+          throw new Error(`Categoria "${updateData.name.trim()}" já existe para este tipo`);
+        }
+      }
+
+      // Adicionar timestamp de atualização
+      updateFields.push('updated_at = CURRENT_TIMESTAMP');
+      updateValues.push(categoryId);
+
+      // Executar atualização
+      const updateSQL = `UPDATE custom_categories SET ${updateFields.join(', ')} WHERE id = ?`;
+      this.db.run(updateSQL, updateValues);
+
+      await this.saveToIndexedDB();
+
+      console.log('✅ Categoria atualizada:', categoryId);
+      return { 
+        success: true, 
+        message: 'Categoria atualizada com sucesso'
+      };
+
+    } catch (error) {
+      console.error('❌ Erro ao atualizar categoria:', error);
+      throw new Error('Falha ao atualizar categoria: ' + error.message);
+    }
+  }
+
+  /**
+   * Excluir categoria (soft delete se usada em transações)
+   * @param {number} categoryId - ID da categoria
+   * @returns {Object} Resultado da operação
+   */
+  async deleteCategory(categoryId) {
+    try {
+      // Verificar se categoria existe
+      const checkStmt = this.db.prepare('SELECT * FROM custom_categories WHERE id = ?');
+      checkStmt.bind([categoryId]);
+      let category = null;
+      if (checkStmt.step()) {
+        category = checkStmt.getAsObject();
+      }
+      checkStmt.free();
+
+      if (!category) {
+        throw new Error('Categoria não encontrada');
+      }
+
+      // Não permitir exclusão de categorias padrão ativas
+      if (category.is_default === 1) {
+        throw new Error('Categorias padrão não podem ser excluídas');
+      }
+
+      // Verificar se categoria está sendo usada em transações
+      const usageStmt = this.db.prepare('SELECT COUNT(*) as count FROM transactions WHERE category = ?');
+      usageStmt.bind([category.name]);
+      usageStmt.step();
+      const usage = usageStmt.getAsObject();
+      usageStmt.free();
+
+      if (usage.count > 0) {
+        // Soft delete - marcar como inativa
+        this.db.run(
+          'UPDATE custom_categories SET is_active = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+          [categoryId]
+        );
+        
+        await this.saveToIndexedDB();
+        
+        return { 
+          success: true, 
+          message: `Categoria "${category.name}" foi desativada pois está sendo usada em ${usage.count} transação(ões)`,
+          type: 'deactivated'
+        };
+      } else {
+        // Hard delete - remover completamente
+        this.db.run('DELETE FROM custom_categories WHERE id = ?', [categoryId]);
+        
+        await this.saveToIndexedDB();
+        
+        return { 
+          success: true, 
+          message: `Categoria "${category.name}" foi excluída permanentemente`,
+          type: 'deleted'
+        };
+      }
+
+    } catch (error) {
+      console.error('❌ Erro ao excluir categoria:', error);
+      throw new Error('Falha ao excluir categoria: ' + error.message);
+    }
+  }
+
+  /**
+   * Reordenar categorias
+   * @param {Array} categoryOrders - Array de { id, sortOrder }
+   * @returns {Object} Resultado da operação
+   */
+  async reorderCategories(categoryOrders) {
+    try {
+      if (!Array.isArray(categoryOrders) || categoryOrders.length === 0) {
+        throw new Error('Lista de ordenação inválida');
+      }
+
+      // Atualizar ordem de cada categoria
+      categoryOrders.forEach(({ id, sortOrder }) => {
+        if (typeof id === 'number' && typeof sortOrder === 'number') {
+          this.db.run(
+            'UPDATE custom_categories SET sort_order = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+            [sortOrder, id]
+          );
+        }
+      });
+
+      await this.saveToIndexedDB();
+
+      console.log('✅ Categorias reordenadas');
+      return { 
+        success: true, 
+        message: 'Ordem das categorias atualizada com sucesso' 
+      };
+
+    } catch (error) {
+      console.error('❌ Erro ao reordenar categorias:', error);
+      throw new Error('Falha ao reordenar categorias: ' + error.message);
+    }
+  }
+
+  /**
+   * Obter estatísticas de uso das categorias
+   * @param {string} type - 'income', 'expenses' ou null para todas
+   * @returns {Array} Estatísticas de uso
+   */
+  async getCategoryUsageStats(type = null) {
+    try {
+      let sql = `
+        SELECT 
+          c.id,
+          c.name,
+          c.type,
+          c.color,
+          c.icon,
+          COALESCE(COUNT(t.id), 0) as usage_count,
+          COALESCE(SUM(t.amount), 0) as total_amount,
+          COALESCE(AVG(t.amount), 0) as avg_amount,
+          MAX(t.date) as last_used
+        FROM custom_categories c
+        LEFT JOIN transactions t ON c.name = t.category AND c.type = t.type
+        WHERE c.is_active = 1
+      `;
+
+      const params = [];
+      if (type) {
+        sql += ' AND c.type = ?';
+        params.push(type);
+      }
+
+      sql += ' GROUP BY c.id ORDER BY usage_count DESC, c.sort_order ASC';
+
+      const stmt = this.db.prepare(sql);
+      if (params.length > 0) {
+        stmt.bind(params);
+      }
+
+      const stats = [];
+      while (stmt.step()) {
+        stats.push(stmt.getAsObject());
+      }
+      stmt.free();
+
+      return stats;
+
+    } catch (error) {
+      console.error('❌ Erro ao obter estatísticas de categorias:', error);
+      throw new Error('Falha ao obter estatísticas: ' + error.message);
+    }
+  }
+
+  // Métodos existentes preservados sem alteração...
 
   async saveToIndexedDB() {
     try {
@@ -380,7 +808,6 @@
     return { message: 'Transaction added successfully' };
   }
 
-  // ✅ NOVO: Método updateTransaction
   async updateTransaction(id, updatedFields) {
     console.log('🔍 DEBUG updateTransaction - ID recebido:', id, 'campos:', updatedFields);
     
@@ -446,7 +873,6 @@
     }
   }
 
-  // 🔧 ÚNICA CORREÇÃO: Função deleteTransaction
   async deleteTransaction(id) {
     console.log('🔍 DEBUG deleteTransaction - ID recebido:', id, 'tipo:', typeof id);
     
@@ -474,7 +900,6 @@
       throw new Error('Transaction not found');
     }
     
-    // 🎯 CORREÇÃO: Usar exec() ao invés de run() que está retornando undefined
     try {
       const deleteSQL = `DELETE FROM transactions WHERE id = ${id}`;
       console.log('🔍 DEBUG - SQL executado:', deleteSQL);
@@ -655,10 +1080,11 @@
 
   // Export data
   async exportData() {
-    const [transactions, balances, movements] = await Promise.all([
+    const [transactions, balances, movements, categories] = await Promise.all([
       this.getAllTableData('transactions'),
       this.getAllTableData('initial_balances'),
-      this.getAllTableData('investment_movements')
+      this.getAllTableData('investment_movements'),
+      this.getAllTableData('custom_categories')
     ]);
 
     return {
@@ -667,7 +1093,8 @@
       data: {
         transactions,
         initialBalances: balances,
-        investmentMovements: movements
+        investmentMovements: movements,
+        customCategories: categories
       }
     };
   }

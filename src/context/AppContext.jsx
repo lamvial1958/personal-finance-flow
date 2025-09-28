@@ -53,7 +53,7 @@ export const AppProvider = ({ children }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [transactionToEdit, setTransactionToEdit] = useState(null);
 
-  // ✅ NOVO: Estados de filtros avançados
+  // Estados de filtros avançados
   const [advancedFilters, setAdvancedFilters] = useState({
     dateStart: '',
     dateEnd: '',
@@ -72,13 +72,60 @@ export const AppProvider = ({ children }) => {
   const [ofxImportResults, setOFXImportResults] = useState(null);
   const [pendingOFXTransactions, setPendingOFXTransactions] = useState([]);
 
-  // Categorias predefinidas
-  const categories = {
-    income: ['Salário', 'Freelance', 'Investimentos', 'Vendas', 'Prêmio', 'Outros'],
-    expenses: ['Alimentação', 'Transporte', 'Moradia', 'Saúde', 'Educação', 'Lazer', 'Compras', 'Outros']
-  };
+  // NOVO: Estados do sistema de categorias personalizáveis
+  const [categories, setCategories] = useState({
+    income: [],
+    expenses: []
+  });
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
+  const [categoriesVersion, setCategoriesVersion] = useState(0);
 
-  // ✅ NOVO: Função para atualizar filtros avançados
+  // NOVO: Carregar categorias dinâmicas do database
+  const loadCategories = useCallback(async () => {
+    try {
+      setIsCategoriesLoading(true);
+      console.log('🏷️ AppContext - Carregando categorias personalizáveis...');
+      
+      // Garantir que o database está inicializado
+      if (!dbManager.isInitialized) {
+        await dbManager.initialize();
+      }
+
+      // Carregar categorias agrupadas (formato compatível)
+      const categoriesGrouped = await dbManager.getCategoriesGrouped();
+      
+      console.log('✅ AppContext - Categorias carregadas:', {
+        income: categoriesGrouped.income?.length || 0,
+        expenses: categoriesGrouped.expenses?.length || 0
+      });
+
+      React.startTransition(() => {
+        setCategories(categoriesGrouped);
+        setCategoriesVersion(prev => prev + 1);
+      });
+
+    } catch (error) {
+      console.error('❌ AppContext - Erro ao carregar categorias:', error);
+      
+      // Fallback para categorias padrão em caso de erro
+      React.startTransition(() => {
+        setCategories({
+          income: ['Salário', 'Freelance', 'Investimentos', 'Vendas', 'Prêmio', 'Outros'],
+          expenses: ['Alimentação', 'Transporte', 'Moradia', 'Saúde', 'Educação', 'Lazer', 'Compras', 'Outros']
+        });
+      });
+    } finally {
+      setIsCategoriesLoading(false);
+    }
+  }, []);
+
+  // NOVO: Recarregar categorias (para usar após modificações)
+  const refreshCategories = useCallback(async () => {
+    console.log('🔄 AppContext - Atualizando categorias...');
+    await loadCategories();
+  }, [loadCategories]);
+
+  // Atualizar filtros avançados
   const updateAdvancedFilters = useCallback((filterUpdate) => {
     setAdvancedFilters(prev => {
       const newFilters = { ...prev, ...filterUpdate };
@@ -98,7 +145,7 @@ export const AppProvider = ({ children }) => {
     });
   }, []);
 
-  // ✅ NOVO: Função para limpar todos os filtros
+  // Limpar todos os filtros
   const clearAdvancedFilters = useCallback(() => {
     setAdvancedFilters({
       dateStart: '',
@@ -111,7 +158,7 @@ export const AppProvider = ({ children }) => {
     });
   }, []);
 
-  // ✅ NOVO: Função para aplicar filtro de categoria
+  // Aplicar filtro de categoria
   const toggleCategoryFilter = useCallback((category) => {
     updateAdvancedFilters({
       selectedCategories: advancedFilters.selectedCategories.includes(category)
@@ -120,7 +167,7 @@ export const AppProvider = ({ children }) => {
     });
   }, [advancedFilters.selectedCategories, updateAdvancedFilters]);
 
-  // ✅ NOVO: Função para aplicar filtro de tipo
+  // Aplicar filtro de tipo
   const toggleTypeFilter = useCallback((type) => {
     updateAdvancedFilters({
       selectedTypes: advancedFilters.selectedTypes.includes(type)
@@ -129,7 +176,7 @@ export const AppProvider = ({ children }) => {
     });
   }, [advancedFilters.selectedTypes, updateAdvancedFilters]);
 
-  // ✅ NOVO: Função para salvar filtros no localStorage
+  // Salvar filtros no localStorage
   const saveFiltersToStorage = useCallback(() => {
     try {
       localStorage.setItem('advancedFilters', JSON.stringify(advancedFilters));
@@ -138,7 +185,7 @@ export const AppProvider = ({ children }) => {
     }
   }, [advancedFilters]);
 
-  // ✅ NOVO: Função para carregar filtros do localStorage
+  // Carregar filtros do localStorage
   const loadFiltersFromStorage = useCallback(() => {
     try {
       const saved = localStorage.getItem('advancedFilters');
@@ -159,15 +206,20 @@ export const AppProvider = ({ children }) => {
     }
   }, []);
 
-  // ✅ NOVO: Efeito para salvar filtros automaticamente
+  // Efeito para salvar filtros automaticamente
   useEffect(() => {
     saveFiltersToStorage();
   }, [saveFiltersToStorage]);
 
-  // ✅ NOVO: Efeito para carregar filtros na inicialização
+  // Efeito para carregar filtros na inicialização
   useEffect(() => {
     loadFiltersFromStorage();
   }, [loadFiltersFromStorage]);
+
+  // NOVO: Carregar categorias na inicialização (junto com outros dados)
+  useEffect(() => {
+    loadCategories();
+  }, [loadCategories]);
 
   // Função de formatação de moeda
   const formatCurrency = useCallback((value) => {
@@ -450,7 +502,7 @@ export const AppProvider = ({ children }) => {
     return totalPatrimony;
   }, [initialBalances, investmentMovements, getDailyTotals, dataVersion]);
 
-  // ✅ ATUALIZADO: Transações filtradas e ordenadas com filtros avançados
+  // ATUALIZADO: Transações filtradas e ordenadas com filtros avançados + categorias dinâmicas
   const getFilteredAndSortedTransactions = useMemo(() => {
     const transactionsList = [];
     
@@ -482,7 +534,7 @@ export const AppProvider = ({ children }) => {
       });
     });
 
-    // ✅ NOVO: Aplicar filtros avançados
+    // Aplicar filtros avançados
     let filteredTransactions = transactionsList;
 
     // Filtro de busca textual
@@ -494,7 +546,7 @@ export const AppProvider = ({ children }) => {
       );
     }
 
-    // ✅ NOVO: Filtros avançados
+    // Filtros avançados
     if (advancedFilters.isActive) {
       // Filtro por período
       if (advancedFilters.dateStart) {
@@ -514,7 +566,7 @@ export const AppProvider = ({ children }) => {
         filteredTransactions = filteredTransactions.filter(t => t.amount <= maxAmount);
       }
       
-      // Filtro por categorias selecionadas
+      // Filtro por categorias selecionadas (agora dinâmicas)
       if (advancedFilters.selectedCategories.length > 0) {
         filteredTransactions = filteredTransactions.filter(t => 
           advancedFilters.selectedCategories.includes(t.category || 'Sem categoria')
@@ -556,6 +608,15 @@ export const AppProvider = ({ children }) => {
     return filteredTransactions;
   }, [dailyTransactions, searchTerm, sortBy, sortOrder, advancedFilters, dataVersion]);
 
+  // NOVO: Obter todas as categorias disponíveis para filtros (compatibilidade)
+  const getAllCategories = useMemo(() => {
+    const allCategories = [
+      ...(categories.income || []),
+      ...(categories.expenses || [])
+    ];
+    return [...new Set(allCategories)].sort();
+  }, [categories, categoriesVersion]);
+
   // Valor do contexto
   const value = {
     // Estados
@@ -588,7 +649,7 @@ export const AppProvider = ({ children }) => {
     showEditModal, setShowEditModal,
     transactionToEdit, setTransactionToEdit,
     
-    // ✅ NOVO: Estados de filtros avançados
+    // Estados de filtros avançados
     advancedFilters, setAdvancedFilters,
     showAdvancedFilters, setShowAdvancedFilters,
     
@@ -599,8 +660,10 @@ export const AppProvider = ({ children }) => {
     ofxImportResults, setOFXImportResults,
     pendingOFXTransactions, setPendingOFXTransactions,
     
-    // Dados e constantes
-    categories,
+    // NOVO: Estados de categorias dinâmicas
+    categories, // Agora dinâmico do database
+    isCategoriesLoading,
+    categoriesVersion,
     
     // Funções
     formatCurrency,
@@ -613,13 +676,18 @@ export const AppProvider = ({ children }) => {
     deleteTransaction,
     exportToCSV,
     
-    // ✅ NOVO: Funções de filtros avançados
+    // Funções de filtros avançados
     updateAdvancedFilters,
     clearAdvancedFilters,
     toggleCategoryFilter,
     toggleTypeFilter,
     saveFiltersToStorage,
     loadFiltersFromStorage,
+    
+    // NOVO: Funções de categorias
+    loadCategories,
+    refreshCategories,
+    getAllCategories,
     
     // Cálculos
     getDailyTotals,
