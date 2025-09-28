@@ -1,10 +1,10 @@
 ﻿# Personal Finance Flow - Estrutura Completa do Projeto
 
-Gerado em: 27/09/2025 - Versão 1.5.0 Edição + Filtros Avançados (66% Implementada)
+Gerado em: 27/09/2025 - Versão 1.4.0 Gráficos Interativos + Modo Escuro
 
 ## Estrutura de Árvore de Diretórios
 
-**ESTRUTURA REAL ATUAL - VERSÃO 1.5.0 EDIÇÃO + FILTROS AVANÇADOS**
+**ESTRUTURA REAL ATUAL - VERSÃO 1.4.0 GRÁFICOS INTERATIVOS + MODO ESCURO**
 
 ```
 Personal_Finance_Flow/
@@ -13,728 +13,823 @@ Personal_Finance_Flow/
 ├── docs/                       # Documentação do projeto
 ├── node_modules/               # Dependências instaladas
 ├── public/                     # Arquivos estáticos PWA
-├── src/                        # Código fonte modularizado ✅ EXPANDIDO V1.5.0
-│   ├── components/             # Componentes React organizados ✅ EDIÇÃO + FILTROS
+├── src/                        # Código fonte modularizado ✅ REFATORADO
+│   ├── components/             # Componentes React organizados ✅ EXPANDIDO
 │   │   ├── Auth/              # Autenticação ✅ COM MODO ESCURO
-│   │   ├── Charts/            # Gráficos Interativos ✅ INTEGRADO COM FILTROS
+│   │   ├── Charts/            # ✅ NOVO - Gráficos Interativos
 │   │   ├── Configuration/     # Configurações ✅ COM TOGGLE TEMA
-│   │   ├── Dashboard/         # Painel principal ✅ EDIÇÃO + FILTROS AVANÇADOS
-│   │   │   ├── Dashboard.jsx   # ✅ ATUALIZADO - Interface integrada
-│   │   │   └── AdvancedFilters.jsx # ✅ NOVO - Filtros avançados
-│   │   ├── Modals/           # Modais especializados ✅ EDIÇÃO ADICIONADA
-│   │   │   ├── DeleteModal.jsx      # Modal exclusão
-│   │   │   ├── EditModal.jsx        # ✅ NOVO - Modal de edição
-│   │   │   ├── OFXImportModal.jsx   # Modal importação OFX
-│   │   │   ├── DonationModal.jsx    # Modal doação
-│   │   │   └── RatingModal.jsx      # Modal avaliação
+│   │   ├── Dashboard/         # Painel principal ✅ TEMA ADAPTADO
+│   │   ├── Modals/           # Modais especializados ✅ TEMA SUPORTADO
 │   │   ├── Patrimony/        # Gestão de investimentos ✅ TEMA APLICADO
 │   │   └── Reports/          # Relatórios anuais ✅ TEMA INTEGRADO
-│   ├── context/              # Context API ✅ FILTROS AVANÇADOS ADICIONADOS
-│   │   ├── AppContext.jsx    # ✅ ATUALIZADO - Estados filtros + edição
-│   │   └── ThemeContext.jsx  # Gerenciamento de tema
-│   ├── hooks/                # Hooks customizados ✅ FILTROS + EDIÇÃO
+│   ├── context/              # Context API ✅ EXPANDIDO
+│   │   ├── AppContext.jsx    # Estados globais + ✅ INICIALIZAÇÃO CORRIGIDA
+│   │   └── ThemeContext.jsx  # ✅ Gerenciamento de tema
+│   ├── hooks/                # Hooks customizados ✅ EXPANDIDO
 │   │   ├── useAuth.js        # Autenticação estabilizada
-│   │   ├── useCharts.js      # Lógica de gráficos ✅ INTEGRADO FILTROS
+│   │   ├── useCharts.js      # ✅ NOVO - Lógica de gráficos
 │   │   ├── useModals.js      # Estados de modais
 │   │   ├── useOFX.js         # Funcionalidades OFX
 │   │   ├── useTheme.js       # Hook de tema
-│   │   └── useTransactions.js # ✅ EXPANDIDO - CRUD + edição + filtros
-│   ├── App.jsx               # Componente principal ✅ COM EDITMODAL
-│   ├── db-manager.js         # ✅ ATUALIZADO - updateTransaction() adicionado
+│   │   └── useTransactions.js # CRUD de transações
+│   ├── App.jsx               # ✅ ATUALIZADO - Com ChartsView integrado
+│   ├── db-manager.js         # Gerenciador SQLite (mantido)
 │   ├── ofx-manager.js        # Gerenciador OFX (mantido)
 │   └── main.jsx              # Entry point (mantido)
 ├── .gitignore                 # Arquivos ignorados pelo Git
-├── index.html                 # Tailwind dark mode config
+├── index.html                 # ✅ ATUALIZADO - Tailwind dark mode config
 ├── package-lock.json          # Lock de dependências ✅ ATUALIZADO
 ├── package.json               # Dependências e config ✅ ATUALIZADO
 ├── README.md                  # Documentação principal
-└── vite.config.js             # Configuração Vite
+└── vite.config.js             # Configuração Vite ✅ ATUALIZADO
 ```
 
-## 🏗️ Arquitetura Modularizada + Edição + Filtros - V1.5.0
+## 🏗️ Arquitetura Modularizada + Modo Escuro + Gráficos - V1.4.0
 
-### 📂 src/ - Código Fonte Expandido (Setembro 2025)
+### 📂 src/ - Código Fonte Refatorado (Setembro 2025)
 
-#### 🎯 **App.jsx** (6.3KB - 27/09) ✅ **INTEGRADO COM EDITMODAL**
-- **Status**: Componente principal com EditModal integrado
-- **Responsabilidade**: Orquestração + ThemeProvider + AuthChecker + Navegação + Modais
+#### 🎯 **App.jsx** (6.1KB - 27/09) ✅ **INTEGRADO COM CHARTSVIEW**
+- **Status**: Componente principal com suporte completo a tema + gráficos
+- **Responsabilidade**: Orquestração + ThemeProvider + AuthChecker + Navegação
 - **Hooks utilizados**: useAuth, useModals, useTheme
-- **Modais**: DeleteModal, EditModal, OFXImportModal, DonationModal, RatingModal
-- **Performance**: 94% redução de código mantida, zero loops circulares
-- **Arquitetura**: ThemeProvider → AuthChecker → AppProvider → Components + Modals
+- **Performance**: 94% redução de código, zero loops circulares
+- **Nova Aba**: "Análise" integrada no sistema de navegação
+- **Arquitetura**: ThemeProvider → AuthChecker → AppProvider → Components
 
-#### 🧩 **context/ - Context API com Filtros Avançados** ✅ **ESTADOS EXPANDIDOS**
+#### 🧩 **context/ - Context API Expandido** ✅ **INICIALIZAÇÃO CORRIGIDA**
 
-##### **AppContext.jsx** (9.8KB) ✅ **ESTADOS FILTROS + EDIÇÃO**
-- **Status**: Estados globais otimizados + filtros avançados + edição
-- **Responsabilidade**: Gerenciamento de estado + inicialização DB + filtros + CRUD transações
-- **Estados Novos**: 
-  - `advancedFilters` - Filtros por período, valor, categoria, tipo
-  - `showAdvancedFilters` - Visibilidade da interface de filtros
-  - `showEditModal`, `transactionToEdit` - Estados de edição
-- **Funções Novas**:
-  - `updateAdvancedFilters()` - Atualização de filtros
-  - `clearAdvancedFilters()` - Limpar todos os filtros
-  - `updateTransaction()` - Atualização de transações
-  - `toggleCategoryFilter()`, `toggleTypeFilter()` - Filtros múltiplos
-- **Performance**: Estados localizados, filtros otimizados
-- **Persistência**: Filtros salvos no localStorage automaticamente
+##### **AppContext.jsx** (8.4KB) ✅ **CONTEXT API + INICIALIZAÇÃO AUTOMÁTICA**
+- **Status**: Estados globais otimizados + carregamento automático de dados
+- **Responsabilidade**: Gerenciamento de estado da aplicação + inicialização DB
+- **Estados**: currentView, loading, error, notifications, dailyTransactions
+- **Performance**: Estados localizados removidos, zero re-renders
+- **Correção Crítica**: useEffect para loadAllData() na inicialização
+- **Debugging**: Logs de carregamento e cálculo de patrimônio
 
 ##### **ThemeContext.jsx** (1.8KB) ✅ **SISTEMA DE TEMA COMPLETO**
-- **Status**: Gerenciamento completo de tema claro/escuro (mantido)
+- **Status**: Gerenciamento completo de tema claro/escuro
 - **Responsabilidade**: Estado do tema, persistência, aplicação DOM
-- **Funcionalidades**: Detecção sistema, persistência localStorage, meta theme-color
+- **Funcionalidades**: 
+  - Detecção de preferência do sistema
+  - Persistência no localStorage ('vm-finance-theme')
+  - Aplicação automática de classes CSS (dark/light)
+  - Meta theme-color dinâmico (#1f2937 dark / #2563eb light)
 - **Provider**: ThemeProvider com context completo
 
-### 🎣 **hooks/ - Hooks Customizados com Edição + Filtros** ✅ **EXPANDIDOS**
+### 🎣 **hooks/ - Hooks Customizados Expandidos** ✅ **GRÁFICOS ADICIONADOS**
 
-#### **useTransactions.js** (6.2KB) ✅ **EXPANDIDO - EDIÇÃO + FILTROS**
-- **Status**: CRUD completo + edição + filtros avançados
-- **Responsabilidade**: Criar, ler, atualizar, deletar + filtros combinados
-- **Funcionalidades Novas**:
-  - **Edição**: `handleEditClick()`, `confirmEdit()`, `cancelEdit()`
-  - **Filtros**: `updateAdvancedFilterField()`, `applyQuickDateFilter()`
-  - **Filtros Rápidos**: Períodos (hoje, semana, mês, ano), valores (pequeno, médio, grande)
-  - **Multi-filtros**: Categorias múltiplas, tipos múltiplos
-  - **Validação**: Estados de formulário para edição
-- **Estados**: `editTransaction`, `advancedFilters`, `showAdvancedFilters`
-- **Integração**: Conectado com AppContext + db-manager updateTransaction()
-
-#### **useAuth.js** (4.2KB) ✅ **ESTÁVEL**
-- **Status**: Hook de autenticação estabilizado (mantido)
+#### **useAuth.js** (4.2KB) ✅ **CORRIGIDO - LOOPS ELIMINADOS**
+- **Status**: Hook de autenticação estabilizado
 - **Responsabilidade**: Login, logout, validação de sessão
-- **Performance**: useRef implementado, loops circulares eliminados
+- **Correções aplicadas**: useRef implementado, loops circulares eliminados
+- **Performance**: Database Manager inicializa 1x apenas
 
-#### **useCharts.js** (4.9KB) ✅ **INTEGRADO COM FILTROS**
-- **Status**: Hook de gráficos integrado com sistema de filtros
-- **Responsabilidade**: Processamento de dados + integração com filtros
-- **Funcionalidades**:
-  - Processamento de `getFilteredAndSortedTransactions` 
-  - Adaptação automática a filtros ativos
-  - Recálculo dinâmico quando filtros mudam
-  - Cores dinâmicas por tema mantidas
-- **Performance**: useMemo otimizado para filtros + dados
+#### **useTransactions.js** (3.8KB) ✅ **CONSOLIDADO**
+- **Status**: CRUD completo de transações
+- **Responsabilidade**: Criar, ler, atualizar, deletar transações
+- **Funcionalidades**: Busca, ordenação, filtros, validação
+- **Integração**: Conectado com db-manager.js
 
-#### **useOFX.js** (5.1KB) ✅ **MANTIDO**
-- **Status**: Funcionalidade OFX isolada (preservada)
+#### **useOFX.js** (5.1KB) ✅ **ESTÁVEL** 
+- **Status**: Funcionalidade OFX isolada
 - **Responsabilidade**: Import/export OFX, duplicatas, categorização
-- **Compatibilidade**: Integração com filtros por categoria automática
+- **Bancos suportados**: 7+ bancos brasileiros testados
+- **Validações**: Parser XML robusto + tratamento de erros
 
-#### **useModals.js** (2.5KB) ✅ **EDIÇÃO ADICIONADA**
-- **Status**: Gerenciamento centralizado incluindo EditModal
+#### **useModals.js** (2.3KB) ✅ **FUNCIONAL**
+- **Status**: Gerenciamento centralizado de modais
 - **Responsabilidade**: Estados e controles de todos os modais
-- **Modais**: Delete, **Edit**, OFX Import, Donation, Rating
+- **Modais**: Delete, OFX Import, Donation, Rating
 - **Performance**: Estados localizados, zero conflitos
 
-#### **useTheme.js** (1.2KB) ✅ **MANTIDO**
-- **Status**: Hook customizado para gerenciamento de tema (preservado)
+#### **useTheme.js** (1.2KB) ✅ **HOOK DE TEMA**
+- **Status**: Hook customizado para gerenciamento de tema
 - **Responsabilidade**: Acesso ao ThemeContext + validação
-- **Compatibilidade**: Filtros e edição aplicam tema automaticamente
-
-### 🧱 **components/ - Componentes com Edição + Filtros** ✅ **EXPANDIDOS**
-
-#### 🏠 **Dashboard/Dashboard.jsx** (12.4KB) ✅ **INTERFACE INTEGRADA**
-- **Status**: Interface principal com edição + filtros avançados integrados
-- **Responsabilidade**: Resumo financeiro + transações + filtros + edição
-- **Funcionalidades Novas**:
-  - **Botão Editar**: Ícone de lápis em cada transação
-  - **Interface de Filtros**: Colapsável com AdvancedFilters integrado
-  - **Indicadores**: Contadores de filtros ativos, estatísticas filtradas
-  - **Cards Dinâmicos**: Mostram dados filtrados vs dados totais
-  - **Botão Filtros**: Toggle para mostrar/ocultar filtros avançados
-- **UX Melhorada**: 
-  - Estados vazios com botão "limpar filtros"
-  - Indicadores visuais de filtros ativos
-  - Resumo adapta a filtros aplicados
-- **Performance**: React.memo mantido + classes CSS dinâmicas
-- **Tema**: Modo escuro aplicado a todas as novas funcionalidades
-
-#### 🔍 **Dashboard/AdvancedFilters.jsx** (8.1KB) ✅ **NOVO - FILTROS AVANÇADOS**
-- **Status**: Componente especializado para filtros avançados
-- **Responsabilidade**: Interface completa de filtros combinados
 - **Funcionalidades**:
-  - **Filtros por Período**: Data inicial/final + filtros rápidos
-  - **Filtros por Valor**: Mínimo/máximo + faixas rápidas
-  - **Filtros por Tipo**: Entradas/Saídas com checkboxes
-  - **Filtros por Categoria**: Múltiplas categorias com grid
-  - **Validação**: Tempo real para datas e valores
-  - **Resumo**: Badges dos filtros ativos aplicados
-- **UX Premium**:
-  - Interface em grid responsivo
-  - Filtros rápidos pré-definidos
-  - Contadores de seleções
-  - Botão "Limpar Todos"
-- **Performance**: React.memo + useCallback otimizado
-- **Tema**: Suporte completo ao modo escuro
+  - Hook useTheme() principal
+  - Hook useThemeClasses() para classes CSS condicionais
+  - Hook useSystemTheme() para preferência do sistema
+  - Validação de contexto obrigatória
+- **Helpers**: Classes CSS automáticas para componentes
 
-#### 📊 **Charts/ChartsView.jsx** (8.9KB) ✅ **INTEGRADO COM FILTROS**
-- **Status**: Interface de gráficos integrada com sistema de filtros
-- **Responsabilidade**: Visualização + integração automática com filtros
-- **Funcionalidades Mantidas**: 4 abas, período, tema, responsividade
-- **Integração Nova**: 
-  - Gráficos atualizam automaticamente com filtros
-  - Dados processados respeitam filtros ativos
-  - Performance otimizada para filtros
-- **UX**: Indicador visual quando filtros estão aplicados nos gráficos
-
-#### 🗂️ **Modals/ - Modais com Edição** ✅ **EDITMODAL ADICIONADO**
-
-**EditModal.jsx** (5.7KB) ✅ **NOVO - MODAL DE EDIÇÃO**
-- **Status**: Modal completo para edição de transações
-- **Responsabilidade**: Interface de edição com validação completa
+#### **useCharts.js** (4.7KB) ✅ **NOVO - HOOK DE GRÁFICOS**
+- **Status**: Hook especializado para processamento de dados de gráficos
+- **Responsabilidade**: Conversão de dados, filtros, formatação, cores
 - **Funcionalidades**:
-  - **Auto-preenchimento**: Dados existentes carregados automaticamente
-  - **Validação**: Tempo real com mensagens de erro
-  - **Suporte Completo**: Todos os campos editáveis
-  - **Tema**: Modo escuro aplicado
-  - **Performance**: Auto-gerenciado, zero conflitos de estado
-- **UX**: Formulário intuitivo, cancelamento seguro, confirmação visual
-- **Integração**: useTransactions hook + AppContext + db-manager
+  - Processamento de dailyTransactions para formato compatível
+  - Filtros de período (1m, 3m, 6m, 12m, all)
+  - Geração de cores dinâmicas por tema (claro/escuro)
+  - Cálculos para monthlyData, categoryData, evolutionData
+  - Formatação de moeda brasileira
+- **Performance**: useMemo para cálculos otimizados
+- **Integração**: Compatible com Recharts e ChartsView
 
-**DeleteModal.jsx** (1.8KB) ✅ **MANTIDO**
-- Modal de confirmação com theme (preservado)
+### 🧱 **components/ - Componentes com Suporte a Tema + Gráficos** ✅ **CHARTS ADICIONADO**
 
-**OFXImportModal.jsx** (6.2KB) ✅ **MANTIDO**
-- Interface de upload com tema (preservado)
+#### 📊 **Charts/ChartsView.jsx** (8.7KB) ✅ **NOVO - GRÁFICOS INTERATIVOS**
+- **Status**: Interface principal de análise gráfica com tema completo
+- **Responsabilidade**: Visualização de dados financeiros interativos
+- **Funcionalidades**:
+  - Sistema de abas (Visão Geral, Tendências, Categorias, Evolução)
+  - Filtros de período dinâmicos
+  - Gráficos Recharts: LineChart, BarChart, PieChart, AreaChart
+  - Tooltips customizados com formatação brasileira
+  - Estados de loading e "nenhum dado encontrado"
+  - Suporte completo a modo escuro/claro
+- **Performance**: React.memo ready, useMemo para dados processados
+- **Integração**: useCharts hook + useTheme + AppContext
+- **UX**: Responsive design mobile/desktop + transições suaves
 
-**DonationModal.jsx** (2.1KB) ✅ **MANTIDO**
-- Modal de doação com tema (preservado)
+#### 🔐 **Auth/AuthenticationForm.jsx** (4.5KB) ✅ **TEMA COMPLETO**
+- **Status**: Formulário de login com modo escuro
+- **Responsabilidade**: Interface de autenticação responsiva
+- **Tema aplicado**: 
+  - Backgrounds: bg-gray-50 dark:bg-gray-900
+  - Cards: bg-white dark:bg-gray-800
+  - Textos: text-gray-900 dark:text-gray-100
+  - Inputs: bg-white dark:bg-gray-700
+  - Borders: border-gray-300 dark:border-gray-600
+- **UX**: Transições suaves, indicador de tema ativo
 
-**RatingModal.jsx** (1.9KB) ✅ **MANTIDO**
-- Sistema de feedback com tema (preservado)
+#### ⚙️ **Configuration/ConfigurationView.jsx** (7.8KB) ✅ **COM TOGGLE TEMA**
+- **Status**: Painel de configurações com controle de tema
+- **Responsabilidade**: OFX, backups, **toggle modo escuro**
+- **Funcionalidades tema**:
+  - Toggle switch claro/escuro
+  - Indicador visual do tema ativo
+  - Persistência automática da preferência
+  - Integração com useTheme hook
+- **Tema aplicado**: Componente totalmente adaptado
 
-#### 🔐 **Auth/AuthenticationForm.jsx** (4.5KB) ✅ **MANTIDO**
-- **Status**: Formulário de login com modo escuro (preservado)
-- **Compatibilidade**: Zero impacto das novas funcionalidades
+#### 🏠 **Dashboard/Dashboard.jsx** (8.7KB) ✅ **TEMA ADAPTADO**
+- **Status**: Interface principal com suporte completo a tema
+- **Responsabilidade**: Resumo financeiro, lista de transações
+- **Tema aplicado**: Cards, tabelas, botões, ícones adaptados
+- **Performance**: React.memo + classes CSS dinâmicas
 
-#### ⚙️ **Configuration/ConfigurationView.jsx** (7.8KB) ✅ **MANTIDO**
-- **Status**: Painel de configurações com toggle tema (preservado)
-- **Funcionalidades**: OFX, backups, toggle modo escuro funcionando
+#### 🗂️ **Modals/ - Modais com Tema** ✅ **SUPORTE COMPLETO**
 
-#### 💼 **Patrimony/PatrimonyView.jsx** (5.4KB) ✅ **MANTIDO**
-- **Status**: Interface de patrimônio com tema (preservada)
-- **Compatibilidade**: Cálculos não afetados por filtros (correto)
+**DeleteModal.jsx** (1.8KB) ✅ **TEMA APLICADO**
+- Modal de confirmação com background adaptado
+- Botões com cores de tema apropriadas
+- Transições suaves entre temas
 
-#### 📊 **Reports/AnnualReportView.jsx** (4.1KB) ✅ **MANTIDO**
-- **Status**: Relatórios anuais com tema (preservados)
-- **Potencial**: Futura integração com filtros por ano
+**OFXImportModal.jsx** (6.2KB) ✅ **TEMA INTEGRADO**
+- Interface de upload com tema
+- Progress bars adaptadas
+- Preview de dados com cores de tema
+
+**DonationModal.jsx** (2.1KB) ✅ **TEMA APLICADO**
+- Modal de doação com tema
+- Links e botões adaptados
+
+**RatingModal.jsx** (1.9KB) ✅ **TEMA SUPORTADO**
+- Sistema de feedback com tema
+- Estrelas e botões adaptados
+
+#### 💼 **Patrimony/PatrimonyView.jsx** (5.4KB) ✅ **TEMA APLICADO**
+- **Status**: Interface de patrimônio com modo escuro
+- **Responsabilidade**: Investimentos, saldos, movimentações
+- **Tema**: Gráficos e tabelas adaptadas ao tema
+
+#### 📊 **Reports/AnnualReportView.jsx** (4.1KB) ✅ **TEMA INTEGRADO**
+- **Status**: Relatórios anuais com suporte a tema
+- **Responsabilidade**: Análises, gráficos, exportações
+- **Tema**: Visualizações adaptadas ao modo escuro/claro
 
 ### 🛠️ **Arquivos Base Atualizados**
 
-#### **db-manager.js** (22.3KB) ✅ **UPDATETRANSACTION ADICIONADO**
-- **Status**: Gerenciador SQLite + método de atualização
-- **Função Nova**: `updateTransaction(id, fields)` implementada
-- **Funcionalidades**: Update SQL + revalidação + logs + tratamento de erros
-- **Performance**: Otimizada para atualizações individuais
-- **Compatibilidade**: 100% preservada com funcionalidades existentes
+#### **index.html** ✅ **TAILWIND DARK MODE CONFIG**
+- **Status**: Configuração Tailwind para modo escuro
+- **Funcionalidades**:
+  - `tailwind.config = { darkMode: 'class' }` implementado
+  - Cores customizadas para tema (primary, gray intermediários)
+  - Animações customizadas (fade-in, slide-in)
+  - Service Worker com verificação de ambiente
+- **Meta tags**: theme-color dinâmico via JavaScript
 
-#### **index.html** ✅ **MANTIDO**
-- Configuração Tailwind dark mode preservada
-- Meta theme-color dinâmico funcionando
+#### **db-manager.js** (21.7KB) ✅ **MANTIDO - ESTÁVEL**
+- Gerenciador SQLite WebAssembly completo
+- Todas as funcionalidades preservadas
+- Performance otimizada para nova arquitetura
 
-#### **ofx-manager.js** (25.8KB) ✅ **MANTIDO**
-- Parser OFX robusto preservado
-- Compatibilidade com filtros por categoria automática
+#### **ofx-manager.js** (25.8KB) ✅ **MANTIDO - FUNCIONAL**
+- Parser OFX robusto para bancos brasileiros
+- Funcionalidades completas preservadas
+- Integração perfeita com hooks
 
 #### **main.jsx** (629 bytes) ✅ **MANTIDO**
-- Entry point React + Service Worker preservado
+- Entry point React + Service Worker
+- Configuração PWA preservada
 
-## 📊 Status dos Componentes - V1.5.0 Edição + Filtros
+## 📊 Status dos Componentes - V1.4.0 + Gráficos Interativos
 
-### ✅ **VERSÃO 1.5.0 - 66% IMPLEMENTADA**
+### ✅ **VERSÃO 1.4.0 - GRÁFICOS INTERATIVOS + MODO ESCURO CONCLUÍDO**
 
-**Status**: FUNCIONANDO COM EDIÇÃO + FILTROS AVANÇADOS + ARQUITETURA MODULAR + TEMA + GRÁFICOS
-**Tecnologia**: React 18 + Context API + Hooks + SQLite + PWA + OFX + Tailwind Dark Mode + Recharts + **Edição + Filtros**
+**Status**: FUNCIONANDO 100% COM ARQUITETURA MODULAR + TEMA DINÂMICO + GRÁFICOS
+**Tecnologia**: React 18 + Context API + Hooks + SQLite + PWA + OFX + **Tailwind Dark Mode** + **Recharts**
 **Localização**: Diretamente em C:\Personal_Finance_Flow\
 **Deploy**: https://lamvial1958.github.io/personal-finance-flow/
 
-**Implementações V1.5.0**:
-- ✅ **Edição de Transações** - EditModal + updateTransaction() + validação + tema
-- ✅ **Filtros Avançados** - AdvancedFilters + persistência + integração gráficos + tema
-- 🔄 **Categorias Personalizáveis** - Próxima implementação (8 dias)
+**Melhorias da V1.4.0**:
+- ✅ **94% redução** do App.jsx (89KB → 6.1KB com navegação expandida)
+- ✅ **Zero breaking changes** - 100% funcionalidades preservadas
+- ✅ **Modo escuro completo** - ThemeContext + Tailwind + persistência
+- ✅ **Gráficos interativos** - ChartsView + useCharts + Recharts
+- ✅ **Loops circulares eliminados** - Performance restaurada
+- ✅ **Estados localizados** por responsabilidade
+- ✅ **Hooks reutilizáveis** - Código DRY
+- ✅ **AppContext inicialização** - Carregamento automático de dados
+- ✅ **Sistema de navegação expandido** - Aba "Análise" integrada
 
-**Funcionalidades Preservadas + Novas**:
-- ✅ PWA offline completo com modo escuro + gráficos + **edição + filtros**
-- ✅ Autenticação segura com tema
-- ✅ Transações CRUD completo + **edição funcionando** + **filtros avançados**
-- ✅ Investimentos e patrimônio com tema
-- ✅ Relatórios anuais com modo escuro
-- ✅ Fase 1: Busca, ordenação, exclusão, export CSV com tema
-- ✅ V1.2.0: Import/export OFX com tema + **integração com filtros**
-- ✅ Fase 3.1: Sistema de tema claro/escuro completo
-- ✅ Fase 3.2: Gráficos interativos + **integração com filtros**
-- ✅ **V1.5.1**: Edição de transações completa
-- ✅ **V1.5.2**: Filtros avançados implementados
+**Funcionalidades Preservadas + Novas 100%**:
+- ✅ PWA offline completo **com modo escuro**
+- ✅ Autenticação segura (SHA-256 + Salt) **com tema**
+- ✅ Transações (CRUD completo) **com tema adaptado**
+- ✅ Investimentos e patrimônio **com tema**
+- ✅ Relatórios anuais **com modo escuro**
+- ✅ **Fase 1**: Busca, ordenação, exclusão, export CSV, categorias **com tema**
+- ✅ **V1.2.0**: Import/export OFX, duplicatas, categorização IA, 7+ bancos **com tema**
+- ✅ **Fase 3.1**: Sistema de tema claro/escuro completo
+- ✅ **Fase 3.2**: Gráficos interativos com Recharts **NOVO**
 
-### 📝 **Sistema de Edição - Funcionalidades Completas**
-
-**Implementação Técnica**:
-- ✅ **EditModal**: Componente auto-gerenciado com validação
-- ✅ **updateTransaction()**: Método SQL no db-manager.js
-- ✅ **Estados Sincronizados**: AppContext + useTransactions integrados
-- ✅ **Botão Editar**: Integrado na lista de transações
-- ✅ **Validação Completa**: Tempo real + mensagens de erro
-- ✅ **Tema Suportado**: Modo escuro aplicado automaticamente
-
-**Funcionalidades de Edição**:
-- 📝 **Auto-preenchimento**: Dados existentes carregados automaticamente
-- ✅ **Validação**: Valor obrigatório, data válida, tipos corretos
-- 🎨 **Modo Escuro**: Interface adaptada ao tema ativo
-- 🔄 **Atualização**: Gráficos e listas atualizados automaticamente
-- 💾 **Persistência**: Dados salvos no SQLite + sincronização
-- 🚫 **Cancelamento**: Seguro sem alterações indesejadas
-
-### 🔍 **Sistema de Filtros - Funcionalidades Completas**
+### 📊 **Sistema de Gráficos - Funcionalidades Completas**
 
 **Implementação Técnica**:
-- ✅ **AdvancedFilters**: Componente especializado responsivo
-- ✅ **Estados Persistentes**: localStorage + AppContext sincronizados
-- ✅ **Integração**: Dashboard + ChartsView + useTransactions
-- ✅ **Performance**: useMemo para filtros otimizados
-- ✅ **Validação**: Tempo real para datas e valores
-- ✅ **Tema Completo**: Modo escuro em toda interface
+- ✅ **ChartsView**: Componente principal de análise gráfica
+- ✅ **useCharts Hook**: Processamento de dados e lógica de negócio
+- ✅ **Recharts Integration**: Biblioteca profissional de gráficos
+- ✅ **Sistema de Abas**: Visão Geral, Tendências, Categorias, Evolução
+- ✅ **Filtros de Período**: 1m, 3m, 6m, 12m, todos
+- ✅ **Modo Escuro**: Cores adaptadas automaticamente por tema
+- ✅ **Responsividade**: Mobile/desktop otimizado
 
-**Tipos de Filtros Disponíveis**:
-- 📅 **Por Período**: Data inicial/final + filtros rápidos (hoje, semana, mês, ano)
-- 💰 **Por Valor**: Mínimo/máximo + faixas rápidas (pequeno, médio, grande)
-- 🏷️ **Por Categoria**: Múltiplas categorias com checkboxes
-- 📊 **Por Tipo**: Entradas/Saídas separadamente ou combinadas
-- 🔍 **Busca Textual**: Combinável com todos os filtros acima
+**Tipos de Gráficos Disponíveis**:
+- 📈 **LineChart**: Receitas vs Despesas mensais
+- 📊 **BarChart**: Saldo mensal e comparações
+- 🥧 **PieChart**: Gastos por categoria com breakdown
+- 📉 **AreaChart**: Evolução patrimonial acumulada
+- 🔄 **Responsive**: Todos os gráficos adaptam ao container
 
 **Funcionalidades Avançadas**:
-- ✅ **Filtros Rápidos**: Períodos e valores pré-definidos
-- ✅ **Múltiplas Seleções**: Categorias e tipos combinados
-- ✅ **Indicadores Visuais**: Contadores de filtros ativos
-- ✅ **Persistência**: Filtros mantidos entre sessões
-- ✅ **Integração**: Gráficos atualizados automaticamente
-- ✅ **Validação**: Verificação de datas e valores
-- ✅ **Resumo**: Badges dos filtros aplicados
-- ✅ **UX Premium**: Interface colapsável e responsiva
+- ✅ **Tooltips Customizados**: Formatação brasileira (R$)
+- ✅ **Estados de Loading**: Feedback visual durante carregamento
+- ✅ **Estado Vazio**: Interface amigável quando sem dados
+- ✅ **Debugging**: Logs detalhados para troubleshooting
+- ✅ **Performance**: useMemo para cálculos otimizados
+- ✅ **Verificações Defensivas**: Tratamento de dados indefinidos
 
-### 📊 **Integração com Gráficos (Preservada + Melhorada)**
+### 🎨 **Sistema de Tema - Funcionalidades Completas (Preservado)**
 
-**Funcionalidades Mantidas**:
-- ✅ ChartsView com 4 abas funcionando
-- ✅ useCharts hook para processamento
-- ✅ Recharts library com tema dinâmico
-- ✅ Responsividade mobile/desktop preservada
+**Implementação Técnica**:
+- ✅ **ThemeContext**: Gerenciamento global de estado do tema
+- ✅ **useTheme Hook**: Acesso ao tema em qualquer componente
+- ✅ **Tailwind Dark Mode**: Classes dark: aplicadas em todos os componentes
+- ✅ **Persistência**: localStorage com chave 'vm-finance-theme'
+- ✅ **Detecção Sistema**: prefers-color-scheme automático
+- ✅ **Toggle Visual**: Switch nas configurações com indicador
+- ✅ **Meta Theme-Color**: Dinâmico conforme tema ativo
 
-**Integrações Novas**:
-- 🔗 **Filtros Automáticos**: Gráficos respeitam filtros ativos
-- 📊 **Dados Filtrados**: useCharts processa dados filtrados
-- 🎨 **Indicadores**: Visual quando filtros aplicados
-- ⚡ **Performance**: Otimizada para grandes datasets filtrados
+**Temas Disponíveis**:
+- 🌞 **Modo Claro**: Backgrounds claros, textos escuros, theme-color #2563eb
+- 🌙 **Modo Escuro**: Backgrounds escuros, textos claros, theme-color #1f2937
+- 🔄 **Transições**: Smooth CSS transitions em todos os elementos
+- 💾 **Persistência**: Preferência salva entre sessões
 
-### 🎨 **Sistema de Tema (Preservado + Expandido)**
+**Componentes com Tema**:
+- ✅ AuthenticationForm - Login/setup com tema
+- ✅ Dashboard - Painel principal adaptado
+- ✅ **ChartsView - Gráficos com modo escuro** ✅ **NOVO**
+- ✅ ConfigurationView - Com toggle de tema
+- ✅ PatrimonyView - Investimentos com tema
+- ✅ AnnualReportView - Relatórios com tema
+- ✅ Todos os Modals - Backgrounds e cores adaptadas
+- ✅ Loading screens - Animações com tema
 
-**Funcionalidades Mantidas**:
-- ✅ ThemeContext + useTheme funcionando
-- ✅ Tailwind dark mode em todos os componentes
-- ✅ Persistência localStorage preservada
-- ✅ Toggle nas configurações mantido
+### 🏦 **Bancos Compatíveis (Preservados com Tema + Gráficos)**
 
-**Aplicação Expandida**:
-- 🎨 **EditModal**: Tema aplicado automaticamente
-- 🔍 **AdvancedFilters**: Interface com modo escuro completo
-- 📊 **Filtros + Gráficos**: Cores dinâmicas preservadas
-- 💫 **Transições**: Suaves em todas as novas interfaces
+**Testados e Funcionando na V1.4.0 + Gráficos**:
+- ✅ Itaú (conta corrente e cartão) - Interface OFX com tema + gráficos
+- ✅ Bradesco (extratos completos) - Import com modo escuro + visualização
+- ✅ Santander (movimentações) - Categorização com tema + charts
+- ✅ Banco do Brasil (PF e PJ) - Interface adaptada + análise gráfica
+- ✅ Nubank (cartão via export OFX) - Modal com tema + gráficos
+- ✅ Inter (conta digital) - Preview com modo escuro + visualização
+- ✅ BTG Pactual (investimentos) - Dados com tema + análise gráfica
 
-## 🚀 Performance e Qualidade - V1.5.0
+## 🚀 Performance e Qualidade - V1.4.0 + Gráficos
 
 ### 📈 **Métricas de Performance**
 
-**V1.4.0 (Base)**:
-- App.jsx: 6.1KB (235 linhas)
-- Componentes: ~56KB total
-- Hooks: ~21KB total
-- Context: ~12KB total
-- Base: ~47KB
+**Antes da Modularização (V1.2.0)**:
+- App.jsx: 89.2KB (2.800+ linhas)
+- Re-renders: 4+ por keystroke
+- Database Manager: Múltiplas inicializações
+- Estados: Globais desnecessários
+- Tema: Inexistente
+- Gráficos: Inexistentes
+- Manutenção: Código monolítico difícil
 
-**V1.5.0 (Com Edição + Filtros)**:
-- App.jsx: 6.3KB (245 linhas) - **+200 bytes para EditModal**
-- Componentes: ~67KB total (+11KB para Dashboard + AdvancedFilters)
-- Hooks: ~25KB total (+4KB para filtros + edição)
-- Context: ~15KB total (+3KB para estados filtros + edição)
-- Base: ~49KB (+2KB para updateTransaction)
-- **EditModal.jsx**: 5.7KB (novo)
-- **AdvancedFilters.jsx**: 8.1KB (novo)
-- **Total**: ~156KB (+20KB para funcionalidades V1.5.0)
+**Depois da Modularização + Tema + Gráficos (V1.4.0)**:
+- App.jsx: 6.1KB (235 linhas) - **93% redução**
+- Re-renders: Eliminados - Input mantém foco
+- Database Manager: 1x inicialização apenas + carregamento automático
+- Estados: Localizados por responsabilidade
+- **Tema**: Sistema completo claro/escuro
+- **Gráficos**: Sistema completo interativo com Recharts
+- **ThemeContext**: 1.8KB adicional
+- **useTheme**: 1.2KB hook dedicado
+- **ChartsView**: 8.7KB componente especializado
+- **useCharts**: 4.7KB hook de processamento
+- Manutenção: Componentes independentes testáveis
 
-### 🎯 **Qualidade do Código com Edição + Filtros**
+### 🎯 **Qualidade do Código com Tema + Gráficos**
 
-**Arquitetura Enterprise Expandida**:
-- ✅ **SOLID principles** aplicados + edição + filtros
-- ✅ **Single Responsibility** por componente + EditModal + AdvancedFilters isolados
-- ✅ **DRY** com hooks + useTransactions expandido reutilizável
-- ✅ **Separation of Concerns** + edição isolada + filtros isolados
-- ✅ **Maintainability** máxima + componentes independentes
-- ✅ **User Experience** moderna + edição intuitiva + filtros visuais
+**Arquitetura Enterprise + UX Moderna + Data Visualization**:
+- ✅ **SOLID principles** aplicados
+- ✅ **Single Responsibility** por componente + tema + gráficos
+- ✅ **DRY (Don't Repeat Yourself)** com hooks + useTheme + useCharts
+- ✅ **Separation of Concerns** clara + ThemeContext + ChartsView isolados
+- ✅ **Maintainability** máxima + tema modular + gráficos modulares
+- ✅ **User Experience** moderna com modo escuro + visualização de dados
+- ✅ **Data Visualization** profissional com Recharts
 
-**Testing Ready Expandido**:
-- ✅ EditModal testável isoladamente
-- ✅ AdvancedFilters com mocks de dados
-- ✅ useTransactions expandido testável
-- ✅ Estados de filtros mockáveis
-- ✅ Integração com AppContext testável
+**Testing Ready + Tema + Gráficos**:
+- ✅ Componentes isolados testáveis com/sem tema e com/sem dados
+- ✅ Hooks unitários testáveis incluindo useTheme + useCharts
+- ✅ Context API mockável para testes
+- ✅ Mocks facilitados para preferências de tema e dados de gráficos
+- ✅ Integração tests preparados com estados de tema e visualização
 
-## 📁 Estrutura Detalhada por Arquivo - V1.5.0
+## 📁 Estrutura Detalhada por Arquivo + Tema + Gráficos
 
-### 📂 **src/components/ com Edição + Filtros**
+### 📂 **src/components/ com Suporte a Tema + Gráficos**
 
 ```
 components/
 ├── Auth/
-│   └── AuthenticationForm.jsx      # Login com modo escuro (mantido)
-├── Charts/
-│   └── ChartsView.jsx             # Gráficos + integração filtros
+│   └── AuthenticationForm.jsx      # Login com modo escuro completo
+├── Charts/                         # ✅ NOVA PASTA - Gráficos Interativos
+│   └── ChartsView.jsx             # ✅ NOVO - Interface principal de gráficos
 ├── Configuration/
-│   └── ConfigurationView.jsx       # Config + toggle tema (mantido)
+│   └── ConfigurationView.jsx       # ✅ COM TOGGLE TEMA + configurações
 ├── Dashboard/
-│   ├── Dashboard.jsx               # ✅ ATUALIZADO - Interface edição + filtros
-│   └── AdvancedFilters.jsx         # ✅ NOVO - Filtros avançados
+│   └── Dashboard.jsx               # Painel com tema adaptado
 ├── Modals/
-│   ├── DeleteModal.jsx            # Modal exclusão (mantido)
-│   ├── EditModal.jsx              # ✅ NOVO - Modal edição
-│   ├── OFXImportModal.jsx         # Upload OFX (mantido)
-│   ├── DonationModal.jsx          # Doação (mantido)
-│   └── RatingModal.jsx            # Feedback (mantido)
+│   ├── DeleteModal.jsx            # Modal com background de tema
+│   ├── OFXImportModal.jsx         # Upload com modo escuro
+│   ├── DonationModal.jsx          # Suporte com tema
+│   └── RatingModal.jsx            # Feedback com tema
 ├── Patrimony/
-│   └── PatrimonyView.jsx          # Investimentos (mantido)
+│   └── PatrimonyView.jsx          # Investimentos com tema
 └── Reports/
-    └── AnnualReportView.jsx       # Relatórios (mantido)
+    └── AnnualReportView.jsx       # Relatórios com modo escuro
 ```
 
-### 📂 **src/hooks/ + Edição + Filtros**
+### 📂 **src/hooks/ + useTheme + useCharts**
 
 ```
 hooks/
-├── useAuth.js          # Autenticação (mantido)
-├── useCharts.js        # Gráficos + integração filtros
-├── useModals.js        # Estados modais + EditModal
-├── useOFX.js          # Import/export OFX (mantido)
-├── useTheme.js        # Tema (mantido)
-└── useTransactions.js  # ✅ EXPANDIDO - CRUD + edição + filtros
+├── useAuth.js          # Autenticação, sessão, login/logout
+├── useCharts.js        # ✅ NOVO - Processamento de dados para gráficos
+├── useModals.js        # Estados e controles de modais
+├── useOFX.js          # Import/export OFX, duplicatas, bancos
+├── useTheme.js        # Hook de tema completo
+└── useTransactions.js  # CRUD transações, busca, ordenação  
 ```
 
-### 📂 **src/context/ + Estados V1.5.0**
+### 📂 **src/context/ Expandido + Corrigido**
 
 ```
 context/
-├── AppContext.jsx     # ✅ EXPANDIDO - Estados filtros + edição
-└── ThemeContext.jsx   # Tema (mantido)
+├── AppContext.jsx     # Estados globais + ✅ INICIALIZAÇÃO AUTOMÁTICA
+└── ThemeContext.jsx   # Gerenciamento completo de tema
 ```
 
-## 🛠️ Comandos Úteis - V1.5.0
+## 🛠️ Comandos Úteis - V1.4.0 + Gráficos
 
 ```bash
-# Desenvolvimento local (edição + filtros)
+# Desenvolvimento local (estrutura modular + tema + gráficos)
 cd C:\Personal_Finance_Flow
 npm run dev
 
-# Build para produção (inclui funcionalidades V1.5.0)
+# Build para produção (inclui sistema de tema + recharts)
 npm run build
 
-# Preview do build com edição + filtros
+# Preview do build modularizado com tema + gráficos
 npm run preview
 
-# Instalar dependências (mantidas)
+# Instalar dependências (incluindo recharts)
 npm install
 
-# Linting (preparado para V1.5.0)
+# Linting (preparado para arquitetura modular + tema + gráficos)
 npm run lint
 ```
 
-## 📦 Dependências Principais - V1.5.0
+## 📦 Dependências Principais - Mantidas + Tema + Gráficos
 
-**Runtime (Preservadas)**:
-- React 18.2.0 - Framework UI + Context API
-- recharts - Biblioteca de gráficos React
-- sql.js 1.8.0 - SQLite WebAssembly + **updateTransaction()**
+**Runtime (Preservadas + Tema + Gráficos)**:
+- React 18.2.0 - Framework UI + Context API para tema
+- **recharts** - Biblioteca de gráficos React **✅ NOVA**
+- sql.js 1.8.0 - SQLite WebAssembly
 - papaparse 5.4.1 - Export CSV
 - fast-xml-parser 4.3.2 - Parser OFX robusto
 - xmlbuilder2 3.1.1 - Export OFX
 
-**Build (Mantidas)**:
+**Build (Mantidas + Dark Mode)**:
 - Vite 5.x - Build tool e dev server
-- Tailwind CSS - Styling via CDN + Dark Mode
+- Tailwind CSS - Styling via CDN **+ Dark Mode Config**
 
-**PWA (Preservada)**:
+**PWA (Preservada + Tema)**:
 - Service Worker nativo
 - Web App Manifest configurado
-- Meta theme-color dinâmico
+- **Meta theme-color dinâmico**
 
-## 📊 Métricas do Projeto - V1.5.0
+## 📊 Métricas do Projeto - V1.4.0 + Gráficos
 
-### **Código Fonte V1.5.0**:
-- **App.jsx**: 6.3KB (245 linhas) - 93% redução mantida + EditModal integrado
-- **Componentes**: ~67KB total (11 componentes + edição + filtros + tema + gráficos)
-- **Hooks**: ~25KB total (6 hooks incluindo edição + filtros expandidos)
-- **Context**: ~15KB total (AppContext + filtros + edição + ThemeContext)
-- **Base**: ~49KB (db-manager + updateTransaction + ofx-manager + main)
-- **Total**: ~156KB (+20KB funcionalidades V1.5.0)
+### **Código Fonte Modularizado + Tema + Gráficos**:
+- **App.jsx**: 6.1KB (235 linhas) - 93% redução + ThemeProvider + ChartsView
+- **Componentes**: ~56KB total (9 componentes + suporte tema + gráficos)
+- **Hooks**: ~21KB total (6 hooks incluindo useTheme + useCharts)
+- **Context**: ~12KB total (AppContext expandido + ThemeContext)
+- **Base**: ~47KB (db-manager + ofx-manager + main)
+- **Total**: ~136KB (+17KB para sistema de tema e gráficos)
 
-### **Funcionalidades Implementadas V1.5.0**:
-- **EditModal.jsx**: 5.7KB - Edição completa de transações
-- **AdvancedFilters.jsx**: 8.1KB - Sistema avançado de filtros
-- **updateTransaction()**: Método SQL no db-manager.js
-- **Estados expandidos**: Filtros + edição no AppContext
-- **Integração**: Gráficos + filtros + edição funcionando
+### **Sistema de Gráficos Adicionado**:
+- **ChartsView.jsx**: 8.7KB
+- **useCharts.js**: 4.7KB
+- **Recharts library**: Via npm (externa)
+- **Integração**: Navegação e dados automática
+- **Suporte tema**: Cores dinâmicas incluídas
+
+### **Sistema de Tema Mantido**:
+- **ThemeContext.jsx**: 1.8KB
+- **useTheme.js**: 1.2KB
+- **Classes CSS**: Tailwind dark mode (via CDN)
+- **Configuração**: Toggle nas configurações
+- **Persistência**: localStorage integrado
 
 ### **Documentação Atualizada**:
-- Roadmap: V1.5.0 66% concluída marcada
-- Estrutura: Este arquivo atualizado para V1.5.0
-- Guias: Sistema de edição + filtros documentados
-- Total docs: ~120KB
+- Roadmap: Fase 3.2 marcada como concluída
+- Guias: Sistema de gráficos documentado
+- Estrutura: Este arquivo com gráficos integrados
+- Total docs: ~110KB
 
-### **Organização V1.5.0**:
-- **Componentes**: 11 arquivos especializados + edição + filtros + tema + gráficos
-- **Hooks**: 6 hooks reutilizáveis + edição + filtros expandidos
-- **Context**: 2 contexts especializados (App expandido + Theme)
-- **Responsabilidades**: Claramente separadas + edição + filtros isolados
-- **Manutenibilidade**: Máxima + modularidade preservada + novas funcionalidades
-- **Testabilidade**: Preparada + edição + filtros mockáveis
+### **Organização + Tema + Gráficos**:
+- **Componentes**: 9 arquivos especializados com tema + gráficos
+- **Hooks**: 6 hooks reutilizáveis incluindo tema + gráficos
+- **Context**: 2 contexts especializados (App + Theme)
+- **Responsabilidades**: Claramente separadas + tema isolado + gráficos isolados
+- **Manutenibilidade**: Máxima + tema modular + gráficos modulares
+- **Testabilidade**: Preparada + tema mockável + dados mockáveis
 
-### **Funcionalidades Completas**:
+### **Funcionalidades Preservadas + Novas**:
 - **V1.0**: Funcionalidades básicas ✅
 - **Fase 1**: 5 melhorias rápidas ✅  
 - **V1.2.0**: 7 funcionalidades OFX ✅
 - **V1.3.0**: Modularização + performance ✅
 - **Fase 3.1**: Sistema de tema claro/escuro ✅
-- **Fase 3.2**: Gráficos interativos ✅
-- **V1.5.1**: Edição de transações ✅ **NOVO**
-- **V1.5.2**: Filtros avançados ✅ **NOVO**
-- **V1.5.3**: Categorias personalizáveis 🔄 **PRÓXIMA**
-- **Total**: 22 funcionalidades principais (20 + 2 novas V1.5.0)
+- **Fase 3.2**: Gráficos interativos ✅ **NOVO**
+- **Total**: 20 funcionalidades principais
 
-## 🚨 Problemas Resolvidos - Histórico + V1.5.0
-
-### ✅ **V1.5.0 - Edição + Filtros Avançados (Setembro 2025)**
-1. **Estados de edição**: Conflitos entre AppContext e useTransactions resolvidos
-2. **Modal EditModal**: Auto-preenchimento funcionando corretamente
-3. **Validação de edição**: Tempo real com mensagens apropriadas
-4. **Filtros persistentes**: localStorage integrado sem conflitos
-5. **Performance filtros**: useMemo otimizado para grandes datasets
-6. **Integração gráficos**: Filtros aplicados automaticamente
-7. **Tema universal**: Edição + filtros com modo escuro completo
-8. **Estados sincronizados**: AppContext + useTransactions + componentes
-9. **UX intuitiva**: Indicadores visuais + interfaces responsivas
-10. **Zero breaking changes**: 100% compatibilidade com V1.4.0
+## 🚨 Problemas Resolvidos - Histórico Completo + Gráficos
 
 ### ✅ **V1.4.0 - Gráficos Interativos (Setembro 2025)**
-1. **Dependência recharts**: Instalada e configurada
-2. **Hook useCharts**: Processamento de dados otimizado
+1. **Dependência recharts**: Instalada via npm install recharts
+2. **Hook useCharts**: Incompatibilidade com ChartsView corrigida
 3. **Verificações defensivas**: Dados undefined tratados
-4. **AppContext inicialização**: loadAllData() automático
-5. **Navegação expandida**: Aba "Análise" integrada
-6. **Estados de loading**: Feedback visual implementado
-7. **Compatibilidade tema**: Gráficos adaptam ao modo escuro/claro
-8. **Performance**: useMemo para dados pesados
-9. **Estados vazios**: Interface amigável
-10. **Debugging**: Logs detalhados funcionando
+4. **AppContext inicialização**: loadAllData() chamado automaticamente
+5. **Navegação expandida**: Aba "Análise" integrada no sistema
+6. **Estados de loading**: Feedback visual para dados carregando
+7. **Compatibilidade tema**: Gráficos adaptam automaticamente ao modo escuro/claro
+8. **Performance otimizada**: useMemo para processamento de dados
+9. **Estados vazios**: Interface amigável quando sem dados
+10. **Debugging completo**: Logs detalhados para troubleshooting
 
 ### ✅ **V1.3.0 - Modularização + Modo Escuro (Setembro 2025)**
-1. **App.jsx monolítico**: Refatorado 89KB → 5.2KB
+1. **App.jsx monolítico**: Refatorado de 89KB → 5.2KB + ThemeProvider
 2. **Loops circulares**: useAuth + useApp eliminados
-3. **Re-renders massivos**: Estados localizados
-4. **Database Manager**: 1x inicialização apenas
-5. **Estados globais**: Context limpo
-6. **Manutenção**: Componentes independentes
-7. **Performance**: 94% redução código principal
-8. **Sistema de tema**: ThemeContext + useTheme
-9. **Toggle funcionando**: Switch nas configurações
-10. **Persistência tema**: localStorage implementada
+3. **Re-renders massivos**: Estados localizados, input mantém foco
+4. **Database Manager**: Múltiplas inicializações → 1x apenas
+5. **Estados globais**: Removidos desnecessários, Context limpo
+6. **Manutenção difícil**: Componentes independentes criados
+7. **Performance**: 94% redução de código principal
+8. **Sistema de tema**: ThemeContext + useTheme + Tailwind dark mode
+9. **Toggle funcionando**: Configurações com switch de tema
+10. **Persistência tema**: localStorage com preferências salvas
 
-## 🎯 Roadmap Futuro - Pós Edição + Filtros
+### ✅ **V1.2.0 - Funcionalidade OFX (Setembro 2025)**
+1. Parser XML robusto para bancos brasileiros
+2. Navegação UX melhorada
+3. Ícones PWA mobile corrigidos
+4. Detecção inteligente de duplicatas
+5. Categorização automática IA
+6. Import bancário de 7+ bancos testados
 
-### 🔄 **EM PROGRESSO: V1.5.0 - 66% IMPLEMENTADA**
+### ✅ **Fase 1 - Melhorias Rápidas (Setembro 2025)**
+1. Exclusão de transações com modal
+2. Busca com highlight em tempo real  
+3. Ordenação flexível (6 critérios)
+4. Export CSV formato brasileiro
+5. Categorias dinâmicas por tipo
 
-#### ✅ **Edição de Transações** - CONCLUÍDA
-- EditModal.jsx auto-gerenciado implementado
-- updateTransaction() no db-manager.js funcionando
-- Validação completa + tema + UX intuitiva
-- Integração perfeita com arquitetura existente
+### ✅ **V1.0 - Base Sólida (Agosto 2025)**
+1. Integração SQLite + Vite
+2. Versionamento IndexedDB
+3. Persistência de dados
+4. Deploy GitHub Pages
 
-#### ✅ **Filtros Avançados** - CONCLUÍDA  
-- AdvancedFilters.jsx componente especializado
-- Sistema completo: período, valor, categoria, tipo
-- Persistência localStorage + integração gráficos
-- Interface responsiva + modo escuro completo
+## 🎯 Roadmap Futuro - Pós Gráficos Interativos
 
-#### 🔄 **Categorias Personalizáveis** - PRÓXIMA (8 dias)
-- Base sólida: Filtros preparados para categorias customizadas
-- Tema: Interface com modo escuro preparada
-- Gráficos: Integração automática com novas categorias
-- Arquitetura: Hooks e Context prontos para expansão
+### ✅ **CONCLUÍDA: Fase 3 - Melhorias de Interface (Q4 2025)**
+**Status**: 50% CONCLUÍDA (2/4 funcionalidades implementadas)
+
+1. **✅ Modo Escuro/Claro** (4 dias) - **CONCLUÍDO** ✅
+   - ThemeContext implementado
+   - useTheme hook criado
+   - Toggle nas configurações funcionando
+   - Persistência localStorage ativa
+   - Tailwind dark mode configurado
+   - Todos os componentes adaptados
+
+2. **✅ Gráficos Interativos** (5 dias) - **CONCLUÍDO** ✅
+   - ChartsView componente implementado
+   - useCharts hook criado e integrado
+   - Recharts library instalada e configurada
+   - Sistema de abas funcionando
+   - Filtros de período implementados
+   - Suporte completo a modo escuro
+   - Navegação "Análise" integrada
+   - Estados de loading e vazios implementados
+
+3. **📋 Edição de Transações** (6 dias) - **PRÓXIMO**
+   - Base: useTransactions hook pronto
+   - Tema: Modal com modo escuro preparado
+   - Gráficos: Atualização automática após edição
+
+4. **📋 Categorias Personalizáveis** (7 dias) - **PLANEJADO**
+   - Base: Sistema modular facilitará
+   - Tema: Interface com modo escuro
+   - Gráficos: Categorias customizadas nos charts
 
 ### 🚀 **Fase 4 - Funcionalidades Avançadas (Q1 2026)**
-1. **Metas Financeiras** - Hook dedicado + tema + gráficos progresso
-2. **Calculadora Investimentos** - Componente + tema + visualizações
-3. **Alertas Inteligentes** - Context notifications + dashboards
-4. **Import CSV** - useOFX expandível + filtros integrados
-5. **Multilínguas** - i18n + tema + gráficos localizados
+1. **Metas Financeiras** - Hook dedicado + tema + gráficos de progresso
+2. **Calculadora de Investimentos** - Componente isolado + tema + visualizações
+3. **Alertas Inteligentes** - Context notifications pronto + tema + dashboards
+4. **Import CSV Complementar** - useOFX expandível + tema + análise gráfica
+5. **Multilínguas** - Context API facilitará + tema i18n + gráficos localizados
 
 ### ⚡ **Fase 5 - Performance e Testes (Q2 2026)**  
-1. **Testes Automatizados** - Edição + filtros + componentes mockáveis
-2. **Paginação Inteligente** - useTransactions + filtros otimizados
-3. **Service Worker** - Cache + edição offline + filtros
+1. **Testes Automatizados** - Componentes isolados + tema mockável + dados mockáveis
+2. **Paginação Inteligente** - useTransactions preparado + tema + gráficos otimizados
+3. **Service Worker Avançado** - PWA otimizada + tema + cache de gráficos
 
 ### 🔗 **Fase 6 - Sincronização Local (Q3 2026)**
-1. **Descoberta Dispositivos** - Hook + tema + interface
-2. **Servidor P2P** - Arquitetura + sincronização + status visual
-3. **Sync Bidirecional** - Estados + merge + progresso gráfico
+1. **Descoberta de Dispositivos** - Hook dedicado + tema + interface gráfica
+2. **Servidor P2P Temporário** - Arquitetura modular + tema + status visual
+3. **Sincronização Bidirecional** - Estados isolados + tema + progresso gráfico
 
-## 🏆 Status de Deploy e Produção - V1.5.0
+## 🏆 Status de Deploy e Produção - V1.4.0 + Gráficos
 
-### ✅ **DEPLOYADO EM PRODUÇÃO - V1.5.0 EDIÇÃO + FILTROS**
+### ✅ **DEPLOYADO EM PRODUÇÃO - V1.4.0 GRÁFICOS + MODO ESCURO**
 - **URL Oficial**: https://lamvial1958.github.io/personal-finance-flow/
-- **Status**: Online, V1.5.0 66% funcionando com edição + filtros + tema + gráficos
-- **Build**: Automático via GitHub Actions + novas funcionalidades
-- **Arquitetura**: Modular expandida + edição + filtros + tema + gráficos
-- **Performance**: 93% melhoria mantida + funcionalidades adicionadas
-- **PWA**: Instalável e offline com **edição + filtros funcionando**
-- **Funcionalidades**: Edição + filtros + tema + gráficos em produção
+- **Status**: Online, modular e funcionando 100% com modo escuro + gráficos
+- **Build**: Automático via GitHub Actions + Tailwind dark mode + Recharts
+- **Arquitetura**: Modular com componentes isolados + sistema de tema + gráficos
+- **Performance**: 93% melhoria no componente principal
+- **PWA**: Instalável e offline completo **com modo escuro + análise gráfica**
+- **Tema**: Claro/escuro funcionando em produção
+- **Gráficos**: Sistema completo de análise funcionando
 
-### 🔄 **CI/CD Pipeline V1.5.0**
+### 🔄 **CI/CD Pipeline Atualizado**
 - **Trigger**: Push no branch main
-- **Build**: Vite + arquitetura modular + EditModal + AdvancedFilters
-- **Dependências**: Preservadas + funcionalidades V1.5.0
+- **Build**: Vite otimizado com arquitetura modular + tema + recharts
+- **Dependências**: Todas preservadas + ThemeContext + useTheme + ChartsView + useCharts
 - **Deploy**: GitHub Pages automático
-- **Tempo**: ~3-5 minutos (funcionalidades adicionadas)
+- **Tempo**: ~3-5 minutos (sem mudanças)
 
-### 📱 **Compatibilidade Testada V1.5.0**
-- **Desktop**: Windows, Mac, Linux - Edição + filtros + gráficos ✅
-- **Mobile**: Android, iOS - PWA + edição responsiva + filtros mobile ✅
-- **Navegadores**: Chrome, Firefox, Safari, Edge + V1.5.0 ✅
-- **Funcionalidades**: 100% preservadas + edição + filtros funcionando ✅
-- **Offline**: Edição funciona offline + filtros persistem ✅
+### 📱 **Compatibilidade Testada V1.4.0 + Gráficos**
+- **Desktop**: Windows, Mac, Linux - Modular + tema + gráficos funcionando ✅
+- **Mobile**: Android, iOS - PWA preservado + modo escuro + gráficos responsivos ✅
+- **Navegadores**: Chrome, Firefox, Safari, Edge + dark mode + recharts ✅
+- **Funcionalidade**: 100% preservada pós-refatoração + tema + gráficos ✅
+- **Tema**: Detecção automática de preferência do sistema ✅
+- **Gráficos**: Responsivos e interativos em todos os dispositivos ✅
 
-## 🔍 Funcionalidades por Seção - V1.5.0
+## 🔍 Funcionalidades por Seção - V1.4.0 + Gráficos
 
-### 🏠 **Dashboard (Dashboard.jsx) + Edição + Filtros**
-- **Componente**: 12.4KB expandido + edição + filtros + tema
-- **Funcionalidades**: 
-  - Preservadas: Cards resumo, busca, ordenação
-  - **Novas**: Botão editar, filtros avançados, indicadores
-- **Performance**: React.memo mantido + otimizações filtros
-- **UX**: Edição intuitiva + filtros visuais + estatísticas dinâmicas
+### 🏠 **Dashboard (Dashboard.jsx) com Tema**
+- **Componente**: 8.7KB especializado + classes dark mode
+- **Funcionalidades**: Cards resumo, busca instantânea, ordenação 6 opções
+- **Performance**: React.memo implementado
+- **UX**: Highlight de termos, contador de resultados
+- **Tema**: Backgrounds, textos, botões adaptados ao modo escuro/claro
 
-### 🔍 **Filtros (AdvancedFilters.jsx) + Tema** ✅ **NOVO**
-- **Componente**: 8.1KB especializado + tema completo + responsivo
-- **Funcionalidades**: Período, valor, categoria, tipo + filtros rápidos
-- **Performance**: React.memo + useCallback + validação tempo real
-- **UX**: Interface em grid + badges + indicadores + persistência
-- **Integração**: Dashboard + gráficos + useTransactions automática
+### 📊 **Análise (ChartsView.jsx) com Tema + Gráficos** ✅ **NOVO**
+- **Componente**: 8.7KB especializado + suporte completo a tema + gráficos
+- **Funcionalidades**: 4 abas de visualização, filtros de período, gráficos interativos
+- **Performance**: useMemo para dados processados + React.memo ready
+- **UX**: Estados de loading, interface vazia amigável, tooltips customizados
+- **Tema**: Cores dinâmicas por tema, transições suaves
+- **Gráficos**: LineChart, BarChart, PieChart, AreaChart com Recharts
 
-### 📝 **Edição (EditModal.jsx) + Tema** ✅ **NOVO**
-- **Componente**: 5.7KB auto-gerenciado + validação + tema
-- **Funcionalidades**: Auto-preenchimento + validação + persistência
-- **Performance**: Estados locais + zero conflitos + React.memo ready
-- **UX**: Formulário intuitivo + mensagens erro + cancelamento seguro
-- **Integração**: useTransactions + AppContext + db-manager seamless
+### 💼 **Patrimônio (PatrimonyView.jsx) com Tema**  
+- **Componente**: 5.4KB isolado + suporte tema
+- **Funcionalidades**: Saldos, movimentações, cálculos automáticos
+- **Integração**: Hook dedicado para lógica
+- **Tema**: Tabelas e gráficos com modo escuro
 
-### 📊 **Análise (ChartsView.jsx) + Filtros**
-- **Componente**: 8.9KB + integração filtros automática
-- **Funcionalidades**: 4 abas + filtros período + **integração filtros avançados**
-- **Performance**: useMemo otimizado para dados filtrados
-- **UX**: Indicadores quando filtros aplicados + responsividade
-- **Integração**: useCharts + filtros + tema dinâmico
+### 📊 **Relatórios (AnnualReportView.jsx) com Tema**
+- **Componente**: 4.1KB especializado + tema
+- **Funcionalidades**: Análises anuais, breakdown mensal
+- **Dados**: Integração com useTransactions
+- **Tema**: Visualizações adaptadas ao tema ativo
 
-### 💼 **Patrimônio (PatrimonyView.jsx) Preservado**  
-- **Componente**: 5.4KB preservado + tema
-- **Funcionalidades**: Saldos, movimentações (não afetadas por filtros)
-- **Comportamento**: Correto - patrimônio independe de filtros de transações
+### ⚙️ **Configurações (ConfigurationView.jsx) + Toggle Tema**
+- **Componente**: 7.8KB completo + **controle de tema**
+- **Funcionalidades**: OFX, backups, **toggle modo escuro**
+- **Toggle**: Switch visual com indicador de tema ativo
+- **Persistência**: Salva preferência automaticamente
+- **Hooks**: useOFX + **useTheme** integrados
 
-### 📊 **Relatórios (AnnualReportView.jsx) Preservado**
-- **Componente**: 4.1KB preservado + tema
-- **Funcionalidades**: Análises anuais (mantidas)
-- **Potencial**: Futura integração com filtros por ano
+### 🔐 **Autenticação (AuthenticationForm.jsx) com Tema**
+- **Componente**: 4.5KB estabilizado + modo escuro
+- **Estados**: Locais (correção crítica)
+- **UX**: Input mantém foco, validação tempo real
+- **Tema**: Login/setup com backgrounds e cores adaptadas
 
-### ⚙️ **Configurações (ConfigurationView.jsx) Preservado**
-- **Componente**: 7.8KB preservado + toggle tema funcionando
-- **Funcionalidades**: OFX, backups, modo escuro
-- **Performance**: Não impactada por V1.5.0
+## 🎓 Lições Aprendidas - Gráficos + Tema + Modularização
 
-### 🔐 **Autenticação (AuthenticationForm.jsx) Preservado**
-- **Componente**: 4.5KB preservado + tema
-- **Funcionalidades**: Login/setup (inalteradas)
-- **Compatibilidade**: Zero impacto V1.5.0
+### ✅ **Sucessos da Implementação Completa**
+1. **Zero Breaking Changes**: 100% funcionalidades preservadas + tema + gráficos adicionados
+2. **Performance Drástica**: 93% redução App.jsx + sistema tema + gráficos eficientes
+3. **Manutenibilidade**: Componentes independentes testáveis + tema modular + gráficos isolados
+4. **Código Limpo**: SOLID principles aplicados + Context isolado + hooks especializados
+5. **Estados Corretos**: Localizados por responsabilidade + tema separado + gráficos separados
+6. **UX Moderna**: Sistema de tema + visualização de dados profissional
+7. **Persistência**: Preferências de tema + dados carregamento automático
+8. **Debugging**: Sistema completo de logs para troubleshooting
 
-## 🎓 Lições Aprendidas - V1.5.0
+### 📚 **Arquitetura Enterprise + UX + Data Visualization Alcançada**
+1. **Separation of Concerns**: Cada arquivo tem responsabilidade única + tema + gráficos isolados
+2. **Reusabilidade**: Hooks customizados reutilizáveis + useTheme + useCharts universais
+3. **Testabilidade**: Componentes isolados + Context tema mockável + dados mockáveis
+4. **Escalabilidade**: Estrutura preparada para crescimento + tema extensível + gráficos expandíveis
+5. **Legibilidade**: Código autodocumentado e limpo + tema organizado + gráficos bem estruturados
+6. **User Experience**: Interface moderna com modo escuro + análise visual de dados
+7. **Data Visualization**: Sistema profissional de gráficos com Recharts
 
-### ✅ **Sucessos da V1.5.0**
-1. **Arquitetura Sólida**: Base modular permitiu adicionar funcionalidades sem refatoração
-2. **Zero Breaking Changes**: 100% funcionalidades V1.4.0 preservadas
-3. **Performance Mantida**: Otimizações preservadas + novas funcionalidades eficientes
-4. **Tema Universal**: Aplicação automática em edição + filtros
-5. **Integração Seamless**: Gráficos + filtros + edição funcionando juntos
-6. **UX Consistente**: Padrões estabelecidos seguidos
-7. **Estados Limpos**: AppContext expandido sem conflitos
-8. **Desenvolvimento Rápido**: Hooks preparados facilitaram implementação
-
-### 📚 **Arquitetura Enterprise Expandida**
-1. **Modularidade**: Componentes independentes + edição + filtros isolados
-2. **Reutilização**: useTransactions expandido mantendo compatibilidade
-3. **Testabilidade**: Novos componentes seguem padrões testáveis
-4. **Escalabilidade**: Preparada para categorias personalizáveis
-5. **Manutenção**: Código limpo + responsabilidades separadas
-6. **Integração**: Filtros + gráficos + edição funcionando automaticamente
-
-### 🔄 **Próximas Melhorias Facilitadas**
-1. **Categorias Personalizáveis**: Filtros + edição preparados para categorias customizadas
-2. **Testes V1.5.0**: EditModal + AdvancedFilters testáveis isoladamente
-3. **Performance**: Otimizações aplicáveis a filtros + edição
-4. **Novas Features**: Tema + filtros + edição aplicáveis automaticamente
-5. **Manutenção**: Debugging localizado + componentes isolados
+### 🔄 **Próximas Melhorias Facilitadas pela Base Sólida**
+1. **Edição de Transações**: useTransactions hook preparado + tema automático + atualização gráficos
+2. **Testes Unitários**: useTheme + useCharts hooks testáveis isoladamente
+3. **Novas Features**: Tema + visualização aplicáveis automaticamente
+4. **Performance**: Classes CSS condicionais + gráficos otimizados
+5. **Manutenção**: Debugging localizado + sistema modular + gráficos isolados
+6. **Colaboração**: Sistema documentado e reutilizável + padrões estabelecidos
 
 ---
 
-## 📝 Observações Finais - V1.5.0
+## 📝 Observações Finais - V1.4.0 + Gráficos Interativos
 
 ### 🎯 **Estado Atual do Projeto**
-A **Versão 1.5.0** representa 66% de implementação da fase mais crítica do Personal Finance Flow. O projeto evoluiu de arquitetura modular + tema + gráficos para uma **aplicação completa de gestão financeira** com **edição de transações funcionando** e **sistema avançado de filtros integrado**.
+A **Versão 1.4.0** representa um marco triplo na evolução do Personal Finance Flow. O projeto evoluiu de um PWA funcional mas monolítico para uma **aplicação enterprise-grade** com arquitetura modular robusta, **sistema de tema moderno nativo** E **sistema completo de análise gráfica**.
 
-### 🏗️ **Arquitetura Madura Expandida**
-- **Modularização preservada** com funcionalidades adicionadas
-- **Performance mantida** com edição + filtros otimizados
-- **Sistema de tema aplicado** automaticamente às novas funcionalidades
-- **Gráficos integrados** com filtros avançados
-- **Código enterprise** expandido seguindo mesmos padrões
-- **Estrutura escalável** preparada para categorias personalizáveis
+### 🏗️ **Arquitetura Madura + UX + Data Visualization**
+- **Modularização completa** sem breaking changes
+- **Performance otimizada** com 93% redução do arquivo principal
+- **Sistema de tema nativo** com modo escuro completo
+- **Sistema de gráficos profissional** com Recharts
+- **Código enterprise** seguindo SOLID principles + UX design patterns + data visualization patterns
+- **Estrutura escalável** preparada para futuras funcionalidades + tema extensível + gráficos expandíveis
 
-### 🚀 **Pronto para Completar V1.5.0**
-A base modular + edição + filtros estabelecidos permitem implementar rapidamente:
-- **Categorias Personalizáveis**: Última funcionalidade V1.5.0 (8 dias)
-- **Base preparada**: Filtros + edição + tema + gráficos aplicáveis automaticamente
-- **Arquitetura pronta**: CRUD patterns + interface + validação estabelecidos
-- **Performance garantida**: Otimizações preservadas + padrões seguidos
+### 🚀 **Pronto para Crescimento com Base Sólida Completa**
+A base modular + sistema de tema + gráficos estabelecidos permitem implementar rapidamente:
+- **Edição de transações** com tema automático + atualização de gráficos
+- **Categorias personalizáveis** com visualização gráfica automática
+- **Novas funcionalidades** com tema + gráficos aplicados por padrão
+- **Testes automatizados** com Context tema + dados mockáveis
+- **Melhorias de UX** com preferências persistentes + análise visual
+- **Features avançadas** com arquitetura + tema + visualização preparados
 
-### 📈 **Evolução do Projeto Atualizada**
+### 📈 **Evolução do Projeto Completa**
 - **V1.0**: PWA básico funcional
 - **Fase 1**: Melhorias rápidas de usabilidade  
 - **V1.2.0**: Funcionalidade bancária OFX completa
-- **V1.3.0**: Arquitetura enterprise modular
-- **V1.4.0**: Modo Escuro + Gráficos Interativos
-- **V1.5.0**: **66% - Edição + Filtros Funcionando** ✅ **ATUAL**
-- **V1.5.0**: **100% - + Categorias Personalizáveis** 🔄 **PRÓXIMA**
-- **V2.0**: Futuro com metas + calculadora + IA + sync + tema + análise universal
+- **V1.3.0**: Arquitetura enterprise modular + **Modo Escuro**
+- **V1.4.0**: **Gráficos Interativos** + Análise Visual Completa ✅ **ATUAL**
+- **V2.0**: Futuro com edição + categorias + IA + sync + tema + análise universal
 
-### 📊 **Funcionalidades V1.5.0 Implementadas**
-- **Edição completa**: EditModal + updateTransaction + validação + tema
-- **Filtros avançados**: AdvancedFilters + persistência + integração + tema
-- **Integração seamless**: Gráficos + filtros + edição funcionando juntos
-- **Performance preservada**: Otimizações mantidas + novas eficientes
-- **UX moderna**: Edição intuitiva + filtros visuais + tema automático
+### 📊 **Sistema de Gráficos como Diferencial Competitivo**
+- **Análise visual completa** de dados financeiros
+- **Múltiplos tipos de gráfico** para diferentes insights
+- **Filtros interativos** por período e categoria
+- **Modo escuro automático** para visualizações
+- **Performance otimizada** para grandes volumes de dados
+- **Responsividade total** mobile/desktop
+- **Integração seamless** com dados existentes
 
-### 🎯 **Próximo Marco: Completar V1.5.0**
-- **Categorias Personalizáveis**: 8 dias de implementação restantes
-- **Base sólida**: Filtros + edição + tema + gráficos preparados
-- **Impacto**: Sistema completo de gestão financeira personalizada
-- **Arquitetura**: Pronta para receber última funcionalidade crítica
+### 🎨 **Sistema de Tema Universal**
+- **Detecção automática** da preferência do sistema
+- **Persistência inteligente** entre sessões
+- **Transições suaves** sem quebras visuais
+- **Compatibilidade total** com todos os componentes + gráficos
+- **Preparação futura** para novos componentes + visualizações automática
 
 ---
 
 *Documento atualizado em: 27/09/2025*  
-*Status: PROJETO V1.5.0 - 66% IMPLEMENTADA - EDIÇÃO + FILTROS FUNCIONANDO*  
-*V1.5.1: ✅ EDIÇÃO CONCLUÍDA | V1.5.2: ✅ FILTROS CONCLUÍDOS | V1.5.3: 🔄 CATEGORIAS PRÓXIMA*  
-*Performance: ✅ MANTIDA | Tema: ✅ UNIVERSAL | Gráficos: ✅ INTEGRADOS*  
-*Próximo: Categorias Personalizáveis (completar V1.5.0 - base sólida preparada)*
+*Status: PROJETO V1.4.0 - ARQUITETURA MODULAR ENTERPRISE + MODO ESCURO + GRÁFICOS INTERATIVOS*  
+*Fase 2: ✅ CONCLUÍDA | Fase 3.1: ✅ CONCLUÍDA | Fase 3.2: ✅ CONCLUÍDA | Performance: ✅ OTIMIZADA*  
+*Próximo: Fase 3.3 - Edição de Transações (base sólida preparada)*
+
+
+🔄 V1.5.1 - Sistema de Atualização Automática com Notificação (Próxima Prioridade)
+Funcionalidade: Atualização Automática Inteligente com Toast de Notificação
+Prioridade: CRÍTICA - Primeira implementação da próxima sessão
+Duração Estimada: 2-3 horas
+Complexidade: Média
+Problema Identificado:
+PWA no desktop não atualiza automaticamente como no mobile, exigindo intervenção manual do usuário (Ctrl+F5, reinstalação, etc.). Usuários ficam em versões desatualizadas sem saber.
+Solução Técnica Detalhada:
+1. Modificações em vite.config.js:
+javascriptVitePWA({
+  registerType: 'prompt', // Mudança de 'autoUpdate' para 'prompt'
+  workbox: {
+    skipWaiting: false,   // Mudança para false - aguarda confirmação
+    clientsClaim: false,  // Mudança para false - não toma controle automático
+    // Demais configurações mantidas
+  }
+})
+2. Novo Componente: UpdateNotification.jsx
+Localização: src/components/UpdateNotification.jsx
+Funcionalidades:
+
+Verificação automática de atualizações no background
+Download silencioso da nova versão
+Toast/banner elegante quando atualização pronta
+Botões "Atualizar Agora" e "Depois"
+Integração com tema escuro/claro
+Animações suaves de entrada/saída
+Estado persistente entre sessões
+
+3. Integração no App.jsx:
+
+Importar UpdateNotification
+Renderizar como overlay/portal
+Zero impacto na arquitetura existente
+Compatibilidade com todos os componentes V1.5.0
+
+4. Fluxo de Funcionamento:
+
+App inicia: Service Worker verifica atualizações automaticamente
+Download background: Nova versão baixa sem interromper uso
+Notificação aparece: Toast/banner discreto quando pronto
+Escolha do usuário: "Atualizar Agora" ou "Depois"
+Aplicação: Recarregamento com nova versão instalada
+
+5. Arquivos Criados/Modificados:
+
+NOVO: src/components/UpdateNotification.jsx (~150 linhas)
+MODIFICADO: src/App.jsx (+3 linhas import + render)
+MODIFICADO: vite.config.js (~5 alterações de configuração)
+MODIFICADO: public/sw.js (ajustes message listener se necessário)
+
+6. Características UX:
+
+Design consistente: Segue padrões V1.5.0 estabelecidos
+Não intrusivo: Não bloqueia interface atual
+Mobile/Desktop: Funciona identicamente em ambos
+Acessível: Keyboard navigation + screen readers
+Responsivo: Adapta a diferentes tamanhos de tela
+
+7. Benefícios Imediatos:
+
+Resolve problema desktop: Atualizações automáticas funcionando
+Controle do usuário: Decide quando aplicar atualização
+Feedback visual: Usuário sempre sabe status da atualização
+Zero breaking changes: 100% compatível com V1.5.0
+Performance: Download em background não impacta uso
+
+8. Integração com Funcionalidades Existentes:
+
+Tema: Toast adapta automaticamente ao modo escuro/claro
+Arquitetura: Usa padrões de componentes estabelecidos
+Estados: Integra com Context API existente se necessário
+PWA: Melhora experiência PWA sem afetar funcionalidades atuais
+
+9. Validação e Testes:
+
+Teste local: Simular atualizações em desenvolvimento
+Teste produção: Deploy incremental para validação
+Cross-platform: Validar mobile + desktop
+Browsers: Chrome, Firefox, Safari, Edge
+
+10. Impacto Esperado:
+
+Usuários sempre atualizados: Redução de versões antigas em uso
+Suporte reduzido: Menos dúvidas sobre "como atualizar"
+Adoção de funcionalidades: Novas features chegam rapidamente aos usuários
+Experiência premium: PWA comporta-se como app nativo
+
+Prioridade Justificada:
+Esta implementação resolve diretamente o problema de atualização identificado durante o deploy V1.5.0, garantindo que futuras atualizações (incluindo categorias personalizáveis) sejam distribuídas eficientemente para todos os usuários, independente da plataforma.

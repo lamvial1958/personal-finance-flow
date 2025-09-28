@@ -1,16 +1,16 @@
 /**
- * EditModal Component - Personal Finance Flow (SOLUÇÃO COMPLETA)
+ * EditModal Component - Personal Finance Flow (VERSÃO LIMPA)
  * Modal de edição auto-gerenciado - dados preenchidos automaticamente
  * 
  * Localização: C:\Personal_Finance_Flow\src\components\Modals\EditModal.jsx
- * Versão: 1.2.0 - Solução completa auto-gerenciada
- * Criado: Setembro 2025
+ * Versão: 1.5.1 - Versão otimizada sem logs excessivos
+ * Atualização: Setembro 2025
  */
 
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 
-const EditModal = () => {
+const EditModal = React.memo(() => {
   const {
     formatDate,
     categories,
@@ -33,7 +33,8 @@ const EditModal = () => {
   // Popular formulário automaticamente quando transactionToEdit mudar
   useEffect(() => {
     if (showEditModal && transactionToEdit) {
-      console.log('🔄 Populando formulário automaticamente:', transactionToEdit);
+      // Log apenas para operações importantes
+      console.log('📝 Editando transação ID:', transactionToEdit.id);
       setFormData({
         type: transactionToEdit.type,
         amount: transactionToEdit.amount.toString(),
@@ -57,7 +58,7 @@ const EditModal = () => {
     }
   }, [showEditModal]);
 
-  // Handlers para campos do formulário
+  // Handlers para campos do formulário (memoizados para performance)
   const handleTypeChange = useCallback((e) => {
     setFormData(prev => ({
       ...prev,
@@ -82,7 +83,7 @@ const EditModal = () => {
     setFormData(prev => ({ ...prev, description: e.target.value }));
   }, []);
 
-  // Validação do formulário
+  // Validação do formulário (memoizada)
   const formValidation = useMemo(() => {
     const hasAmount = formData.amount && parseFloat(formData.amount) > 0;
     const hasValidDate = formData.date && new Date(formData.date).getTime();
@@ -96,9 +97,9 @@ const EditModal = () => {
         date: !hasValidDate ? 'Data inválida' : null
       }
     };
-  }, [formData]);
+  }, [formData.amount, formData.date]);
 
-  // Opções de categoria baseadas no tipo selecionado
+  // Opções de categoria baseadas no tipo selecionado (memoizada)
   const categoryOptions = useMemo(() => {
     return categories[formData.type] || [];
   }, [categories, formData.type]);
@@ -118,7 +119,7 @@ const EditModal = () => {
         category: formData.category || ''
       };
 
-      console.log('Atualizando transação ID:', transactionToEdit.id, 'com campos:', updatedFields);
+      console.log('✅ Atualizando transação ID:', transactionToEdit.id, 'com campos:', updatedFields);
 
       await updateTransaction(transactionToEdit.id, updatedFields);
       
@@ -126,10 +127,11 @@ const EditModal = () => {
       setShowEditModal(false);
       setTransactionToEdit(null);
       
+      console.log('✅ Transação atualizada com sucesso!');
       alert('Transação atualizada com sucesso!');
       
     } catch (error) {
-      console.error('Erro ao editar transação:', error);
+      console.error('❌ Erro ao editar transação:', error);
       alert('Erro ao atualizar transação: ' + error.message);
     }
   }, [formData, transactionToEdit, formValidation.isValid, updateTransaction, setShowEditModal, setTransactionToEdit]);
@@ -140,18 +142,10 @@ const EditModal = () => {
     setTransactionToEdit(null);
   }, [setShowEditModal, setTransactionToEdit]);
 
-  // Debug logs
-  console.log('🔍 EditModal DEBUG - showEditModal:', showEditModal);
-  console.log('🔍 EditModal DEBUG - transactionToEdit:', transactionToEdit);
-  console.log('🔍 EditModal DEBUG - formData:', formData);
-
   // Não renderizar se modal não deve ser exibido
   if (!showEditModal || !transactionToEdit) {
-    console.log('🔍 EditModal DEBUG - Modal não será renderizado');
     return null;
   }
-
-  console.log('🔍 EditModal DEBUG - Modal será renderizado!');
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -293,6 +287,8 @@ const EditModal = () => {
       </div>
     </div>
   );
-};
+});
+
+EditModal.displayName = 'EditModal';
 
 export default EditModal;

@@ -35,13 +35,24 @@ export default defineConfig(({ command, mode }) => {
         workbox: {
           skipWaiting: true,
           clientsClaim: true,
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,wasm}'],
+          // CORRIGIDO: Configuração agressiva mas válida para forçar atualizações desktop
+          cleanupOutdatedCaches: true,
+          // Estratégia de cache mais agressiva para detectar mudanças
+          globPatterns: [
+            '**/*.{js,css,html,ico,png,svg,wasm}',
+            '**/assets/**/*'
+          ],
+          // CORRIGIDO: Runtime caching simplificado mas agressivo
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
               handler: 'StaleWhileRevalidate',
               options: {
                 cacheName: 'google-fonts-stylesheets',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 30 // 30 dias
+                }
               }
             },
             {
@@ -54,8 +65,23 @@ export default defineConfig(({ command, mode }) => {
                   maxAgeSeconds: 60 * 60 * 24 * 365
                 }
               }
+            },
+            // CORRIGIDO: Cache strategy para assets principais - StaleWhileRevalidate força verificação
+            {
+              urlPattern: /\.(?:js|css|html)$/,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'app-static-resources'
+              }
             }
-          ]
+          ],
+          // REMOVIDO: additionalManifestEntries que estava causando erro
+          // Workbox irá gerenciar automaticamente as entradas do manifest
+        },
+        // NOVO: Configuração de desenvolvimento melhorada
+        devOptions: {
+          enabled: false, // Garante que SW customizado funcione em dev
+          type: 'module'
         },
         manifest: {
           name: 'V&M Personal Finance',
@@ -71,6 +97,8 @@ export default defineConfig(({ command, mode }) => {
           categories: ['finance', 'productivity', 'business'],
           lang: 'pt-BR',
           dir: 'ltr',
+          // NOVO: Versão no manifest para forçar detecção de mudanças
+          version: '1.5.1',
           icons: [
             {
               src: isProduction ? '/personal-finance-flow/icon-192.png' : '/icon-192.png',
@@ -142,14 +170,12 @@ export default defineConfig(({ command, mode }) => {
       cssMinify: isProduction ? 'esbuild' : false
     },
     
-    // REMOVIDO: Configuração esbuild problemática que injetava React duplicado
-    // esbuild: {
-    //   jsxInject: `import React from 'react'`  // ← Esta linha causava o problema
-    // },
-    
+    // NOVO: Definições para debugging de atualizações
     define: {
-      __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-      __BUILD_DATE__: JSON.stringify(new Date().toISOString())
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.5.1'),
+      __BUILD_DATE__: JSON.stringify(new Date().toISOString()),
+      // NOVO: Flag para debugging de atualizações
+      __PWA_DEBUG__: JSON.stringify(!isProduction)
     }
   }
 })

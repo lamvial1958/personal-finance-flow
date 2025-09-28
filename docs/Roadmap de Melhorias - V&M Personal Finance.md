@@ -715,6 +715,99 @@
 
 ---
 
+🔄 V1.5.1 - Sistema de Atualização Automática com Notificação (Próxima Prioridade)
+Funcionalidade: Atualização Automática Inteligente com Toast de Notificação
+Prioridade: CRÍTICA - Primeira implementação da próxima sessão
+Duração Estimada: 2-3 horas
+Complexidade: Média
+Problema Identificado:
+PWA no desktop não atualiza automaticamente como no mobile, exigindo intervenção manual do usuário (Ctrl+F5, reinstalação, etc.). Usuários ficam em versões desatualizadas sem saber.
+Solução Técnica Detalhada:
+1. Modificações em vite.config.js:
+javascriptVitePWA({
+  registerType: 'prompt', // Mudança de 'autoUpdate' para 'prompt'
+  workbox: {
+    skipWaiting: false,   // Mudança para false - aguarda confirmação
+    clientsClaim: false,  // Mudança para false - não toma controle automático
+    // Demais configurações mantidas
+  }
+})
+2. Novo Componente: UpdateNotification.jsx
+Localização: src/components/UpdateNotification.jsx
+Funcionalidades:
+
+Verificação automática de atualizações no background
+Download silencioso da nova versão
+Toast/banner elegante quando atualização pronta
+Botões "Atualizar Agora" e "Depois"
+Integração com tema escuro/claro
+Animações suaves de entrada/saída
+Estado persistente entre sessões
+
+3. Integração no App.jsx:
+
+Importar UpdateNotification
+Renderizar como overlay/portal
+Zero impacto na arquitetura existente
+Compatibilidade com todos os componentes V1.5.0
+
+4. Fluxo de Funcionamento:
+
+App inicia: Service Worker verifica atualizações automaticamente
+Download background: Nova versão baixa sem interromper uso
+Notificação aparece: Toast/banner discreto quando pronto
+Escolha do usuário: "Atualizar Agora" ou "Depois"
+Aplicação: Recarregamento com nova versão instalada
+
+5. Arquivos Criados/Modificados:
+
+NOVO: src/components/UpdateNotification.jsx (~150 linhas)
+MODIFICADO: src/App.jsx (+3 linhas import + render)
+MODIFICADO: vite.config.js (~5 alterações de configuração)
+MODIFICADO: public/sw.js (ajustes message listener se necessário)
+
+6. Características UX:
+
+Design consistente: Segue padrões V1.5.0 estabelecidos
+Não intrusivo: Não bloqueia interface atual
+Mobile/Desktop: Funciona identicamente em ambos
+Acessível: Keyboard navigation + screen readers
+Responsivo: Adapta a diferentes tamanhos de tela
+
+7. Benefícios Imediatos:
+
+Resolve problema desktop: Atualizações automáticas funcionando
+Controle do usuário: Decide quando aplicar atualização
+Feedback visual: Usuário sempre sabe status da atualização
+Zero breaking changes: 100% compatível com V1.5.0
+Performance: Download em background não impacta uso
+
+8. Integração com Funcionalidades Existentes:
+
+Tema: Toast adapta automaticamente ao modo escuro/claro
+Arquitetura: Usa padrões de componentes estabelecidos
+Estados: Integra com Context API existente se necessário
+PWA: Melhora experiência PWA sem afetar funcionalidades atuais
+
+9. Validação e Testes:
+
+Teste local: Simular atualizações em desenvolvimento
+Teste produção: Deploy incremental para validação
+Cross-platform: Validar mobile + desktop
+Browsers: Chrome, Firefox, Safari, Edge
+
+10. Impacto Esperado:
+
+Usuários sempre atualizados: Redução de versões antigas em uso
+Suporte reduzido: Menos dúvidas sobre "como atualizar"
+Adoção de funcionalidades: Novas features chegam rapidamente aos usuários
+Experiência premium: PWA comporta-se como app nativo
+
+Prioridade Justificada:
+Esta implementação resolve diretamente o problema de atualização identificado durante o deploy V1.5.0, garantindo que futuras atualizações (incluindo categorias personalizáveis) sejam distribuídas eficientemente para todos os usuários, independente da plataforma.
+
+---
+
 *Documento atualizado em: Setembro 2025*  
 *Versão: 8.0 - Pós Implementação Edição + Filtros Avançados*  
 *Próxima revisão: Após implementação de Categorias Personalizáveis*  
