@@ -1,0 +1,688 @@
+{
+  "app": {
+    "title": "V&M Personal Finance",
+    "subtitle": "Progressive Web App + OFX",
+    "loading": "Vérification de la session...",
+    "lightMode": "Mode Clair",
+    "darkMode": "Mode Sombre",
+    "checkingSession": "Vérification de la session...",
+    "checkUpdate": "Vérifier la Mise à Jour",
+    "lastCheck": "Dernière vérification"
+  },
+  "navigation": {
+    "dashboard": "Tableau de Bord",
+    "analysis": "Analyse", 
+    "patrimony": "Patrimoine",
+    "annualReport": "Rapport Annuel",
+    "settings": "Paramètres",
+    "back": "Retour"
+  },
+  "auth": {
+    "welcome": "Bienvenue à",
+    "subtitle": "Gérez vos finances intelligemment et en toute sécurité",
+    "newUser": "Nouvel utilisateur?",
+    "existingUser": "Vous avez déjà un compte?",
+    "createPassword": "Créer un mot de passe d'accès",
+    "enterPassword": "Entrez votre mot de passe",
+    "setupAccount": "Configurer le Compte",
+    "login": "Se Connecter",
+    "passwordPlaceholder": "Entrez un mot de passe fort",
+    "confirmPassword": "Confirmer le mot de passe",
+    "passwordsMatch": "Les mots de passe correspondent",
+    "passwordsMismatch": "Les mots de passe ne correspondent pas",
+    "weakPassword": "Mot de passe trop faible",
+    "strongPassword": "Mot de passe fort",
+    "loading": "Chargement...",
+    "fields": {
+      "password": "Mot de Passe",
+      "confirmPassword": "Confirmer le Mot de Passe",
+      "currentPassword": "Mot de Passe Actuel",
+      "newPassword": "Nouveau Mot de Passe"
+    },
+    "placeholders": {
+      "minimumChars": "Minimum 6 caractères",
+      "enterPassword": "Entrez votre mot de passe",
+      "enterNewPassword": "Entrez le nouveau mot de passe",
+      "confirmNewPassword": "Confirmez le nouveau mot de passe",
+      "currentPassword": "Entrez le mot de passe actuel",
+      "confirmPassword": "Confirmez le mot de passe"
+    },
+    "errors": {
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "weakPassword": "Mot de passe trop faible - utilisez au moins 6 caractères",
+      "invalidPassword": "Mot de passe invalide",
+      "requiredPassword": "Le mot de passe est obligatoire",
+      "passwordTooShort": "Mot de passe trop court - utilisez au moins 6 caractères",
+      "setupError": "Erreur lors de la configuration du système",
+      "loginError": "Erreur lors de la connexion",
+      "newPasswordMismatch": "Les nouveaux mots de passe ne correspondent pas",
+      "changePasswordError": "Erreur lors du changement de mot de passe"
+    },
+    "messages": {
+      "systemConfigured": "Système configuré avec succès!",
+      "loginSuccess": "Connexion réussie!",
+      "passwordChanged": "Mot de passe modifié avec succès!"
+    },
+    "actions": {
+      "login": "Se Connecter",
+      "setupSystem": "Configurer le Système",
+      "changePassword": "Changer le Mot de Passe",
+      "confirmChange": "Confirmer la Modification",
+      "backToLogin": "Retour à la Connexion"
+    },
+    "login": {
+      "title": "Se Connecter"
+    },
+    "setup": {
+      "title": "Configurer le Système",
+      "description": "Créez un mot de passe pour protéger vos données financières"
+    },
+    "changePassword": {
+      "title": "Changer le Mot de Passe"
+    },
+    "firstAccess": {
+      "title": "Premier Accès",
+      "description": "Configurez le système en créant un mot de passe d'accès"
+    },
+    "pwa": {
+      "title": "Application PWA",
+      "offline": "L'application fonctionne hors ligne",
+      "localData": "Données stockées localement",
+      "secureStorage": "Stockage crypté",
+      "install": "Installer sur l'écran d'accueil",
+      "multiDevice": "Synchroniser entre appareils",
+      "themeSupport": "Support du mode {{mode}}"
+    }
+  },
+  "dashboard": {
+    "quickSummary": "Résumé Rapide",
+    "revenue": "Revenus",
+    "expenses": "Dépenses", 
+    "balance": "Solde",
+    "thisMonth": "Ce Mois",
+    "addTransaction": "Nouvelle Transaction",
+    "recentTransactions": "Transactions Récentes",
+    "noTransactions": "Aucune transaction trouvée",
+    "searchPlaceholder": "Rechercher par description ou catégorie...",
+    "sortBy": "Trier par",
+    "showingTransactions": "Affichage de {{count}} sur {{total}} transactions",
+    "filtered": "Filtrées",
+    "selectCategory": "Sélectionnez une catégorie",
+    "noDescription": "Sans description",
+    "noCategory": "Sans catégorie",
+    "editTransaction": "Modifier la transaction",
+    "deleteTransaction": "Supprimer la transaction",
+    "summaryFiltered": "Résumé (Filtré)",
+    "balanceFiltered": "Solde Filtré",
+    "totalIncome": "Total des revenus",
+    "totalExpenses": "Total des dépenses",
+    "records": "enregistrements",
+    "movements": "mouvements",
+    "activeFilters": "filtre actif",
+    "activeFiltersPlural": "filtres actifs",
+    "noTransactionsWithFilters": "Aucune transaction trouvée avec les filtres appliqués",
+    "clearFilters": "Effacer les filtres",
+    "database": "Base de données",
+    "sortOptions": {
+      "dateDesc": "Date (Plus récente)",
+      "dateAsc": "Date (Plus ancienne)",
+      "valueDesc": "Valeur (Plus élevée)",
+      "valueAsc": "Valeur (Plus basse)",
+      "categoryAsc": "Catégorie (A-Z)",
+      "categoryDesc": "Catégorie (Z-A)"
+    },
+    "transactionForm": {
+      "type": "Type",
+      "amount": "Montant",
+      "category": "Catégorie",
+      "description": "Description (optionnelle)",
+      "date": "Date",
+      "save": "Enregistrer",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "cancel": "Annuler"
+    },
+    "transactionTypes": {
+      "income": "Revenu",
+      "expense": "Dépense"
+    }
+  },
+  "transactions": {
+    "validation": {
+      "validAmount": "Veuillez saisir un montant valide",
+      "validDate": "Veuillez sélectionner une date valide",
+      "requiredAmount": "Le montant est obligatoire",
+      "positiveAmount": "Le montant doit être supérieur à zéro",
+      "requiredAmountPositive": "Le montant est obligatoire et doit être supérieur à zéro",
+      "invalidDate": "Date invalide sélectionnée",
+      "requiredCategory": "La catégorie est obligatoire",
+      "requiredType": "Le type de transaction est obligatoire"
+    },
+    "messages": {
+      "addSuccess": "Transaction ajoutée avec succès!",
+      "addError": "Erreur lors de l'ajout de la transaction",
+      "updateSuccess": "Transaction mise à jour avec succès!",
+      "updateError": "Erreur lors de la mise à jour de la transaction",
+      "deleteSuccess": "Transaction supprimée avec succès!",
+      "deleteError": "Erreur lors de la suppression de la transaction"
+    },
+    "filters": {
+      "anyPeriod": "Toute période",
+      "today": "Aujourd'hui",
+      "lastWeek": "Semaine dernière",
+      "thisMonth": "Ce mois",
+      "thisYear": "Cette année",
+      "anyAmount": "Tout montant",
+      "upTo100": "Jusqu'à 100€",
+      "between100and1000": "100€ - 1.000€",
+      "above1000": "Plus de 1.000€"
+    }
+  },
+  "filters": {
+    "advanced": {
+      "title": "Filtres Avancés",
+      "period": "Filtrer par Période",
+      "quickPeriods": "Périodes Rapides",
+      "dateStart": "Date de Début",
+      "dateEnd": "Date de Fin",
+      "amount": "Filtrer par Montant",
+      "quickRanges": "Plages Rapides",
+      "amountMin": "Montant Minimum",
+      "amountMax": "Montant Maximum",
+      "type": "Type de Transaction",
+      "categories": "Catégories",
+      "selectedCount": "sélectionnée",
+      "selectedCountPlural": "sélectionnées",
+      "applied": "Filtres Appliqués",
+      "clearAll": "Effacer Tout",
+      "noCategoriesAvailable": "Aucune catégorie disponible",
+      "configureMessage": "Configurez les filtres ci-dessus pour affiner votre analyse des transactions",
+      "filters": "Filtres"
+    },
+    "validation": {
+      "dateInvalid": "La date de début doit être antérieure à la date de fin",
+      "amountInvalid": "Le montant minimum doit être inférieur au maximum"
+    }
+  },
+  "charts": {
+    "title": "Analyse Financière",
+    "subtitle": "Visualisez vos finances à travers des graphiques interactifs",
+    "categories": "Catégories",
+    "tabs": {
+      "overview": "Vue d'Ensemble",
+      "trends": "Tendances", 
+      "categories": "Catégories",
+      "evolution": "Évolution"
+    },
+    "filters": {
+      "period": "Période",
+      "allTime": "Tout",
+      "last1Month": "1 mois",
+      "last3Months": "3 mois", 
+      "last6Months": "6 mois",
+      "last12Months": "12 mois"
+    },
+    "noData": "Aucune donnée trouvée pour la période sélectionnée",
+    "noDataTitle": "Aucune donnée trouvée",
+    "noDataMessage": "Ajoutez quelques transactions pour voir les graphiques",
+    "noDataInstructions": "Allez au Tableau de Bord et ajoutez des revenus ou dépenses, ou importez des données OFX",
+    "loading": "Chargement des données...",
+    "monthlyBalance": "Solde Mensuel",
+    "incomeVsExpenses": "Revenus vs Dépenses",
+    "expensesByCategory": "Dépenses par Catégorie",
+    "balanceEvolution": "Évolution du Solde",
+    "income": "Revenus",
+    "expenses": "Dépenses",
+    "balance": "Solde",
+    "value": "Valeur",
+    "accumulatedPatrimony": "Patrimoine Accumulé",
+    "noCategoryData": "Aucune donnée de catégorie trouvée pour la période sélectionnée",
+    "noCategoryDataHint": "Assurez-vous que vos transactions ont des catégories définies",
+    "totalTransactions": "Total des Transactions",
+    "footerMessage": "Données basées sur vos transactions • Période: {{period}} • Catégories dynamiques actives • Mis à jour en temps réel"
+  },
+  "patrimony": {
+    "title": "Gestion du Patrimoine",
+    "currentBalance": "Solde Actuel",
+    "totalInvestments": "Total Investi",
+    "monthlyReturn": "Rendement Mensuel",
+    "portfolioAllocation": "Allocation du Portefeuille",
+    "recentMovements": "Mouvements Récents",
+    "summary": "Résumé du Patrimoine",
+    "totalPatrimony": "Patrimoine Total",
+    "initialBalances": "Soldes Initiaux par Investissement",
+    "saveInitialBalances": "Enregistrer les Soldes Initiaux",
+    "addMovement": "Ajouter un Mouvement",
+    "investmentType": "Type d'Investissement",
+    "date": "Date",
+    "amount": "Montant (positif pour investissement, négatif pour retrait)",
+    "amountHint": "Utilisez des valeurs positives pour les investissements et négatives pour les retraits",
+    "description": "Description",
+    "descriptionPlaceholder": "Description du mouvement (optionnelle)",
+    "selectPlaceholder": "Sélectionner...",
+    "categoryBreakdown": "Résumé par Catégorie",
+    "totalInitialBalances": "Total des Soldes Initiaux:",
+    "howToUse": {
+      "title": "Comment utiliser cette section",
+      "step1": "Configurez les soldes initiaux de chaque type d'investissement",
+      "step2": "Utilisez les mouvements pour enregistrer les investissements et retraits",
+      "step3": "Le patrimoine total est calculé automatiquement",
+      "step4": "Valeurs positives = investissements | Valeurs négatives = retraits"
+    },
+    "investmentTypes": {
+      "treasuryDirect": "Obligations d'État",
+      "cdb": "Certificats de Dépôt",
+      "lciLca": "LCI/LCA",
+      "investmentFunds": "Fonds d'Investissement",
+      "stocks": "Actions",
+      "fiis": "Fonds Immobiliers",
+      "crypto": "Cryptomonnaies",
+      "savings": "Épargne",
+      "others": "Autres"
+    },
+    "messages": {
+      "saveSuccess": "Soldes initiaux enregistrés avec succès!",
+      "saveError": "Erreur lors de l'enregistrement des soldes initiaux.",
+      "fillRequired": "Veuillez remplir le type d'investissement et le montant.",
+      "invalidAmount": "Veuillez entrer un montant valide (positif pour investissement, négatif pour retrait).",
+      "movementSuccess": "Mouvement ajouté avec succès!",
+      "movementError": "Erreur lors de l'ajout du mouvement d'investissement."
+    }
+  },
+  "reports": {
+    "title": "Rapport Annuel",
+    "annualReport": "Rapport Annuel",
+    "selectYear": "Sélectionner l'Année",
+    "totalIncome": "Total des Revenus",
+    "totalExpenses": "Total des Dépenses",
+    "netResult": "Résultat Net",
+    "netBalance": "Solde Net",
+    "monthlyBreakdown": "Répartition Mensuelle",
+    "monthlyEvolution": "Évolution Mensuelle",
+    "categoryAnalysis": "Analyse par Catégorie",
+    "exportReport": "Exporter le Rapport",
+    "month": "Mois",
+    "income": "Revenus",
+    "expenses": "Dépenses",
+    "balance": "Solde",
+    "investments": "Investissements",
+    "months": {
+      "january": "Janvier",
+      "february": "Février",
+      "march": "Mars",
+      "april": "Avril",
+      "may": "Mai",
+      "june": "Juin",
+      "july": "Juillet",
+      "august": "Août",
+      "september": "Septembre",
+      "october": "Octobre",
+      "november": "Novembre",
+      "december": "Décembre"
+    },
+    "loading": {
+      "initializing": "Initialisation du système...",
+      "generating": "Génération du rapport..."
+    },
+    "errors": {
+      "tryAgain": "Réessayer",
+      "noData": "Aucune donnée trouvée pour {{year}}",
+      "noDataHint": "Ajoutez quelques transactions pour générer des rapports"
+    },
+    "info": {
+      "title": "Comment interpréter le rapport",
+      "incomeDesc": "Tous les revenus enregistrés dans l'année",
+      "expensesDesc": "Toutes les dépenses enregistrées dans l'année",
+      "balanceDesc": "Différence entre revenus et dépenses mensuels",
+      "investmentsDesc": "Mouvements d'investissements et de retraits"
+    },
+    "stats": {
+      "title": "Statistiques Supplémentaires",
+      "monthsWithData": "Mois avec Données",
+      "avgMonthlyIncome": "Moyenne Mensuelle Revenus",
+      "avgMonthlyExpenses": "Moyenne Mensuelle Dépenses"
+    }
+  },
+  "configuration": {
+    "title": "Paramètres",
+    "appearance": "Apparence",
+    "language": {
+      "title": "Langue de l'Interface",
+      "description": "Sélectionnez la langue de l'application",
+      "current": "Langue actuelle",
+      "detectAutomatic": "Détecter automatiquement"
+    },
+    "theme": {
+      "title": "Apparence",
+      "description": "Choisissez entre le mode clair ou sombre pour une meilleure expérience visuelle",
+      "lightMode": "Mode Clair",
+      "darkMode": "Mode Sombre",
+      "lightDescription": "Interface claire et propre pour une utilisation en journée",
+      "darkDescription": "Interface sombre pour réduire la fatigue oculaire",
+      "toggleTo": "Passer à",
+      "light": "Clair",
+      "dark": "Sombre",
+      "lightSubtitle": "Interface traditionnelle",
+      "darkSubtitle": "Réduit la fatigue oculaire",
+      "aboutTitle": "À propos du thème",
+      "aboutDescription": "Votre préférence est enregistrée automatiquement et appliquée dans toutes les sessions. Le mode sombre peut aider à réduire la fatigue oculaire lors d'une utilisation prolongée.",
+      "current": "Thème actuel"
+    },
+    "currency": {
+      "title": "Devise et Format Monétaire",
+      "description": "Configurez la devise et le format d'affichage des valeurs",
+      "currency": "Devise",
+      "displayFormat": "Format d'Affichage",
+      "example": "Exemple",
+      "currentCurrency": "Devise actuelle",
+      "code": "Code",
+      "format": "Format",
+      "currencies": {
+        "usd": "Dollar Américain",
+        "eur": "Euro",
+        "gbp": "Livre Sterling",
+        "brl": "Réal Brésilien",
+        "cad": "Dollar Canadien",
+        "aud": "Dollar Australien",
+        "jpy": "Yen Japonais",
+        "chf": "Franc Suisse"
+      }
+    },
+    "dateFormat": {
+      "title": "Format de Date",
+      "description": "Choisissez comment les dates sont affichées dans le système",
+      "format": "Format",
+      "example": "Exemple",
+      "currentFormat": "Format actuel",
+      "pattern": "Modèle",
+      "separator": "Séparateur",
+      "regionsLabel": "Régions",
+      "examples": "Exemples",
+      "today": "Aujourd'hui",
+      "newYear": "Nouvel An",
+      "birthday": "Anniversaire",
+      "contract": "Contrat",
+      "tip": "Conseil",
+      "tipDescription": "Le format sélectionné sera utilisé dans toutes les transactions, rapports et graphiques du système. Vous pouvez le modifier à tout moment sans perdre de données.",
+      "regions": {
+        "ddmmyyyy": "Brésil, Portugal, Royaume-Uni, France",
+        "mmddyyyy": "États-Unis, Canada",
+        "dddotmm": "Allemagne, Autriche, Suisse",
+        "iso": "ISO 8601, International",
+        "ddhyphen": "Certains pays européens",
+        "shorteu": "Format court Europe",
+        "shortus": "Format court États-Unis"
+      }
+    },
+    "categories": {
+      "title": "Gérer les Catégories",
+      "description": "Personnalisez vos catégories de revenus et dépenses",
+      "customizable": "Personnalisables",
+      "manage": "Gérer les Catégories",
+      "categoryName": "Nom de la Catégorie",
+      "addCategory": "Ajouter une Catégorie",
+      "editCategory": "Modifier la Catégorie",
+      "deleteCategory": "Supprimer la Catégorie",
+      "categoryType": "Type de Catégorie",
+      "incomeCategories": "Catégories de Revenus",
+      "expenseCategories": "Catégories de Dépenses",
+      "defaultCategories": "Catégories par Défaut",
+      "customCategories": "Catégories Personnalisées",
+      "statistics": "Statistiques",
+      "add": "Ajouter",
+      "default": "Par défaut",
+      "color": "Couleur",
+      "icon": "Icône",
+      "usage": "Utilisation",
+      "lastUsed": "Dernière utilisation",
+      "noStats": "Aucune statistique disponible",
+      "noCategories": "Aucune catégorie trouvée",
+      "inactive": "Inactive"
+    },
+    "data": "Données",
+    "about": "À Propos",
+    "ofx": {
+      "title": "Fonctionnalité OFX",
+      "description": "Importez des transactions depuis des fichiers .ofx/.qfx bancaires ou exportez vos données au format OFX",
+      "import": "Importer OFX",
+      "export": "Exporter OFX",
+      "compatibility": "Compatible avec Itaú, Bradesco, Santander, Banco do Brasil",
+      "duplicateDetection": "L'importation détecte automatiquement les doublons",
+      "smartCategorization": "Catégorisation intelligente basée sur la description",
+      "compatibleBanks": "• Compatible avec Itaú, Bradesco, Santander, Banco do Brasil",
+      "features": "• L'importation détecte automatiquement les doublons",
+      "categorization": "• Catégorisation intelligente basée sur la description"
+    },
+    "backup": {
+      "title": "Sauvegarde et Exportation",
+      "description": "Sauvegardez vos données financières",
+      "exportCSV": "Exporter CSV",
+      "exportJSON": "Exporter JSON",
+      "downloadDB": "Télécharger la Base (.db)",
+      "exportCsv": "Exporter CSV",
+      "exportJson": "Exporter JSON",
+      "downloadDb": "Télécharger la Base (.db)"
+    },
+    "account": {
+      "title": "Compte et Sécurité",
+      "description": "Gérez votre compte et les paramètres de sécurité",
+      "changePassword": "Changer le Mot de Passe",
+      "logout": "Se Déconnecter"
+    },
+    "rating": {
+      "title": "Évaluation",
+      "description": "Si vous avez aimé l'application, aidez les autres à la découvrir",
+      "action": "Vous avez aimé? Laissez une étoile pour aider les autres à la découvrir",
+      "rateApp": "Vous avez aimé? Laissez une étoile pour aider les autres à la découvrir"
+    },
+    "features": {
+      "title": "Fonctionnalités Implémentées",
+      "transactionDeletion": "Suppression de transactions avec logs",
+      "searchByDescription": "Recherche par description/catégorie",
+      "flexibleSorting": "Tri flexible",
+      "completeCSVExport": "Export CSV complet",
+      "transactionEditing": "Modification de transactions",
+      "advancedFilters": "Filtres avancés",
+      "ofxImportExport": "Import/Export OFX",
+      "duplicateDetection": "Détection de doublons",
+      "completeModularization": "Modularisation complète",
+      "functionalPWA": "PWA hors ligne fonctionnel",
+      "darkLightMode": "Mode Sombre/Clair",
+      "multilingualSystem": "Système Multilingue",
+      "implemented": {
+        "deleteTransactions": "Suppression de transactions avec logs",
+        "search": "Recherche par description/catégorie", 
+        "sorting": "Tri flexible",
+        "csvExport": "Export CSV complet",
+        "editTransactions": "Modification de transactions",
+        "advancedFilters": "Filtres avancés",
+        "ofxImport": "Import/Export OFX",
+        "duplicateDetection": "Détection de doublons",
+        "modularization": "Modularisation complète",
+        "pwaOffline": "PWA hors ligne fonctionnel",
+        "darkMode": "Mode Sombre/Clair",
+        "customCategories": "Catégories Personnalisables",
+        "multiLanguage": "Système Multilingue"
+      }
+    },
+    "system": {
+      "title": "Informations Système",
+      "type": "Type",
+      "database": "Base de données",
+      "storage": "Stockage",
+      "offlineMode": "Mode hors ligne",
+      "functional": "Fonctionnel",
+      "version": "Version",
+      "multilingualVersion": "Système Multilingue",
+      "currentTheme": "Thème actuel",
+      "lightMode": "Mode Clair",
+      "darkMode": "Mode Sombre",
+      "currentLanguage": "Langue actuelle"
+    }
+  },
+  "modals": {
+    "delete": {
+      "title": "Confirmer la Suppression",
+      "message": "Êtes-vous sûr de vouloir supprimer cette transaction?",
+      "transactionDetails": "Détails de la transaction:",
+      "confirm": "Oui, supprimer",
+      "cancel": "Annuler",
+      "confirmMessage": "Cette action ne peut pas être annulée. La transaction sera définitivement supprimée du système.",
+      "fields": {
+        "id": "ID:",
+        "date": "Date:",
+        "type": "Type:",
+        "description": "Description:",
+        "category": "Catégorie:",
+        "amount": "Montant:"
+      }
+    },
+    "edit": {
+      "title": "Modifier la Transaction",
+      "save": "Enregistrer les Modifications",
+      "cancel": "Annuler",
+      "fields": {
+        "originalDate": "Date Originale",
+        "originalAmount": "Montant Original",
+        "originalCategory": "Catégorie Originale",
+        "originalDescription": "Description Originale"
+      },
+      "actions": {
+        "saveChanges": "Enregistrer les Modifications",
+        "discardChanges": "Annuler les Modifications"
+      },
+      "footer": {
+        "autoUpdate": "Système de mise à jour automatique actif"
+      }
+    },
+    "ofxImport": {
+      "title": "Importer un Fichier OFX",
+      "selectFile": "Sélectionner un Fichier",
+      "processing": "Traitement en cours...",
+      "preview": "Aperçu des Données",
+      "import": "Importer",
+      "cancel": "Annuler",
+      "stats": {
+        "total": "Total des transactions:",
+        "new": "Nouvelles transactions:",
+        "duplicates": "Doublons trouvés:"
+      },
+      "warnings": {
+        "duplicatesFound": "Certaines transactions existent déjà dans le système",
+        "noNewTransactions": "Aucune nouvelle transaction trouvée"
+      },
+      "actions": {
+        "importAll": "Tout Importer",
+        "importOnlyNew": "Importer Uniquement les Nouvelles ({{count}})",
+        "viewDuplicates": "Voir les Doublons"
+      },
+      "messages": {
+        "importSuccess": "{{count}} transaction(s) importée(s) avec succès!",
+        "importError": "Erreur lors de l'importation des transactions",
+        "fileInvalid": "Fichier OFX invalide ou corrompu"
+      }
+    },
+    "donation": {
+      "titles": {
+        "twoMonths": "2 mois d'utilisation de l'app !",
+        "threeMonths": "3 mois d'utilisation de l'app !",
+        "general": "Soutenez le développement"
+      },
+      "description": "Si l'application vous a été utile, envisagez de faire un don pour soutenir le développement continu.",
+      "payment": {
+        "international": "International"
+      },
+      "pix": {
+        "label": "Clé PIX",
+        "copied": "PIX copié dans le presse-papiers !"
+      },
+      "iban": {
+        "label": "IBAN",
+        "accountHolder": "Titulaire du Compte",
+        "currencies": "Accepte EUR, USD, GBP et plus de 100 devises"
+      },
+      "messages": {
+        "pixCopied": "Clé PIX copiée avec succès !",
+        "ibanCopied": "IBAN copié avec succès !"
+      },
+      "actions": {
+        "copy": "Copier",
+        "thankYou": "Merci pour votre soutien !",
+        "remindLater": "Me rappeler plus tard",
+        "dontShowAgain": "Ne plus afficher"
+      },
+      "footer": {
+        "appInfo": "V&M Personal Finance - Application gratuite et open-source"
+      }
+    },
+    "rating": {
+      "title": "Évaluer l'application",
+      "description": "Vous utilisez l'application depuis un moment. Si elle vous a été utile, pensez à l'évaluer!",
+      "instructions": {
+        "clickButton": "Cliquez sur le bouton ci-dessous pour aller sur GitHub",
+        "steps": "1. Allez sur la page du projet\n2. Cliquez sur l'étoile (⭐) en haut de la page\n3. Optionnellement, laissez un commentaire"
+      },
+      "actions": {
+        "rateOnGithub": "Évaluer sur GitHub",
+        "remindLater": "Rappeler plus tard",
+        "noThanks": "Non, merci"
+      },
+      "footer": {
+        "timeInfo": "Demande après 30 jours d'utilisation"
+      }
+    }
+  },
+  "categoryMapping": {
+    "income": {
+      "salary": "Salaire",
+      "freelance": "Freelance", 
+      "investments": "Investissements",
+      "sales": "Ventes",
+      "bonus": "Prime",
+      "other": "Autres"
+    },
+    "expenses": {
+      "food": "Alimentation",
+      "transport": "Transport",
+      "housing": "Logement",
+      "health": "Santé",
+      "education": "Éducation",
+      "entertainment": "Divertissement",
+      "shopping": "Achats",
+      "utilities": "Services",
+      "insurance": "Assurances",
+      "taxes": "Impôts",
+      "other": "Autres"
+    }
+  },
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "edit": "Modifier", 
+    "delete": "Supprimer",
+    "close": "Fermer",
+    "back": "Retour",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "warning": "Avertissement",
+    "info": "Information",
+    "yes": "Oui",
+    "no": "Non",
+    "ok": "OK",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "clear": "Effacer",
+    "reset": "Réinitialiser",
+    "apply": "Appliquer",
+    "show": "Afficher",
+    "hide": "Masquer",
+    "confirmDelete": "Confirmer la Suppression",
+    "confirmAction": "Confirmer l'Action",
+    "selectAll": "Tout Sélectionner",
+    "selectNone": "Ne Rien Sélectionner",
+    "refresh": "Actualiser",
+    "export": "Exporter",
+    "import": "Importer"
+  }
+}

@@ -1,0 +1,688 @@
+{
+  "app": {
+    "title": "V&M Personal Finance",
+    "subtitle": "Progressive Web App + OFX",
+    "loading": "Sitzung wird überprüft...",
+    "lightMode": "Heller Modus",
+    "darkMode": "Dunkler Modus",
+    "checkingSession": "Sitzung wird überprüft...",
+    "checkUpdate": "Aktualisierung Prüfen",
+    "lastCheck": "Letzte Überprüfung"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "analysis": "Analyse", 
+    "patrimony": "Vermögen",
+    "annualReport": "Jahresbericht",
+    "settings": "Einstellungen",
+    "back": "Zurück"
+  },
+  "auth": {
+    "welcome": "Willkommen bei",
+    "subtitle": "Verwalten Sie Ihre Finanzen intelligent und sicher",
+    "newUser": "Neuer Benutzer?",
+    "existingUser": "Haben Sie bereits ein Konto?",
+    "createPassword": "Zugangspasswort erstellen",
+    "enterPassword": "Geben Sie Ihr Passwort ein",
+    "setupAccount": "Konto Einrichten",
+    "login": "Anmelden",
+    "passwordPlaceholder": "Geben Sie ein starkes Passwort ein",
+    "confirmPassword": "Passwort bestätigen",
+    "passwordsMatch": "Passwörter stimmen überein",
+    "passwordsMismatch": "Passwörter stimmen nicht überein",
+    "weakPassword": "Passwort zu schwach",
+    "strongPassword": "Starkes Passwort",
+    "loading": "Wird geladen...",
+    "fields": {
+      "password": "Passwort",
+      "confirmPassword": "Passwort Bestätigen",
+      "currentPassword": "Aktuelles Passwort",
+      "newPassword": "Neues Passwort"
+    },
+    "placeholders": {
+      "minimumChars": "Mindestens 6 Zeichen",
+      "enterPassword": "Geben Sie Ihr Passwort ein",
+      "enterNewPassword": "Geben Sie neues Passwort ein",
+      "confirmNewPassword": "Bestätigen Sie neues Passwort",
+      "currentPassword": "Geben Sie aktuelles Passwort ein",
+      "confirmPassword": "Bestätigen Sie Passwort"
+    },
+    "errors": {
+      "passwordMismatch": "Passwörter stimmen nicht überein",
+      "weakPassword": "Passwort zu schwach - verwenden Sie mindestens 6 Zeichen",
+      "invalidPassword": "Ungültiges Passwort",
+      "requiredPassword": "Passwort ist erforderlich",
+      "passwordTooShort": "Passwort zu kurz - verwenden Sie mindestens 6 Zeichen",
+      "setupError": "Fehler beim Einrichten des Systems",
+      "loginError": "Fehler bei der Anmeldung",
+      "newPasswordMismatch": "Neue Passwörter stimmen nicht überein",
+      "changePasswordError": "Fehler beim Ändern des Passworts"
+    },
+    "messages": {
+      "systemConfigured": "System erfolgreich konfiguriert!",
+      "loginSuccess": "Anmeldung erfolgreich!",
+      "passwordChanged": "Passwort erfolgreich geändert!"
+    },
+    "actions": {
+      "login": "Anmelden",
+      "setupSystem": "System Einrichten",
+      "changePassword": "Passwort Ändern",
+      "confirmChange": "Änderung Bestätigen",
+      "backToLogin": "Zurück zur Anmeldung"
+    },
+    "login": {
+      "title": "Anmelden"
+    },
+    "setup": {
+      "title": "System Einrichten",
+      "description": "Erstellen Sie ein Passwort zum Schutz Ihrer Finanzdaten"
+    },
+    "changePassword": {
+      "title": "Passwort Ändern"
+    },
+    "firstAccess": {
+      "title": "Erster Zugriff",
+      "description": "Richten Sie das System ein, indem Sie ein Zugangspasswort erstellen"
+    },
+    "pwa": {
+      "title": "PWA-Anwendung",
+      "offline": "App funktioniert offline",
+      "localData": "Daten lokal gespeichert",
+      "secureStorage": "Verschlüsselte Speicherung",
+      "install": "Auf Startbildschirm installieren",
+      "multiDevice": "Zwischen Geräten synchronisieren",
+      "themeSupport": "Unterstützung für {{mode}}-Modus"
+    }
+  },
+  "dashboard": {
+    "quickSummary": "Schnellübersicht",
+    "revenue": "Einnahmen",
+    "expenses": "Ausgaben", 
+    "balance": "Saldo",
+    "thisMonth": "Dieser Monat",
+    "addTransaction": "Neue Transaktion",
+    "recentTransactions": "Letzte Transaktionen",
+    "noTransactions": "Keine Transaktionen gefunden",
+    "searchPlaceholder": "Nach Beschreibung oder Kategorie suchen...",
+    "sortBy": "Sortieren nach",
+    "showingTransactions": "Zeige {{count}} von {{total}} Transaktionen",
+    "filtered": "Gefiltert",
+    "selectCategory": "Wählen Sie eine Kategorie",
+    "noDescription": "Keine Beschreibung",
+    "noCategory": "Keine Kategorie",
+    "editTransaction": "Transaktion bearbeiten",
+    "deleteTransaction": "Transaktion löschen",
+    "summaryFiltered": "Zusammenfassung (Gefiltert)",
+    "balanceFiltered": "Gefilterter Saldo",
+    "totalIncome": "Gesamteinnahmen",
+    "totalExpenses": "Gesamtausgaben",
+    "records": "Datensätze",
+    "movements": "Bewegungen",
+    "activeFilters": "aktiver Filter",
+    "activeFiltersPlural": "aktive Filter",
+    "noTransactionsWithFilters": "Keine Transaktionen mit angewendeten Filtern gefunden",
+    "clearFilters": "Filter löschen",
+    "database": "Datenbank",
+    "sortOptions": {
+      "dateDesc": "Datum (Neueste)",
+      "dateAsc": "Datum (Älteste)",
+      "valueDesc": "Betrag (Höchste)",
+      "valueAsc": "Betrag (Niedrigste)",
+      "categoryAsc": "Kategorie (A-Z)",
+      "categoryDesc": "Kategorie (Z-A)"
+    },
+    "transactionForm": {
+      "type": "Typ",
+      "amount": "Betrag",
+      "category": "Kategorie",
+      "description": "Beschreibung (optional)",
+      "date": "Datum",
+      "save": "Speichern",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "cancel": "Abbrechen"
+    },
+    "transactionTypes": {
+      "income": "Einnahme",
+      "expense": "Ausgabe"
+    }
+  },
+  "transactions": {
+    "validation": {
+      "validAmount": "Bitte geben Sie einen gültigen Betrag ein",
+      "validDate": "Bitte wählen Sie ein gültiges Datum",
+      "requiredAmount": "Betrag ist erforderlich",
+      "positiveAmount": "Betrag muss größer als Null sein",
+      "requiredAmountPositive": "Betrag ist erforderlich und muss größer als Null sein",
+      "invalidDate": "Ungültiges Datum ausgewählt",
+      "requiredCategory": "Kategorie ist erforderlich",
+      "requiredType": "Transaktionstyp ist erforderlich"
+    },
+    "messages": {
+      "addSuccess": "Transaktion erfolgreich hinzugefügt!",
+      "addError": "Fehler beim Hinzufügen der Transaktion",
+      "updateSuccess": "Transaktion erfolgreich aktualisiert!",
+      "updateError": "Fehler beim Aktualisieren der Transaktion",
+      "deleteSuccess": "Transaktion erfolgreich gelöscht!",
+      "deleteError": "Fehler beim Löschen der Transaktion"
+    },
+    "filters": {
+      "anyPeriod": "Beliebiger Zeitraum",
+      "today": "Heute",
+      "lastWeek": "Letzte Woche",
+      "thisMonth": "Dieser Monat",
+      "thisYear": "Dieses Jahr",
+      "anyAmount": "Beliebiger Betrag",
+      "upTo100": "Bis zu €100",
+      "between100and1000": "€100 - €1.000",
+      "above1000": "Über €1.000"
+    }
+  },
+  "filters": {
+    "advanced": {
+      "title": "Erweiterte Filter",
+      "period": "Nach Zeitraum Filtern",
+      "quickPeriods": "Schnellzeiträume",
+      "dateStart": "Startdatum",
+      "dateEnd": "Enddatum",
+      "amount": "Nach Betrag Filtern",
+      "quickRanges": "Schnellbereiche",
+      "amountMin": "Mindestbetrag",
+      "amountMax": "Höchstbetrag",
+      "type": "Transaktionstyp",
+      "categories": "Kategorien",
+      "selectedCount": "ausgewählt",
+      "selectedCountPlural": "ausgewählt",
+      "applied": "Angewendete Filter",
+      "clearAll": "Alle Löschen",
+      "noCategoriesAvailable": "Keine Kategorien verfügbar",
+      "configureMessage": "Konfigurieren Sie die obigen Filter, um Ihre Transaktionsanalyse zu verfeinern",
+      "filters": "Filter"
+    },
+    "validation": {
+      "dateInvalid": "Startdatum muss vor Enddatum liegen",
+      "amountInvalid": "Mindestbetrag muss kleiner als Höchstbetrag sein"
+    }
+  },
+  "charts": {
+    "title": "Finanzanalyse",
+    "subtitle": "Visualisieren Sie Ihre Finanzen durch interaktive Diagramme",
+    "categories": "Kategorien",
+    "tabs": {
+      "overview": "Übersicht",
+      "trends": "Trends", 
+      "categories": "Kategorien",
+      "evolution": "Entwicklung"
+    },
+    "filters": {
+      "period": "Zeitraum",
+      "allTime": "Alle",
+      "last1Month": "1 Monat",
+      "last3Months": "3 Monate", 
+      "last6Months": "6 Monate",
+      "last12Months": "12 Monate"
+    },
+    "noData": "Keine Daten für den ausgewählten Zeitraum gefunden",
+    "noDataTitle": "Keine Daten gefunden",
+    "noDataMessage": "Fügen Sie einige Transaktionen hinzu, um Diagramme zu sehen",
+    "noDataInstructions": "Gehen Sie zum Dashboard und fügen Sie Einnahmen oder Ausgaben hinzu, oder importieren Sie OFX-Daten",
+    "loading": "Daten werden geladen...",
+    "monthlyBalance": "Monatlicher Saldo",
+    "incomeVsExpenses": "Einnahmen vs Ausgaben",
+    "expensesByCategory": "Ausgaben nach Kategorie",
+    "balanceEvolution": "Saldoentwicklung",
+    "income": "Einnahmen",
+    "expenses": "Ausgaben",
+    "balance": "Saldo",
+    "value": "Wert",
+    "accumulatedPatrimony": "Angesammeltes Vermögen",
+    "noCategoryData": "Keine Kategoriedaten für den ausgewählten Zeitraum gefunden",
+    "noCategoryDataHint": "Stellen Sie sicher, dass Ihre Transaktionen definierte Kategorien haben",
+    "totalTransactions": "Gesamttransaktionen",
+    "footerMessage": "Daten basierend auf Ihren Transaktionen • Zeitraum: {{period}} • Dynamische Kategorien aktiv • In Echtzeit aktualisiert"
+  },
+  "patrimony": {
+    "title": "Vermögensverwaltung",
+    "currentBalance": "Aktueller Saldo",
+    "totalInvestments": "Gesamtinvestitionen",
+    "monthlyReturn": "Monatliche Rendite",
+    "portfolioAllocation": "Portfolioaufteilung",
+    "recentMovements": "Letzte Bewegungen",
+    "summary": "Vermögenszusammenfassung",
+    "totalPatrimony": "Gesamtvermögen",
+    "initialBalances": "Anfangssalden pro Investition",
+    "saveInitialBalances": "Anfangssalden Speichern",
+    "addMovement": "Bewegung Hinzufügen",
+    "investmentType": "Investitionstyp",
+    "date": "Datum",
+    "amount": "Betrag (positiv für Investition, negativ für Auszahlung)",
+    "amountHint": "Verwenden Sie positive Werte für Investitionen und negative für Auszahlungen",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "Bewegungsbeschreibung (optional)",
+    "selectPlaceholder": "Auswählen...",
+    "categoryBreakdown": "Zusammenfassung nach Kategorie",
+    "totalInitialBalances": "Gesamtanfangssalden:",
+    "howToUse": {
+      "title": "So verwenden Sie diesen Bereich",
+      "step1": "Richten Sie die Anfangssalden für jeden Investitionstyp ein",
+      "step2": "Verwenden Sie Bewegungen, um Investitionen und Auszahlungen zu erfassen",
+      "step3": "Das Gesamtvermögen wird automatisch berechnet",
+      "step4": "Positive Werte = Investitionen | Negative Werte = Auszahlungen"
+    },
+    "investmentTypes": {
+      "treasuryDirect": "Staatsanleihen",
+      "cdb": "Einlagenzertifikate",
+      "lciLca": "LCI/LCA",
+      "investmentFunds": "Investmentfonds",
+      "stocks": "Aktien",
+      "fiis": "Immobilienfonds",
+      "crypto": "Kryptowährungen",
+      "savings": "Spareinlagen",
+      "others": "Andere"
+    },
+    "messages": {
+      "saveSuccess": "Anfangssalden erfolgreich gespeichert!",
+      "saveError": "Fehler beim Speichern der Anfangssalden.",
+      "fillRequired": "Bitte füllen Sie Investitionstyp und Betrag aus.",
+      "invalidAmount": "Bitte geben Sie einen gültigen Betrag ein (positiv für Investition, negativ für Auszahlung).",
+      "movementSuccess": "Bewegung erfolgreich hinzugefügt!",
+      "movementError": "Fehler beim Hinzufügen der Investitionsbewegung."
+    }
+  },
+  "reports": {
+    "title": "Jahresbericht",
+    "annualReport": "Jahresbericht",
+    "selectYear": "Jahr Auswählen",
+    "totalIncome": "Gesamteinnahmen",
+    "totalExpenses": "Gesamtausgaben",
+    "netResult": "Nettoergebnis",
+    "netBalance": "Nettosaldo",
+    "monthlyBreakdown": "Monatliche Aufschlüsselung",
+    "monthlyEvolution": "Monatliche Entwicklung",
+    "categoryAnalysis": "Analyse nach Kategorie",
+    "exportReport": "Bericht Exportieren",
+    "month": "Monat",
+    "income": "Einnahmen",
+    "expenses": "Ausgaben",
+    "balance": "Saldo",
+    "investments": "Investitionen",
+    "months": {
+      "january": "Januar",
+      "february": "Februar",
+      "march": "März",
+      "april": "April",
+      "may": "Mai",
+      "june": "Juni",
+      "july": "Juli",
+      "august": "August",
+      "september": "September",
+      "october": "Oktober",
+      "november": "November",
+      "december": "Dezember"
+    },
+    "loading": {
+      "initializing": "System wird initialisiert...",
+      "generating": "Bericht wird erstellt..."
+    },
+    "errors": {
+      "tryAgain": "Erneut Versuchen",
+      "noData": "Keine Daten für {{year}} gefunden",
+      "noDataHint": "Fügen Sie einige Transaktionen hinzu, um Berichte zu erstellen"
+    },
+    "info": {
+      "title": "So interpretieren Sie den Bericht",
+      "incomeDesc": "Alle im Jahr erfassten Einnahmen",
+      "expensesDesc": "Alle im Jahr erfassten Ausgaben",
+      "balanceDesc": "Differenz zwischen monatlichen Einnahmen und Ausgaben",
+      "investmentsDesc": "Investitions- und Auszahlungsbewegungen"
+    },
+    "stats": {
+      "title": "Zusätzliche Statistiken",
+      "monthsWithData": "Monate mit Daten",
+      "avgMonthlyIncome": "Durchschnittliche Monatliche Einnahmen",
+      "avgMonthlyExpenses": "Durchschnittliche Monatliche Ausgaben"
+    }
+  },
+  "configuration": {
+    "title": "Einstellungen",
+    "appearance": "Erscheinungsbild",
+    "language": {
+      "title": "Sprache der Benutzeroberfläche",
+      "description": "Wählen Sie die Anwendungssprache",
+      "current": "Aktuelle Sprache",
+      "detectAutomatic": "Automatisch erkennen"
+    },
+    "theme": {
+      "title": "Erscheinungsbild",
+      "description": "Wählen Sie zwischen hellem oder dunklem Modus für ein besseres visuelles Erlebnis",
+      "lightMode": "Heller Modus",
+      "darkMode": "Dunkler Modus",
+      "lightDescription": "Helle und saubere Oberfläche für die Tagesnutzung",
+      "darkDescription": "Dunkle Oberfläche zur Reduzierung der Augenbelastung",
+      "toggleTo": "Wechseln zu",
+      "light": "Hell",
+      "dark": "Dunkel",
+      "lightSubtitle": "Traditionelle Oberfläche",
+      "darkSubtitle": "Reduziert Augenbelastung",
+      "aboutTitle": "Über das Thema",
+      "aboutDescription": "Ihre Präferenz wird automatisch gespeichert und in allen Sitzungen angewendet. Der dunkle Modus kann helfen, die Augenbelastung bei längerem Gebrauch zu reduzieren.",
+      "current": "Aktuelles Thema"
+    },
+    "currency": {
+      "title": "Währung und Geldformat",
+      "description": "Konfigurieren Sie Währung und Anzeigeformat der Werte",
+      "currency": "Währung",
+      "displayFormat": "Anzeigeformat",
+      "example": "Beispiel",
+      "currentCurrency": "Aktuelle Währung",
+      "code": "Code",
+      "format": "Format",
+      "currencies": {
+        "usd": "US-Dollar",
+        "eur": "Euro",
+        "gbp": "Britisches Pfund",
+        "brl": "Brasilianischer Real",
+        "cad": "Kanadischer Dollar",
+        "aud": "Australischer Dollar",
+        "jpy": "Japanischer Yen",
+        "chf": "Schweizer Franken"
+      }
+    },
+    "dateFormat": {
+      "title": "Datumsformat",
+      "description": "Wählen Sie, wie Daten im System angezeigt werden",
+      "format": "Format",
+      "example": "Beispiel",
+      "currentFormat": "Aktuelles Format",
+      "pattern": "Muster",
+      "separator": "Trennzeichen",
+      "regionsLabel": "Regionen",
+      "examples": "Beispiele",
+      "today": "Heute",
+      "newYear": "Neujahr",
+      "birthday": "Geburtstag",
+      "contract": "Vertrag",
+      "tip": "Tipp",
+      "tipDescription": "Das ausgewählte Format wird in allen Transaktionen, Berichten und Diagrammen des Systems verwendet. Sie können es jederzeit ändern, ohne Daten zu verlieren.",
+      "regions": {
+        "ddmmyyyy": "Brasilien, Portugal, Vereinigtes Königreich, Frankreich",
+        "mmddyyyy": "Vereinigte Staaten, Kanada",
+        "dddotmm": "Deutschland, Österreich, Schweiz",
+        "iso": "ISO 8601, International",
+        "ddhyphen": "Einige europäische Länder",
+        "shorteu": "Kurzformat Europa",
+        "shortus": "Kurzformat USA"
+      }
+    },
+    "categories": {
+      "title": "Kategorien Verwalten",
+      "description": "Passen Sie Ihre Einnahmen- und Ausgabenkategorien an",
+      "customizable": "Anpassbar",
+      "manage": "Kategorien Verwalten",
+      "categoryName": "Kategoriename",
+      "addCategory": "Kategorie Hinzufügen",
+      "editCategory": "Kategorie Bearbeiten",
+      "deleteCategory": "Kategorie Löschen",
+      "categoryType": "Kategorietyp",
+      "incomeCategories": "Einnahmenkategorien",
+      "expenseCategories": "Ausgabenkategorien",
+      "defaultCategories": "Standardkategorien",
+      "customCategories": "Benutzerdefinierte Kategorien",
+      "statistics": "Statistiken",
+      "add": "Hinzufügen",
+      "default": "Standard",
+      "color": "Farbe",
+      "icon": "Symbol",
+      "usage": "Verwendung",
+      "lastUsed": "Zuletzt verwendet",
+      "noStats": "Keine Statistiken verfügbar",
+      "noCategories": "Keine Kategorien gefunden",
+      "inactive": "Inaktiv"
+    },
+    "data": "Daten",
+    "about": "Über",
+    "ofx": {
+      "title": "OFX-Funktionalität",
+      "description": "Importieren Sie Transaktionen aus .ofx/.qfx-Bankdateien oder exportieren Sie Ihre Daten im OFX-Format",
+      "import": "OFX Importieren",
+      "export": "OFX Exportieren",
+      "compatibility": "Kompatibel mit Itaú, Bradesco, Santander, Banco do Brasil",
+      "duplicateDetection": "Import erkennt Duplikate automatisch",
+      "smartCategorization": "Intelligente Kategorisierung basierend auf Beschreibung",
+      "compatibleBanks": "• Kompatibel mit Itaú, Bradesco, Santander, Banco do Brasil",
+      "features": "• Import erkennt Duplikate automatisch",
+      "categorization": "• Intelligente Kategorisierung basierend auf Beschreibung"
+    },
+    "backup": {
+      "title": "Sicherung und Export",
+      "description": "Sichern Sie Ihre Finanzdaten",
+      "exportCSV": "CSV Exportieren",
+      "exportJSON": "JSON Exportieren",
+      "downloadDB": "Datenbank Herunterladen (.db)",
+      "exportCsv": "CSV Exportieren",
+      "exportJson": "JSON Exportieren",
+      "downloadDb": "Datenbank Herunterladen (.db)"
+    },
+    "account": {
+      "title": "Konto und Sicherheit",
+      "description": "Verwalten Sie Ihr Konto und Sicherheitseinstellungen",
+      "changePassword": "Passwort Ändern",
+      "logout": "Abmelden"
+    },
+    "rating": {
+      "title": "Bewertung",
+      "description": "Wenn Ihnen die Anwendung gefallen hat, helfen Sie anderen, sie zu entdecken",
+      "action": "Hat es Ihnen gefallen? Hinterlassen Sie einen Stern, um anderen zu helfen, sie zu entdecken",
+      "rateApp": "Hat es Ihnen gefallen? Hinterlassen Sie einen Stern, um anderen zu helfen, sie zu entdecken"
+    },
+    "features": {
+      "title": "Implementierte Funktionen",
+      "transactionDeletion": "Transaktionslöschung mit Protokollen",
+      "searchByDescription": "Suche nach Beschreibung/Kategorie",
+      "flexibleSorting": "Flexible Sortierung",
+      "completeCSVExport": "Vollständiger CSV-Export",
+      "transactionEditing": "Transaktionsbearbeitung",
+      "advancedFilters": "Erweiterte Filter",
+      "ofxImportExport": "Import/Export OFX",
+      "duplicateDetection": "Duplikaterkennung",
+      "completeModularization": "Vollständige Modularisierung",
+      "functionalPWA": "Funktionale Offline-PWA",
+      "darkLightMode": "Dunkler/Heller Modus",
+      "multilingualSystem": "Mehrsprachiges System",
+      "implemented": {
+        "deleteTransactions": "Transaktionslöschung mit Protokollen",
+        "search": "Suche nach Beschreibung/Kategorie", 
+        "sorting": "Flexible Sortierung",
+        "csvExport": "Vollständiger CSV-Export",
+        "editTransactions": "Transaktionsbearbeitung",
+        "advancedFilters": "Erweiterte Filter",
+        "ofxImport": "Import/Export OFX",
+        "duplicateDetection": "Duplikaterkennung",
+        "modularization": "Vollständige Modularisierung",
+        "pwaOffline": "Funktionale Offline-PWA",
+        "darkMode": "Dunkler/Heller Modus",
+        "customCategories": "Anpassbare Kategorien",
+        "multiLanguage": "Mehrsprachiges System"
+      }
+    },
+    "system": {
+      "title": "Systeminformationen",
+      "type": "Typ",
+      "database": "Datenbank",
+      "storage": "Speicher",
+      "offlineMode": "Offline-Modus",
+      "functional": "Funktional",
+      "version": "Version",
+      "multilingualVersion": "Mehrsprachiges System",
+      "currentTheme": "Aktuelles Thema",
+      "lightMode": "Heller Modus",
+      "darkMode": "Dunkler Modus",
+      "currentLanguage": "Aktuelle Sprache"
+    }
+  },
+  "modals": {
+    "delete": {
+      "title": "Löschung Bestätigen",
+      "message": "Sind Sie sicher, dass Sie diese Transaktion löschen möchten?",
+      "transactionDetails": "Transaktionsdetails:",
+      "confirm": "Ja, löschen",
+      "cancel": "Abbrechen",
+      "confirmMessage": "Diese Aktion kann nicht rückgängig gemacht werden. Die Transaktion wird dauerhaft aus dem System entfernt.",
+      "fields": {
+        "id": "ID:",
+        "date": "Datum:",
+        "type": "Typ:",
+        "description": "Beschreibung:",
+        "category": "Kategorie:",
+        "amount": "Betrag:"
+      }
+    },
+    "edit": {
+      "title": "Transaktion Bearbeiten",
+      "save": "Änderungen Speichern",
+      "cancel": "Abbrechen",
+      "fields": {
+        "originalDate": "Ursprüngliches Datum",
+        "originalAmount": "Ursprünglicher Betrag",
+        "originalCategory": "Ursprüngliche Kategorie",
+        "originalDescription": "Ursprüngliche Beschreibung"
+      },
+      "actions": {
+        "saveChanges": "Änderungen Speichern",
+        "discardChanges": "Änderungen Verwerfen"
+      },
+      "footer": {
+        "autoUpdate": "Automatisches Update-System aktiv"
+      }
+    },
+    "ofxImport": {
+      "title": "OFX-Datei Importieren",
+      "selectFile": "Datei Auswählen",
+      "processing": "Wird verarbeitet...",
+      "preview": "Datenvorschau",
+      "import": "Importieren",
+      "cancel": "Abbrechen",
+      "stats": {
+        "total": "Gesamttransaktionen:",
+        "new": "Neue Transaktionen:",
+        "duplicates": "Duplikate gefunden:"
+      },
+      "warnings": {
+        "duplicatesFound": "Einige Transaktionen existieren bereits im System",
+        "noNewTransactions": "Keine neuen Transaktionen gefunden"
+      },
+      "actions": {
+        "importAll": "Alle Importieren",
+        "importOnlyNew": "Nur Neue Importieren ({{count}})",
+        "viewDuplicates": "Duplikate Anzeigen"
+      },
+      "messages": {
+        "importSuccess": "{{count}} Transaktion(en) erfolgreich importiert!",
+        "importError": "Fehler beim Importieren von Transaktionen",
+        "fileInvalid": "Ungültige oder beschädigte OFX-Datei"
+      }
+    },
+    "donation": {
+      "titles": {
+        "twoMonths": "2 Monate mit der App!",
+        "threeMonths": "3 Monate mit der App!",
+        "general": "Entwicklung unterstützen"
+      },
+      "description": "Wenn die App für Sie nützlich war, erwägen Sie eine Spende zur Unterstützung der weiteren Entwicklung.",
+      "payment": {
+        "international": "International"
+      },
+      "pix": {
+        "label": "PIX-Schlüssel",
+        "copied": "PIX in die Zwischenablage kopiert!"
+      },
+      "iban": {
+        "label": "IBAN",
+        "accountHolder": "Kontoinhaber",
+        "currencies": "Akzeptiert EUR, USD, GBP und über 100 Währungen"
+      },
+      "messages": {
+        "pixCopied": "PIX-Schlüssel erfolgreich kopiert!",
+        "ibanCopied": "IBAN erfolgreich kopiert!"
+      },
+      "actions": {
+        "copy": "Kopieren",
+        "thankYou": "Danke für Ihre Unterstützung!",
+        "remindLater": "Später erinnern",
+        "dontShowAgain": "Nicht mehr anzeigen"
+      },
+      "footer": {
+        "appInfo": "V&M Personal Finance - Kostenlose Open-Source-App"
+      }
+    },
+    "rating": {
+      "title": "Anwendung Bewerten",
+      "description": "Sie nutzen die Anwendung schon eine Weile. Wenn sie hilfreich war, erwägen Sie bitte eine Bewertung!",
+      "instructions": {
+        "clickButton": "Klicken Sie auf die Schaltfläche unten, um zu GitHub zu gehen",
+        "steps": "1. Gehen Sie zur Projektseite\n2. Klicken Sie auf den Stern (⭐) oben auf der Seite\n3. Optional: Hinterlassen Sie einen Kommentar"
+      },
+      "actions": {
+        "rateOnGithub": "Auf GitHub Bewerten",
+        "remindLater": "Später Erinnern",
+        "noThanks": "Nein, danke"
+      },
+      "footer": {
+        "timeInfo": "Anfrage nach 30 Tagen Nutzung"
+      }
+    }
+  },
+  "categoryMapping": {
+    "income": {
+      "salary": "Gehalt",
+      "freelance": "Freiberuflich", 
+      "investments": "Investitionen",
+      "sales": "Verkäufe",
+      "bonus": "Bonus",
+      "other": "Andere"
+    },
+    "expenses": {
+      "food": "Lebensmittel",
+      "transport": "Transport",
+      "housing": "Wohnen",
+      "health": "Gesundheit",
+      "education": "Bildung",
+      "entertainment": "Unterhaltung",
+      "shopping": "Einkäufe",
+      "utilities": "Nebenkosten",
+      "insurance": "Versicherungen",
+      "taxes": "Steuern",
+      "other": "Andere"
+    }
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "edit": "Bearbeiten", 
+    "delete": "Löschen",
+    "close": "Schließen",
+    "back": "Zurück",
+    "loading": "Wird geladen...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "warning": "Warnung",
+    "info": "Information",
+    "yes": "Ja",
+    "no": "Nein",
+    "ok": "OK",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "clear": "Löschen",
+    "reset": "Zurücksetzen",
+    "apply": "Anwenden",
+    "show": "Anzeigen",
+    "hide": "Verbergen",
+    "confirmDelete": "Löschung Bestätigen",
+    "confirmAction": "Aktion Bestätigen",
+    "selectAll": "Alle Auswählen",
+    "selectNone": "Keine Auswählen",
+    "refresh": "Aktualisieren",
+    "export": "Exportieren",
+    "import": "Importieren"
+  }
+}

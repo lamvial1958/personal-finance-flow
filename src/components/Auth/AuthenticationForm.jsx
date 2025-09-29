@@ -1,21 +1,24 @@
 /**
  * AuthenticationForm.jsx - Componente de Autenticação com Tema
- * Estados LOCAIS + Suporte a Modo Escuro
+ * Estados LOCAIS + Suporte a Modo Escuro + Sistema Multilínguas
  * 
- * FUNCIONALIDADE v1.3.0:
+ * FUNCIONALIDADE v1.6.0:
  * - Classes Tailwind dark mode aplicadas
  * - Transições suaves entre temas
  * - Estados 100% locais mantidos
+ * - Sistema multilínguas integrado
  * 
  * Localização: C:\Personal_Finance_Flow\src\components\Auth\AuthenticationForm.jsx
  */
 
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '../../hooks/useTheme'; // ✅ CORRIGIDO: Import do hook correto
+import { useTheme } from '../../hooks/useTheme';
+import { useLanguage } from '../../hooks/useLanguage'; // NOVO: Sistema multilínguas
 import dbManager from '../../db-manager.js';
 
 const AuthenticationForm = () => {
   const { isDark } = useTheme();
+  const { t } = useLanguage(); // NOVO: Hook de tradução
   
   // Estados locais - SEM CONTEXT API PARA EVITAR LOOPS
   const [isSystemSetup, setIsSystemSetup] = useState(null);
@@ -32,16 +35,16 @@ const AuthenticationForm = () => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        console.log('🔐 Inicializando sistema de autenticação...');
+        console.log('🔍 Initializing authentication system...');
         await dbManager.initialize();
         
         const setupCheck = await dbManager.checkSetup();
         setIsSystemSetup(setupCheck.isSetup);
-        console.log('✅ Sistema setup:', setupCheck.isSetup);
+        console.log('✅ System setup:', setupCheck.isSetup);
         
         setIsLoading(false);
       } catch (error) {
-        console.error('❌ Erro ao inicializar auth:', error);
+        console.error('❌ Auth initialization error:', error);
         setIsLoading(false);
       }
     };
@@ -52,24 +55,24 @@ const AuthenticationForm = () => {
   // Handlers simples - SEM DEPENDENCIES COMPLEXAS
   const handleSetup = async () => {
     if (password !== confirmPassword) {
-      alert('Senhas não coincidem');
+      alert(t('auth.errors.passwordMismatch'));
       return;
     }
     
     if (password.length < 6) {
-      alert('Senha deve ter pelo menos 6 caracteres');
+      alert(t('auth.errors.passwordTooShort'));
       return;
     }
 
     try {
       await dbManager.setupAuth(password);
-      alert('Sistema configurado com sucesso!');
+      alert(t('auth.messages.systemConfigured'));
       setIsSystemSetup(true);
       setAuthMode('login');
       setPassword('');
       setConfirmPassword('');
     } catch (error) {
-      alert('Erro ao configurar: ' + error.message);
+      alert(t('auth.errors.setupError') + ': ' + error.message);
     }
   };
 
@@ -79,25 +82,25 @@ const AuthenticationForm = () => {
       sessionStorage.setItem('finance-app-authenticated', 'true');
       window.location.reload();
     } catch (error) {
-      alert('Erro no login: ' + error.message);
+      alert(t('auth.errors.loginError') + ': ' + error.message);
     }
   };
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
-      alert('Novas senhas não coincidem');
+      alert(t('auth.errors.newPasswordMismatch'));
       return;
     }
 
     try {
       await dbManager.changePassword(currentPassword, newPassword);
-      alert('Senha alterada com sucesso!');
+      alert(t('auth.messages.passwordChanged'));
       setAuthMode('login');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error) {
-      alert('Erro ao alterar senha: ' + error.message);
+      alert(t('auth.errors.changePasswordError') + ': ' + error.message);
     }
   };
 
@@ -107,8 +110,8 @@ const AuthenticationForm = () => {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center transition-colors">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4"></div>
-          <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">V&M Personal Finance PWA</h2>
-          <p className="text-gray-500 dark:text-gray-400 mt-2">Inicializando sistema...</p>
+          <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">{t('app.title')}</h2>
+          <p className="text-gray-500 dark:text-gray-400 mt-2">{t('auth.loading')}</p>
         </div>
       </div>
     );
@@ -127,48 +130,51 @@ const AuthenticationForm = () => {
             />
           </div>
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100 transition-colors">
-            V&M Personal Finance
+            {t('app.title')}
           </h2>
           <p className="mt-2 text-sm text-blue-600 dark:text-blue-400 transition-colors">
-            Progressive Web App {isDark ? '• Modo Escuro' : '• Modo Claro'}
+            {t('app.subtitle')} • {isDark ? t('app.darkMode') : t('app.lightMode')}
           </p>
         </div>
 
         {/* Configuração Inicial */}
         {authMode === 'setup' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4 transition-colors">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Configurar Sistema</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('auth.setup.title')}</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Configure uma senha para proteger seus dados financeiros. 
-              Esta senha será necessária para acessar o sistema.
+              {t('auth.setup.description')}
             </p>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Senha</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('auth.fields.password')}
+              </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => {
-                  console.log('🔑 Digitando senha setup:', e.target.value.length, 'chars');
+                  console.log('🔑 Typing setup password:', e.target.value.length, 'chars');
                   setPassword(e.target.value);
                 }}
                 className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors"
-                placeholder="Mínimo 6 caracteres"
+                placeholder={t('auth.placeholders.minimumChars')}
                 autoComplete="new-password"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Confirmar Senha</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('auth.fields.confirmPassword')}
+              </label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => {
-                  console.log('🔑 Confirmando senha:', e.target.value.length, 'chars');
+                  console.log('🔑 Confirming password:', e.target.value.length, 'chars');
                   setConfirmPassword(e.target.value);
                 }}
                 className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors"
-                placeholder="Digite a senha novamente"
+                placeholder={t('auth.placeholders.confirmPassword')}
                 autoComplete="new-password"
               />
             </div>
@@ -177,7 +183,7 @@ const AuthenticationForm = () => {
               onClick={handleSetup}
               className="w-full bg-blue-600 dark:bg-blue-700 text-white py-3 px-4 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
             >
-              Configurar Sistema
+              {t('auth.actions.setupSystem')}
             </button>
           </div>
         )}
@@ -185,20 +191,22 @@ const AuthenticationForm = () => {
         {/* Login */}
         {authMode === 'login' && isSystemSetup && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4 transition-colors">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Entrar</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('auth.login.title')}</h3>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Senha</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('auth.fields.password')}
+              </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => {
-                  console.log('🔑 Digitando senha login:', e.target.value.length, 'chars');
+                  console.log('🔑 Typing login password:', e.target.value.length, 'chars');
                   setPassword(e.target.value);
                 }}
                 onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
                 className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors"
-                placeholder="Digite sua senha"
+                placeholder={t('auth.placeholders.enterPassword')}
                 autoComplete="current-password"
                 autoFocus
               />
@@ -208,7 +216,7 @@ const AuthenticationForm = () => {
               onClick={handleLogin}
               className="w-full bg-blue-600 dark:bg-blue-700 text-white py-3 px-4 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
             >
-              Entrar
+              {t('auth.actions.login')}
             </button>
 
             <div className="text-center">
@@ -216,7 +224,7 @@ const AuthenticationForm = () => {
                 onClick={() => setAuthMode('change-password')}
                 className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
               >
-                Alterar senha
+                {t('auth.actions.changePassword')}
               </button>
             </div>
           </div>
@@ -225,40 +233,46 @@ const AuthenticationForm = () => {
         {/* Alterar Senha */}
         {authMode === 'change-password' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4 transition-colors">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Alterar Senha</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('auth.changePassword.title')}</h3>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Senha Atual</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('auth.fields.currentPassword')}
+              </label>
               <input
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors"
-                placeholder="Sua senha atual"
+                placeholder={t('auth.placeholders.currentPassword')}
                 autoComplete="current-password"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nova Senha</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('auth.fields.newPassword')}
+              </label>
               <input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors"
-                placeholder="Nova senha (mínimo 6 caracteres)"
+                placeholder={t('auth.placeholders.newPassword')}
                 autoComplete="new-password"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Confirmar Nova Senha</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('auth.fields.confirmNewPassword')}
+              </label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors"
-                placeholder="Confirme a nova senha"
+                placeholder={t('auth.placeholders.confirmNewPassword')}
                 autoComplete="new-password"
               />
             </div>
@@ -267,14 +281,14 @@ const AuthenticationForm = () => {
               onClick={handleChangePassword}
               className="w-full bg-green-600 dark:bg-green-700 text-white py-3 px-4 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
             >
-              Alterar Senha
+              {t('auth.actions.changePassword')}
             </button>
 
             <button
               onClick={() => setAuthMode('login')}
               className="w-full text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 py-2 transition-colors"
             >
-              Voltar ao login
+              {t('auth.actions.backToLogin')}
             </button>
           </div>
         )}
@@ -282,28 +296,28 @@ const AuthenticationForm = () => {
         {/* Sistema não configurado */}
         {!isSystemSetup && authMode === 'login' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4 text-center transition-colors">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Sistema Não Configurado</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('auth.firstAccess.title')}</h3>
             <p className="text-gray-600 dark:text-gray-400">
-              Este é o primeiro acesso. Configure uma senha para proteger seus dados.
+              {t('auth.firstAccess.description')}
             </p>
             <button
               onClick={() => setAuthMode('setup')}
               className="w-full bg-green-600 dark:bg-green-700 text-white py-3 px-4 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
             >
-              Configurar Sistema
+              {t('auth.actions.setupSystem')}
             </button>
           </div>
         )}
 
         {/* Info PWA com tema */}
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 transition-colors">
-          <h4 className="font-semibold text-blue-800 dark:text-blue-200">Progressive Web App</h4>
+          <h4 className="font-semibold text-blue-800 dark:text-blue-200">{t('auth.pwa.title')}</h4>
           <div className="text-sm text-blue-700 dark:text-blue-300 mt-2 space-y-1">
-            <p>• Funciona offline após carregamento inicial</p>
-            <p>• Dados salvos localmente em seu dispositivo</p>
-            <p>• Instale tocando "Adicionar à tela inicial"</p>
-            <p>• Funciona em computador, tablet e celular</p>
-            <p>• Suporte a {isDark ? 'modo escuro' : 'modo claro'} automático</p>
+            <p>• {t('auth.pwa.offline')}</p>
+            <p>• {t('auth.pwa.localData')}</p>
+            <p>• {t('auth.pwa.install')}</p>
+            <p>• {t('auth.pwa.multiDevice')}</p>
+            <p>• {t('auth.pwa.themeSupport', { mode: isDark ? t('app.darkMode') : t('app.lightMode') })}</p>
           </div>
         </div>
       </div>

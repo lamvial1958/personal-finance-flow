@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vm-finance-v1.5.1';
+const CACHE_NAME = 'vm-finance-v1.6.0';
 const urlsToCache = [
   '/',
   '/manifest.json',

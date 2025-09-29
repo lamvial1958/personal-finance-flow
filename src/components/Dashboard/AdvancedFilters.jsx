@@ -2,15 +2,29 @@
  * AdvancedFilters Component - Personal Finance Flow
  * Componente de filtros avançados para análise detalhada de transações
  * 
+ * NOVA FUNCIONALIDADE V1.6.0:
+ * - Sistema multilínguas completo integrado
+ * - Interface traduzida para 6 idiomas
+ * - Todas funcionalidades mantidas
+ * 
+ * CORREÇÃO V1.6.1:
+ * - 100% dos textos agora traduzidos
+ * - Mensagens de validação internacionalizadas
+ * - Labels e placeholders traduzidos
+ * 
  * Localização: C:\Personal_Finance_Flow\src\components\Dashboard\AdvancedFilters.jsx
- * Versão: Filtros avançados
+ * Versão: V1.6.1 - Multilínguas Completo
  * Criado: Setembro 2025
  */
 
 import React, { useCallback, useMemo } from 'react';
+import { useLanguage } from '../../hooks/useLanguage';
 import useTransactions from '../../hooks/useTransactions';
 
 const AdvancedFilters = () => {
+  // Hook de tradução multilínguas
+  const { t } = useLanguage();
+
   const {
     // Estados de filtros avançados
     advancedFilters,
@@ -54,7 +68,7 @@ const AdvancedFilters = () => {
     applyQuickAmountFilter(e.target.value);
   }, [applyQuickAmountFilter]);
 
-  // Validação de datas
+  // ✅ TRADUZIDO: Validação de datas
   const dateValidation = useMemo(() => {
     const { dateStart, dateEnd } = advancedFilters;
     if (!dateStart || !dateEnd) return { isValid: true, error: null };
@@ -65,14 +79,14 @@ const AdvancedFilters = () => {
     if (start > end) {
       return {
         isValid: false,
-        error: 'Data inicial deve ser anterior à data final'
+        error: t('filters.validation.dateInvalid')
       };
     }
     
     return { isValid: true, error: null };
-  }, [advancedFilters.dateStart, advancedFilters.dateEnd]);
+  }, [advancedFilters.dateStart, advancedFilters.dateEnd, t]);
 
-  // Validação de valores
+  // ✅ TRADUZIDO: Validação de valores
   const amountValidation = useMemo(() => {
     const { amountMin, amountMax } = advancedFilters;
     if (!amountMin || !amountMax) return { isValid: true, error: null };
@@ -83,27 +97,27 @@ const AdvancedFilters = () => {
     if (min > max) {
       return {
         isValid: false,
-        error: 'Valor mínimo deve ser menor que o máximo'
+        error: t('filters.validation.amountInvalid')
       };
     }
     
     return { isValid: true, error: null };
-  }, [advancedFilters.amountMin, advancedFilters.amountMax]);
+  }, [advancedFilters.amountMin, advancedFilters.amountMax, t]);
 
-  // Seção de filtros por período
+  // ✅ TRADUZIDO: Seção de filtros por período
   const DateFilters = useMemo(() => (
     <div className="space-y-3">
       <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
         </svg>
-        Filtrar por Período
+        {t('filters.advanced.period')}
       </h4>
       
       {/* Filtros rápidos de data */}
       <div className="mb-3">
         <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
-          Períodos Rápidos
+          {t('filters.advanced.quickPeriods')}
         </label>
         <select
           value=""
@@ -122,7 +136,7 @@ const AdvancedFilters = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-            Data Inicial
+            {t('filters.advanced.dateStart')}
           </label>
           <input
             type="date"
@@ -134,7 +148,7 @@ const AdvancedFilters = () => {
         
         <div>
           <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-            Data Final
+            {t('filters.advanced.dateEnd')}
           </label>
           <input
             type="date"
@@ -157,23 +171,24 @@ const AdvancedFilters = () => {
     handleDateStartChange,
     handleDateEndChange,
     handleQuickDateFilter,
-    dateValidation
+    dateValidation,
+    t
   ]);
 
-  // Seção de filtros por valor
+  // ✅ TRADUZIDO: Seção de filtros por valor
   const AmountFilters = useMemo(() => (
     <div className="space-y-3">
       <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
         </svg>
-        Filtrar por Valor
+        {t('filters.advanced.amount')}
       </h4>
       
       {/* Filtros rápidos de valor */}
       <div className="mb-3">
         <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
-          Faixas Rápidas
+          {t('filters.advanced.quickRanges')}
         </label>
         <select
           value=""
@@ -192,7 +207,7 @@ const AdvancedFilters = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-            Valor Mínimo
+            {t('filters.advanced.amountMin')}
           </label>
           <input
             type="number"
@@ -207,7 +222,7 @@ const AdvancedFilters = () => {
         
         <div>
           <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-            Valor Máximo
+            {t('filters.advanced.amountMax')}
           </label>
           <input
             type="number"
@@ -233,17 +248,18 @@ const AdvancedFilters = () => {
     handleAmountMinChange,
     handleAmountMaxChange,
     handleQuickAmountFilter,
-    amountValidation
+    amountValidation,
+    t
   ]);
 
-  // Seção de filtros por tipo
+  // ✅ TRADUZIDO: Seção de filtros por tipo
   const TypeFilters = useMemo(() => (
     <div className="space-y-3">
       <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
         </svg>
-        Tipo de Transação
+        {t('filters.advanced.type')}
       </h4>
       
       <div className="space-y-2">
@@ -263,25 +279,25 @@ const AdvancedFilters = () => {
                 ? 'text-green-600 dark:text-green-400' 
                 : 'text-red-600 dark:text-red-400'
             }`}>
-              {type.label}
+              {type.value === 'income' ? t('dashboard.transactionTypes.income') : t('dashboard.transactionTypes.expense')}
             </span>
           </label>
         ))}
       </div>
     </div>
-  ), [advancedFilters.selectedTypes, quickFilterOptions.types, handleTypeToggle]);
+  ), [advancedFilters.selectedTypes, quickFilterOptions.types, handleTypeToggle, t]);
 
-  // Seção de filtros por categoria
+  // ✅ TRADUZIDO: Seção de filtros por categoria
   const CategoryFilters = useMemo(() => (
     <div className="space-y-3">
       <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
         </svg>
-        Categorias
+        {t('filters.advanced.categories')}
         {advancedFilters.selectedCategories.length > 0 && (
           <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
-            {advancedFilters.selectedCategories.length} selecionada{advancedFilters.selectedCategories.length !== 1 ? 's' : ''}
+            {advancedFilters.selectedCategories.length} {advancedFilters.selectedCategories.length !== 1 ? t('filters.advanced.selectedCountPlural') : t('filters.advanced.selectedCount')}
           </span>
         )}
       </h4>
@@ -307,18 +323,18 @@ const AdvancedFilters = () => {
         </div>
       ) : (
         <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-          Nenhuma categoria disponível
+          {t('filters.advanced.noCategoriesAvailable')}
         </p>
       )}
     </div>
-  ), [allCategories, advancedFilters.selectedCategories, handleCategoryToggle]);
+  ), [allCategories, advancedFilters.selectedCategories, handleCategoryToggle, t]);
 
-  // Resumo dos filtros ativos
+  // ✅ TRADUZIDO: Resumo dos filtros ativos
   const FilterSummary = useMemo(() => {
     const activeFilters = [];
     
     if (advancedFilters.dateStart && advancedFilters.dateEnd) {
-      activeFilters.push(`Período: ${advancedFilters.dateStart} a ${advancedFilters.dateEnd}`);
+      activeFilters.push(`${t('charts.filters.period')}: ${advancedFilters.dateStart} a ${advancedFilters.dateEnd}`);
     } else if (advancedFilters.dateStart) {
       activeFilters.push(`A partir de: ${advancedFilters.dateStart}`);
     } else if (advancedFilters.dateEnd) {
@@ -326,7 +342,7 @@ const AdvancedFilters = () => {
     }
     
     if (advancedFilters.amountMin && advancedFilters.amountMax) {
-      activeFilters.push(`Valor: $${advancedFilters.amountMin} - $${advancedFilters.amountMax}`);
+      activeFilters.push(`${t('dashboard.transactionForm.amount')}: $${advancedFilters.amountMin} - $${advancedFilters.amountMax}`);
     } else if (advancedFilters.amountMin) {
       activeFilters.push(`Mín: $${advancedFilters.amountMin}`);
     } else if (advancedFilters.amountMax) {
@@ -335,28 +351,28 @@ const AdvancedFilters = () => {
     
     if (advancedFilters.selectedTypes.length > 0) {
       const typeLabels = advancedFilters.selectedTypes.map(type => 
-        type === 'income' ? 'Entradas' : 'Saídas'
+        type === 'income' ? t('dashboard.revenue') : t('dashboard.expenses')
       ).join(', ');
       activeFilters.push(`Tipos: ${typeLabels}`);
     }
     
     if (advancedFilters.selectedCategories.length > 0) {
       if (advancedFilters.selectedCategories.length <= 3) {
-        activeFilters.push(`Categorias: ${advancedFilters.selectedCategories.join(', ')}`);
+        activeFilters.push(`${t('filters.advanced.categories')}: ${advancedFilters.selectedCategories.join(', ')}`);
       } else {
-        activeFilters.push(`Categorias: ${advancedFilters.selectedCategories.length} selecionadas`);
+        activeFilters.push(`${t('filters.advanced.categories')}: ${advancedFilters.selectedCategories.length} ${t('filters.advanced.selectedCountPlural')}`);
       }
     }
     
     return activeFilters;
-  }, [advancedFilters]);
+  }, [advancedFilters, t]);
 
   return (
     <div className="space-y-6">
       {/* Header com ações */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-          Filtros Avançados
+          {t('filters.advanced.title')}
         </h3>
         
         {advancedFilters.isActive && (
@@ -367,7 +383,7 @@ const AdvancedFilters = () => {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
             </svg>
-            Limpar Todos
+            {t('filters.advanced.clearAll')}
           </button>
         )}
       </div>
@@ -399,7 +415,7 @@ const AdvancedFilters = () => {
       {FilterSummary.length > 0 && (
         <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
           <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-            Filtros Aplicados:
+            {t('filters.advanced.applied')}:
           </h4>
           <div className="flex flex-wrap gap-2">
             {FilterSummary.map((filter, index) => (
@@ -418,7 +434,7 @@ const AdvancedFilters = () => {
       {!advancedFilters.isActive && (
         <div className="text-center py-6 border-t border-gray-200 dark:border-gray-600">
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Configure os filtros acima para refinar sua análise de transações
+            {t('filters.advanced.configureMessage')}
           </p>
         </div>
       )}

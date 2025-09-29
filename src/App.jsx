@@ -1,23 +1,28 @@
 /**
- * App.jsx - Personal Finance Flow (Com Suporte a Tema + Gráficos + Edição + Atualização Automática)
+ * App.jsx - Personal Finance Flow (Com Suporte a Tema + Gráficos + Edição + Atualização Automática + MULTILÍNGUAS)
  * Loops de re-render ELIMINADOS + Modo Escuro/Claro + Análise Gráfica + Edição de Transações + Atualização Automática Desktop
  * 
- * NOVA FUNCIONALIDADE v1.5.1:
- * - Sistema de atualização automática agressiva
- * - Debugging completo de atualizações PWA
- * - Verificação periódica em background
- * - Logs detalhados para troubleshooting
+ * NOVA FUNCIONALIDADE v1.6.0:
+ * - Sistema multilínguas completo (6 idiomas)
+ * - Detecção automática de idioma do browser
+ * - Persistência de preferência de idioma
+ * - Sistema híbrido de tradução de categorias
  * 
  * Localização: C:\Personal_Finance_Flow\src\App.jsx
- * Versão: 1.5.1 - Sistema de Atualização Automática Integrado
+ * Versão: 1.6.0 - Sistema Multilínguas Integrado
  */
 
 import React, { useState, useEffect } from 'react';
 
+// NOVO: Sistema i18n
+import './i18n'; // Inicializar sistema de tradução
+
 // Context Providers
 import { AppProvider } from './context/AppContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { LanguageProvider } from './context/LanguageContext'; // NOVO
 import { useTheme } from './hooks/useTheme';
+import { useLanguage } from './hooks/useLanguage'; // NOVO
 
 // NOVO: Hook de atualização automática
 import { useAutoUpdate } from './hooks/useAutoUpdate';
@@ -43,14 +48,17 @@ import RatingModal from './components/Modals/RatingModal';
 const AuthChecker = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // NOVO: Hook de tradução para tela de loading
+  const { t, isReady } = useLanguage();
 
   useEffect(() => {
-    console.log('🔍 Verificando autenticação...');
+    console.log('🔍 Checking authentication...');
     
     // VERIFICAÇÃO SIMPLES - SEM HOOKS COMPLEXOS
     const checkAuth = () => {
       const hasSession = sessionStorage.getItem('finance-app-authenticated') === 'true';
-      console.log('✅ Status sessão:', hasSession);
+      console.log('✅ Session status:', hasSession);
       
       setIsAuthenticated(hasSession);
       setIsLoading(false);
@@ -59,14 +67,18 @@ const AuthChecker = ({ children }) => {
     checkAuth();
   }, []); // Dependências vazias - executa apenas uma vez
 
-  // LOADING SIMPLES
+  // LOADING SIMPLES (COM TRADUÇÃO)
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center transition-colors">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4"></div>
-          <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">V&M Personal Finance PWA</h2>
-          <p className="text-gray-500 dark:text-gray-400 mt-2">Verificando sessão...</p>
+          <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
+            {isReady ? t('app.title') : 'V&M Personal Finance PWA'}
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400 mt-2">
+            {isReady ? t('app.checkingSession') : 'Checking session...'}
+          </p>
         </div>
       </div>
     );
@@ -83,6 +95,7 @@ const AuthChecker = ({ children }) => {
 // APP AUTENTICADO (APENAS COM CONTEXT QUANDO NECESSÁRIO)
 const AuthenticatedApp = () => {
   const { theme, isDark } = useTheme();
+  const { t, language, languageInfo } = useLanguage(); // NOVO: Tradução
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isConfigOpen, setIsConfigOpen] = useState(false);
 
@@ -98,15 +111,15 @@ const AuthenticatedApp = () => {
   // NOVO: Log de status de atualização para debugging
   useEffect(() => {
     if (updateStatus && updateStatus !== 'checking') {
-      console.log(`[PWA-STATUS] Estado: ${updateStatus} | Produção: ${isProduction} | SW Support: ${supportsServiceWorker}`);
+      console.log(`[PWA-STATUS] State: ${updateStatus} | Production: ${isProduction} | SW Support: ${supportsServiceWorker}`);
       
       if (lastCheck) {
-        console.log(`[PWA-STATUS] Última verificação: ${lastCheck.toLocaleString('pt-BR')}`);
+        console.log(`[PWA-STATUS] Last check: ${lastCheck.toLocaleString(language)}`);
       }
     }
-  }, [updateStatus, lastCheck, isProduction, supportsServiceWorker]);
+  }, [updateStatus, lastCheck, isProduction, supportsServiceWorker, language]);
 
-  // CABEÇALHO DA APLICAÇÃO (Com suporte a tema)
+  // CABEÇALHO DA APLICAÇÃO (Com suporte a tema + tradução)
   const AppHeader = () => (
     <header className="bg-white dark:bg-gray-800 shadow-lg transition-colors border-b border-gray-200 dark:border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -121,10 +134,14 @@ const AuthenticatedApp = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 transition-colors">
-                V&M Personal Finance
+                {t('app.title')}
               </h1>
               <p className="text-sm text-blue-600 dark:text-blue-400 transition-colors">
-                Progressive Web App + OFX + {isDark ? 'Modo Escuro' : 'Modo Claro'}
+                {t('app.subtitle')} + {isDark ? t('app.darkMode') : t('app.lightMode')}
+                {/* Indicador de idioma atual */}
+                <span className="ml-2 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
+                  {languageInfo.flag} {languageInfo.nativeName}
+                </span>
                 {/* NOVO: Indicador de status de atualização em desenvolvimento */}
                 {!isProduction && updateStatus && (
                   <span className="ml-2 text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
@@ -136,11 +153,11 @@ const AuthenticatedApp = () => {
           </div>
           <div className="flex items-center space-x-2">
             {/* NOVO: Botão de verificação manual (apenas em desenvolvimento para debugging) */}
-            {!isProduction && __PWA_DEBUG__ && (
+            {!isProduction && typeof __PWA_DEBUG__ !== 'undefined' && __PWA_DEBUG__ && (
               <button
                 onClick={manualUpdateCheck}
                 className="p-2 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                title="Verificar Atualização (Debug)"
+                title={t('app.checkUpdate')}
               >
                 🔄
               </button>
@@ -148,7 +165,7 @@ const AuthenticatedApp = () => {
             <button
               onClick={() => setIsConfigOpen(!isConfigOpen)}
               className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-              title="Configurações"
+              title={t('navigation.settings')}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -161,7 +178,7 @@ const AuthenticatedApp = () => {
     </header>
   );
 
-  // NAVEGAÇÃO POR ABAS (Com suporte a tema + Nova aba Análise)
+  // NAVEGAÇÃO POR ABAS (Com suporte a tema + tradução + Nova aba Análise)
   const TabNavigation = () => (
     <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -177,7 +194,7 @@ const AuthenticatedApp = () => {
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
             }`}
           >
-            Painel
+            {t('navigation.dashboard')}
           </button>
           <button
             onClick={() => {
@@ -190,7 +207,7 @@ const AuthenticatedApp = () => {
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
             }`}
           >
-            Análise
+            {t('navigation.analysis')}
           </button>
           <button
             onClick={() => {
@@ -203,7 +220,7 @@ const AuthenticatedApp = () => {
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
             }`}
           >
-            Patrimônio
+            {t('navigation.patrimony')}
           </button>
           <button
             onClick={() => {
@@ -216,7 +233,7 @@ const AuthenticatedApp = () => {
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
             }`}
           >
-            Relatório Anual
+            {t('navigation.annualReport')}
           </button>
         </div>
       </div>
@@ -265,36 +282,40 @@ const AuthenticatedApp = () => {
       <OFXImportModal />
 
       {/* NOVO: Status de atualização no footer (apenas desenvolvimento) */}
-      {!isProduction && __PWA_DEBUG__ && (
+      {!isProduction && typeof __PWA_DEBUG__ !== 'undefined' && __PWA_DEBUG__ && (
         <div className="fixed bottom-4 right-4 bg-black dark:bg-white bg-opacity-80 dark:bg-opacity-80 text-white dark:text-black text-xs px-3 py-2 rounded shadow-lg">
           <div>PWA: {updateStatus}</div>
           {lastCheck && (
-            <div>Última verificação: {lastCheck.toLocaleTimeString('pt-BR')}</div>
+            <div>{t('app.lastCheck')}: {lastCheck.toLocaleTimeString(language)}</div>
           )}
           <div>SW: {supportsServiceWorker ? 'OK' : 'N/A'}</div>
+          <div>Lang: {languageInfo.flag} {language}</div>
         </div>
       )}
     </div>
   );
 };
 
-// COMPONENTE RAIZ (ARQUITETURA COM TEMA + GRÁFICOS + EDIÇÃO + ATUALIZAÇÃO)
+// COMPONENTE RAIZ (ARQUITETURA COM TEMA + GRÁFICOS + EDIÇÃO + ATUALIZAÇÃO + MULTILÍNGUAS)
 export default function App() {
   // NOVO: Log de inicialização da aplicação
   useEffect(() => {
-    console.log(`[APP-INIT] V&M Personal Finance v${__APP_VERSION__} iniciado`);
-    console.log(`[APP-INIT] Build: ${__BUILD_DATE__}`);
-    console.log(`[APP-INIT] Ambiente: ${window.location.hostname}`);
+    console.log(`[APP-INIT] V&M Personal Finance v${typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '1.6.0'} started`);
+    console.log(`[APP-INIT] Build: ${typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : new Date().toISOString()}`);
+    console.log(`[APP-INIT] Environment: ${window.location.hostname}`);
+    console.log('🌐 [APP-INIT] Multilingual system loaded');
   }, []);
 
   return (
     <ThemeProvider>
-      <AuthChecker>
-        {/* AppProvider apenas para app autenticado (EVITA LOOPS) */}
-        <AppProvider>
-          <AuthenticatedApp />
-        </AppProvider>
-      </AuthChecker>
+      <LanguageProvider>
+        <AuthChecker>
+          {/* AppProvider apenas para app autenticado (EVITA LOOPS) */}
+          <AppProvider>
+            <AuthenticatedApp />
+          </AppProvider>
+        </AuthChecker>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }

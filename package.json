@@ -1,9 +1,9 @@
 {
   "name": "vm-personal-finance-pwa",
   "private": true,
-  "version": "1.5.1",
+  "version": "1.6.0",
   "type": "module",
-  "description": "V&M Personal Finance - Sistema completo de gestão financeira com categorias personalizáveis + auto-update",
+  "description": "V&M Personal Finance - Sistema completo de gestão financeira com categorias personalizáveis + auto-update + multilínguas",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -15,9 +15,12 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "fast-xml-parser": "^4.3.2",
+    "i18next": "^23.7.6",
+    "i18next-browser-languagedetector": "^7.2.0",
     "papaparse": "^5.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-i18next": "^13.5.0",
     "recharts": "^3.2.1",
     "sql.js": "^1.8.0",
     "xmlbuilder2": "^3.1.1"

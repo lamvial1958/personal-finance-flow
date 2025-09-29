@@ -6,26 +6,29 @@
  * - Ícones sol/lua animados
  * - Feedback visual suave
  * - Integração com ThemeContext
+ * - Sistema multilínguas integrado
  * 
  * Localização: C:\Personal_Finance_Flow\src\components\Configuration\ThemeToggle.jsx
- * Versão: 1.3.0 - Modo Escuro
+ * Versão: 1.6.0 - Sistema Multilínguas
  */
 
 import React from 'react';
 import { useTheme } from '../../hooks/useTheme';
+import { useLanguage } from '../../hooks/useLanguage';
 
 const ThemeToggle = () => {
   const { theme, isDark, toggleTheme } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <div className="space-y-4">
       {/* Cabeçalho da seção */}
       <div>
         <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-          Aparência
+          {t('configuration.theme.title')}
         </h3>
         <p className="text-gray-600 dark:text-gray-400 mb-4">
-          Escolha entre modo claro ou escuro para melhor experiência visual
+          {t('configuration.theme.description')}
         </p>
       </div>
 
@@ -48,12 +51,12 @@ const ThemeToggle = () => {
           {/* Informações do tema */}
           <div>
             <p className="font-medium text-gray-900 dark:text-gray-100">
-              {isDark ? 'Modo Escuro' : 'Modo Claro'}
+              {isDark ? t('configuration.theme.darkMode') : t('configuration.theme.lightMode')}
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               {isDark 
-                ? 'Interface escura para reduzir cansaço visual' 
-                : 'Interface clara e limpa para uso diurno'
+                ? t('configuration.theme.darkDescription')
+                : t('configuration.theme.lightDescription')
               }
             </p>
           </div>
@@ -69,7 +72,7 @@ const ThemeToggle = () => {
           }`}
           role="switch"
           aria-checked={isDark}
-          aria-label={`Alternar para ${isDark ? 'modo claro' : 'modo escuro'}`}
+          aria-label={`${t('configuration.theme.toggleTo')} ${isDark ? t('configuration.theme.lightMode') : t('configuration.theme.darkMode')}`}
         >
           <span
             className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
@@ -98,8 +101,12 @@ const ThemeToggle = () => {
               </svg>
             </div>
             <div className="text-left">
-              <p className="font-medium text-gray-900 dark:text-gray-100">Claro</p>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Interface tradicional</p>
+              <p className="font-medium text-gray-900 dark:text-gray-100">
+                {t('configuration.theme.light')}
+              </p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                {t('configuration.theme.lightSubtitle')}
+              </p>
             </div>
             {!isDark && (
               <div className="ml-auto">
@@ -128,8 +135,12 @@ const ThemeToggle = () => {
               </svg>
             </div>
             <div className="text-left">
-              <p className="font-medium text-gray-900 dark:text-gray-100">Escuro</p>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Reduz cansaço visual</p>
+              <p className="font-medium text-gray-900 dark:text-gray-100">
+                {t('configuration.theme.dark')}
+              </p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                {t('configuration.theme.darkSubtitle')}
+              </p>
             </div>
             {isDark && (
               <div className="ml-auto">
@@ -150,11 +161,10 @@ const ThemeToggle = () => {
           </svg>
           <div>
             <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
-              Sobre o tema
+              {t('configuration.theme.aboutTitle')}
             </p>
             <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-              Sua preferência é salva automaticamente e aplicada em todas as sessões. 
-              O modo escuro pode ajudar a reduzir o cansaço visual durante uso prolongado.
+              {t('configuration.theme.aboutDescription')}
             </p>
           </div>
         </div>

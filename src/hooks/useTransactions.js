@@ -3,14 +3,16 @@
  * Gerencia toda a lógica de transações, busca, ordenação, exclusão, edição e filtros avançados
  * 
  * Localização: C:\Personal_Finance_Flow\src\hooks\useTransactions.js
- * Versão: Filtros avançados implementados
+ * Versão: Filtros avançados implementados + Sistema Multilínguas
  * Criado: Setembro 2025
  */
 
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from './useLanguage';
 
 export const useTransactions = () => {
+  const { t } = useLanguage();
   const {
     // Estados principais
     dailyTransactions,
@@ -114,12 +116,12 @@ export const useTransactions = () => {
     try {
       // Validar dados antes de atualizar
       if (!editTransaction.amount || parseFloat(editTransaction.amount) <= 0) {
-        alert('Por favor, preencha um valor válido.');
+        alert(t('transactions.validation.validAmount'));
         return;
       }
 
       if (!editTransaction.date) {
-        alert('Por favor, preencha uma data válida.');
+        alert(t('transactions.validation.validDate'));
         return;
       }
 
@@ -148,13 +150,13 @@ export const useTransactions = () => {
         date: ''
       });
       
-      alert('Transação atualizada com sucesso!');
+      alert(t('transactions.messages.updateSuccess'));
       
     } catch (error) {
       console.error('Erro ao editar transação:', error);
-      alert('Erro ao atualizar transação: ' + error.message);
+      alert(t('transactions.messages.updateError') + ': ' + error.message);
     }
-  }, [transactionToEdit, editTransaction, updateTransaction, setShowEditModal, setTransactionToEdit]);
+  }, [transactionToEdit, editTransaction, updateTransaction, setShowEditModal, setTransactionToEdit, t]);
 
   // Cancelar edição usando AppContext
   const cancelEdit = useCallback(() => {
@@ -185,12 +187,12 @@ export const useTransactions = () => {
     
     // Apenas valor é obrigatório, descrição é opcional
     if (!newTransaction.amount) {
-      alert('Por favor, preencha o valor.');
+      alert(t('transactions.validation.requiredAmount'));
       return;
     }
 
     if (parseFloat(newTransaction.amount) <= 0) {
-      alert('O valor deve ser maior que zero.');
+      alert(t('transactions.validation.positiveAmount'));
       return;
     }
 
@@ -212,13 +214,13 @@ export const useTransactions = () => {
         date: new Date().toISOString().split('T')[0]
       });
       
-      alert('Transação adicionada com sucesso!');
+      alert(t('transactions.messages.addSuccess'));
       
     } catch (error) {
       console.error('Erro no formulário:', error);
-      alert('Erro ao adicionar transação: ' + error.message);
+      alert(t('transactions.messages.addError') + ': ' + error.message);
     }
-  }, [newTransaction, addTransaction]);
+  }, [newTransaction, addTransaction, t]);
 
   // Atualizar campo do formulário
   const updateTransactionField = useCallback((field, value) => {
@@ -359,7 +361,7 @@ export const useTransactions = () => {
     // Contadores por categoria
     const categoryStats = {};
     filtered.forEach(transaction => {
-      const cat = transaction.category || 'Sem categoria';
+      const cat = transaction.category || t('common.noCategory');
       if (!categoryStats[cat]) {
         categoryStats[cat] = { count: 0, amount: 0 };
       }
@@ -398,7 +400,7 @@ export const useTransactions = () => {
         advancedFilters.selectedTypes.length > 0
       ].filter(Boolean).length
     };
-  }, [getFilteredAndSortedTransactions, dailyTransactions, getDailyTotals, searchTerm, sortBy, sortOrder, advancedFilters]);
+  }, [getFilteredAndSortedTransactions, dailyTransactions, getDailyTotals, searchTerm, sortBy, sortOrder, advancedFilters, t]);
 
   // Hoje - cálculos específicos
   const todayStats = useMemo(() => {
@@ -423,11 +425,11 @@ export const useTransactions = () => {
       hasAmount,
       hasValidDate,
       errors: {
-        amount: !hasAmount ? 'Valor é obrigatório e deve ser maior que zero' : null,
-        date: !hasValidDate ? 'Data inválida' : null
+        amount: !hasAmount ? t('transactions.validation.requiredAmountPositive') : null,
+        date: !hasValidDate ? t('transactions.validation.invalidDate') : null
       }
     };
-  }, [newTransaction]);
+  }, [newTransaction, t]);
 
   // Validações do formulário de edição
   const editFormValidation = useMemo(() => {
@@ -439,32 +441,32 @@ export const useTransactions = () => {
       hasAmount,
       hasValidDate,
       errors: {
-        amount: !hasAmount ? 'Valor é obrigatório e deve ser maior que zero' : null,
-        date: !hasValidDate ? 'Data inválida' : null
+        amount: !hasAmount ? t('transactions.validation.requiredAmountPositive') : null,
+        date: !hasValidDate ? t('transactions.validation.invalidDate') : null
       }
     };
-  }, [editTransaction]);
+  }, [editTransaction, t]);
 
-  // ✅ NOVO: Opções de filtros rápidos
-  const quickFilterOptions = {
+  // ✅ NOVO: Opções de filtros rápidos traduzidas
+  const quickFilterOptions = useMemo(() => ({
     dates: [
-      { value: '', label: 'Qualquer período' },
-      { value: 'today', label: 'Hoje' },
-      { value: 'week', label: 'Última semana' },
-      { value: 'month', label: 'Este mês' },
-      { value: 'year', label: 'Este ano' }
+      { value: '', label: t('transactions.filters.anyPeriod') },
+      { value: 'today', label: t('transactions.filters.today') },
+      { value: 'week', label: t('transactions.filters.lastWeek') },
+      { value: 'month', label: t('transactions.filters.thisMonth') },
+      { value: 'year', label: t('transactions.filters.thisYear') }
     ],
     amounts: [
-      { value: '', label: 'Qualquer valor' },
-      { value: 'small', label: 'Até $100' },
-      { value: 'medium', label: '$100 - $1.000' },
-      { value: 'large', label: 'Acima de $1.000' }
+      { value: '', label: t('transactions.filters.anyAmount') },
+      { value: 'small', label: t('transactions.filters.upTo100') },
+      { value: 'medium', label: t('transactions.filters.between100and1000') },
+      { value: 'large', label: t('transactions.filters.above1000') }
     ],
     types: [
-      { value: 'income', label: 'Entradas' },
-      { value: 'expenses', label: 'Saídas' }
+      { value: 'income', label: t('dashboard.transactionTypes.income') },
+      { value: 'expenses', label: t('dashboard.transactionTypes.expense') }
     ]
-  };
+  }), [t]);
 
   // ✅ NOVO: Lista de todas as categorias únicas
   const allCategories = useMemo(() => {
@@ -487,15 +489,15 @@ export const useTransactions = () => {
     return Array.from(categoriesSet).sort();
   }, [categories, dailyTransactions]);
 
-  // Opções de ordenação disponíveis
-  const sortOptions = [
-    { value: 'date-desc', label: 'Data ↓ (mais recente)' },
-    { value: 'date-asc', label: 'Data ↑ (mais antiga)' },
-    { value: 'amount-desc', label: 'Valor ↓ (maior)' },
-    { value: 'amount-asc', label: 'Valor ↑ (menor)' },
-    { value: 'category-asc', label: 'Categoria A-Z' },
-    { value: 'category-desc', label: 'Categoria Z-A' }
-  ];
+  // Opções de ordenação disponíveis traduzidas
+  const sortOptions = useMemo(() => [
+    { value: 'date-desc', label: t('dashboard.sortOptions.dateDesc') },
+    { value: 'date-asc', label: t('dashboard.sortOptions.dateAsc') },
+    { value: 'amount-desc', label: t('dashboard.sortOptions.valueDesc') },
+    { value: 'amount-asc', label: t('dashboard.sortOptions.valueAsc') },
+    { value: 'category-asc', label: t('dashboard.sortOptions.categoryAsc') },
+    { value: 'category-desc', label: t('dashboard.sortOptions.categoryDesc') }
+  ], [t]);
 
   // Função para destacar termos de busca
   const highlightSearchTerm = useCallback((text, term) => {

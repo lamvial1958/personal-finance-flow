@@ -2,80 +2,99 @@
  * useCharts Hook - Personal Finance Flow
  * Gerencia dados e lógica para gráficos interativos com categorias dinâmicas
  * 
- * CORREÇÃO: Compatibilidade com categorias personalizáveis
+ * CORREÇÃO: Compatibilidade com categorias personalizáveis + Multilínguas
  * - Aceita categorias dinâmicas como parâmetro
  * - Processa corretamente dados de categorias customizadas
  * - Mantém compatibilidade com ChartsView.jsx
  * - Performance otimizada com memoização
+ * - Labels de período traduzidos automaticamente
  * 
  * Localização: C:\Personal_Finance_Flow\src\hooks\useCharts.js
- * Versão: Categorias Dinâmicas Integradas
+ * Versão: Categorias Dinâmicas + Sistema Multilínguas
  * Atualizado: Setembro 2025
  */
 
 import React, { useMemo, useCallback } from 'react';
+import { useLanguage } from './useLanguage';
 
 export const useCharts = (transactions = {}, selectedPeriod = '6m', categories = null) => {
   
-  // Opções de período (mantidas do hook original)
-  const periodOptions = [
-    { value: '1m', label: '1 Mês' },
-    { value: '3m', label: '3 Meses' },
-    { value: '6m', label: '6 Meses' },
-    { value: '12m', label: '12 Meses' },
-    { value: 'all', label: 'Todos' }
-  ];
+  // Integração com sistema de tradução
+  const { t, language } = useLanguage();
+  
+  // Opções de período (traduzidas dinamicamente)
+  const periodOptions = useMemo(() => [
+    { value: '1m', label: t('charts.filters.last1Month') },
+    { value: '3m', label: t('charts.filters.last3Months') },
+    { value: '6m', label: t('charts.filters.last6Months') },
+    { value: '12m', label: t('charts.filters.last12Months') },
+    { value: 'all', label: t('charts.filters.allTime') }
+  ], [t]);
 
-  // Função para formatar moeda (reutilizável)
+  // Função para formatar moeda (reutilizável e localizada) com tratamento de erro
   const formatCurrency = useCallback((value) => {
-    if (typeof value !== 'number') return 'R$ 0,00';
+    if (typeof value !== 'number') return '$ 0.00';
     
-    return new Intl.NumberFormat('pt-BR', {
+    let currencyConfig = { code: 'USD', symbol: '$' };
+    
+    try {
+      const stored = localStorage.getItem('vm-finance-currency');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed === 'object' && parsed.code) {
+          currencyConfig = parsed;
+        }
+      }
+    } catch (error) {
+      console.warn('Erro ao carregar configuração de moeda, usando padrão USD:', error);
+    }
+    
+    return new Intl.NumberFormat(language, {
       style: 'currency',
-      currency: 'BRL'
+      currency: currencyConfig.code
     }).format(value);
-  }, []);
+  }, [language]);
 
   // Função para cores dos gráficos baseada no tema
   const getChartColors = useCallback((isDark = false) => {
     if (isDark) {
       return {
-        income: '#22C55E',     // green-500 mais brilhante para dark mode
-        expense: '#F87171',    // red-400 mais suave para dark mode  
-        balance: '#60A5FA',    // blue-400 mais suave para dark mode
-        evolution: '#A78BFA',  // violet-400 mais suave para dark mode
+        income: '#22C55E',
+        expense: '#F87171',
+        balance: '#60A5FA',
+        evolution: '#A78BFA',
         categories: [
-          '#60A5FA', // blue-400
-          '#22C55E', // green-500
-          '#FBBF24', // amber-400
-          '#F87171', // red-400
-          '#A78BFA', // violet-400
-          '#22D3EE', // cyan-400
-          '#A3E635', // lime-400
-          '#FB923C'  // orange-400
+          '#60A5FA',
+          '#22C55E',
+          '#FBBF24',
+          '#F87171',
+          '#A78BFA',
+          '#22D3EE',
+          '#A3E635',
+          '#FB923C'
         ]
       };
     } else {
       return {
-        income: '#10B981',     // green-500
-        expense: '#EF4444',    // red-500
-        balance: '#3B82F6',    // blue-500
-        evolution: '#8B5CF6',  // violet-500
+        income: '#10B981',
+        expense: '#EF4444',
+        balance: '#3B82F6',
+        evolution: '#8B5CF6',
         categories: [
-          '#3B82F6', // blue-500
-          '#10B981', // green-500
-          '#F59E0B', // amber-500
-          '#EF4444', // red-500
-          '#8B5CF6', // violet-500
-          '#06B6D4', // cyan-500
-          '#84CC16', // lime-500
-          '#F97316'  // orange-500
+          '#3B82F6',
+          '#10B981',
+          '#F59E0B',
+          '#EF4444',
+          '#8B5CF6',
+          '#06B6D4',
+          '#84CC16',
+          '#F97316'
         ]
       };
     }
   }, []);
 
-  // ✅ CORREÇÃO: Converter transações do formato Context para array processável
+  // Converter transações do formato Context para array processável
   const processedTransactions = useMemo(() => {
     if (!transactions || typeof transactions !== 'object') {
       return [];
@@ -83,10 +102,8 @@ export const useCharts = (transactions = {}, selectedPeriod = '6m', categories =
 
     const result = [];
     
-    // Se transactions é um objeto com datas como chaves
     Object.entries(transactions).forEach(([date, dayData]) => {
       if (dayData && typeof dayData === 'object') {
-        // Processar receitas
         if (dayData.income && typeof dayData.income === 'object') {
           Object.entries(dayData.income).forEach(([id, transaction]) => {
             result.push({
@@ -100,7 +117,6 @@ export const useCharts = (transactions = {}, selectedPeriod = '6m', categories =
           });
         }
         
-        // Processar despesas
         if (dayData.expenses && typeof dayData.expenses === 'object') {
           Object.entries(dayData.expenses).forEach(([id, transaction]) => {
             result.push({
@@ -116,7 +132,6 @@ export const useCharts = (transactions = {}, selectedPeriod = '6m', categories =
       }
     });
 
-    // ✅ NOVO: Log de debug para verificar transações processadas
     if (result.length > 0) {
       console.log(`📊 useCharts - ${result.length} transações processadas`, {
         receitas: result.filter(t => t.type === 'income').length,
@@ -128,23 +143,20 @@ export const useCharts = (transactions = {}, selectedPeriod = '6m', categories =
     return result;
   }, [transactions]);
 
-  // ✅ NOVO: Obter todas as categorias disponíveis (dinâmicas + das transações)
+  // Obter todas as categorias disponíveis
   const availableCategories = useMemo(() => {
-    // Começar com categorias das transações existentes
     const transactionCategories = [...new Set(
       processedTransactions
         .map(t => t.category)
         .filter(cat => cat && cat !== 'Sem categoria')
     )];
 
-    // Se temos categorias dinâmicas, incluí-las
     if (categories) {
       const dynamicCategories = [
         ...(categories.income || []),
         ...(categories.expenses || [])
       ].map(cat => typeof cat === 'string' ? cat : cat.name);
 
-      // Combinar e remover duplicatas
       return [...new Set([...transactionCategories, ...dynamicCategories])];
     }
 
@@ -184,8 +196,6 @@ export const useCharts = (transactions = {}, selectedPeriod = '6m', categories =
     return filtered;
   }, [processedTransactions, selectedPeriod]);
 
-  // DADOS PARA CHARTVIEW (nomes compatíveis)
-  
   // monthlyData - Evolução mensal
   const monthlyData = useMemo(() => {
     const monthlyDataMap = {};
@@ -196,7 +206,7 @@ export const useCharts = (transactions = {}, selectedPeriod = '6m', categories =
       
       if (!monthlyDataMap[monthKey]) {
         monthlyDataMap[monthKey] = {
-          mes: date.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }),
+          mes: date.toLocaleDateString(language, { month: 'short', year: '2-digit' }),
           receitas: 0,
           despesas: 0,
           saldo: 0
@@ -210,7 +220,6 @@ export const useCharts = (transactions = {}, selectedPeriod = '6m', categories =
       }
     });
 
-    // Calcular saldo e ordenar por data
     const result = Object.entries(monthlyDataMap)
       .map(([monthKey, data]) => ({
         ...data,
@@ -221,13 +230,12 @@ export const useCharts = (transactions = {}, selectedPeriod = '6m', categories =
 
     console.log(`📊 useCharts - Dados mensais: ${result.length} meses processados`);
     return result;
-  }, [filteredTransactions]);
+  }, [filteredTransactions, language]);
 
-  // ✅ CORRIGIDO: categoryData - Gastos por categoria com verificação aprimorada
+  // categoryData - Gastos por categoria
   const categoryData = useMemo(() => {
     const categoryDataMap = {};
 
-    // Filtrar apenas despesas com categoria válida
     const expenseTransactions = filteredTransactions.filter(transaction => 
       transaction.type === 'expenses' && 
       transaction.category && 
@@ -251,15 +259,15 @@ export const useCharts = (transactions = {}, selectedPeriod = '6m', categories =
     });
 
     const result = Object.values(categoryDataMap)
-      .filter(cat => cat.valor > 0) // Só categorias com valor > 0
+      .filter(cat => cat.valor > 0)
       .sort((a, b) => b.valor - a.valor)
-      .slice(0, 8); // Top 8 categorias
+      .slice(0, 8);
 
     console.log(`📊 useCharts - Categorias processadas: ${result.length}`, 
-      result.map(cat => `${cat.categoria}: R$ ${cat.valor.toFixed(2)}`));
+      result.map(cat => `${cat.categoria}: ${formatCurrency(cat.valor)}`));
 
     return result;
-  }, [filteredTransactions]);
+  }, [filteredTransactions, formatCurrency]);
 
   // evolutionData - Evolução patrimonial
   const evolutionData = useMemo(() => {
@@ -307,7 +315,7 @@ export const useCharts = (transactions = {}, selectedPeriod = '6m', categories =
     return [value, name];
   }, [formatCurrency]);
 
-  // ✅ CORREÇÃO: Verificação de dados disponíveis mais rigorosa
+  // Verificação de dados disponíveis
   const hasData = useMemo(() => {
     const hasTransactions = filteredTransactions.length > 0;
     const hasCategories = categoryData.length > 0;
@@ -319,7 +327,7 @@ export const useCharts = (transactions = {}, selectedPeriod = '6m', categories =
   const hasMonthlyData = monthlyData.length > 0;
   const hasCategoryData = categoryData.length > 0;
 
-  // ✅ NOVO: Debug do estado atual
+  // Debug do estado atual
   React.useEffect(() => {
     if (categories) {
       console.log('📊 useCharts - Categorias dinâmicas recebidas:', {
@@ -332,12 +340,12 @@ export const useCharts = (transactions = {}, selectedPeriod = '6m', categories =
 
   // RETORNO COMPATÍVEL COM CHARTVIEW
   return {
-    // Dados principais (nomes exatos esperados pelo ChartsView)
+    // Dados principais
     monthlyData,
     categoryData, 
     evolutionData,
     
-    // Configurações (nomes exatos esperados pelo ChartsView)
+    // Configurações
     periodOptions,
     formatCurrency,
     getChartColors,
@@ -349,9 +357,9 @@ export const useCharts = (transactions = {}, selectedPeriod = '6m', categories =
     formatTooltipValue,
     hasData,
     hasMonthlyData,
-    hasCategoryData, // ✅ NOVO: Estado específico para dados de categoria
+    hasCategoryData,
     
-    // ✅ NOVO: Informações sobre categorias
+    // Informações sobre categorias
     availableCategories,
     
     // Estado atual

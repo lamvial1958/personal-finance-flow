@@ -2,19 +2,31 @@
  * Dashboard Component - Personal Finance Flow
  * Componente principal do painel com resumo, transações, filtros avançados e funcionalidades Fase 1 + Edição
  * 
+ * NOVA FUNCIONALIDADE V1.6.0:
+ * - Sistema multilínguas completo integrado
+ * - Interface traduzida para 6 idiomas
+ * - Sistema híbrido de categorias traduzidas
+ * - Todas funcionalidades mantidas
+ * 
+ * CORREÇÃO V1.6.1:
+ * - 100% dos textos agora traduzidos
+ * - Remoção completa de strings hardcoded
+ * - Labels e mensagens internacionalizadas
+ * 
  * CORREÇÃO: Integração com categorias dinâmicas do AppContext
  * - Categorias personalizáveis no formulário
  * - Sincronização automática com CategoryManager
  * - Compatibilidade total com sistema
  * 
  * Localização: C:\Personal_Finance_Flow\src\components\Dashboard\Dashboard.jsx
- * Versão: Categorias Dinâmicas Integradas
+ * Versão: V1.6.1 - Multilínguas Completo + Categorias Dinâmicas Integradas
  * ATUALIZAÇÃO: Interface de filtros avançados + componente AdvancedFilters integrado
  * Criado: Setembro 2025
  */
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../hooks/useLanguage';
 import useTransactions from '../../hooks/useTransactions';
 import AdvancedFilters from './AdvancedFilters';
 
@@ -25,9 +37,12 @@ const Dashboard = () => {
     investmentMovements,
     getCurrentPatrimony,
     dataVersion,
-    // ✅ NOVO: Categorias dinâmicas do AppContext
+    // Categorias dinâmicas do AppContext
     categories: dynamicCategories
   } = useApp();
+
+  // Hook de tradução multilínguas
+  const { t, translateCategory } = useLanguage();
 
   const {
     // Estados e dados
@@ -37,10 +52,9 @@ const Dashboard = () => {
     sortOrder,
     todayStats,
     transactionStats,
-    // Removido: categories (não precisamos mais das estáticas)
     sortOptions,
     
-    // ✅ NOVO: Estados de filtros avançados
+    // Estados de filtros avançados
     advancedFilters,
     showAdvancedFilters,
     hasActiveFilters,
@@ -63,7 +77,7 @@ const Dashboard = () => {
     // Funções de edição
     handleEditClick,
     
-    // ✅ NOVO: Funções de filtros avançados
+    // Funções de filtros avançados
     toggleAdvancedFilters,
     handleClearAllFilters,
     
@@ -75,7 +89,7 @@ const Dashboard = () => {
     transactionCount
   } = useTransactions();
 
-  // ✅ CORREÇÃO: Usar APENAS categorias dinâmicas do AppContext
+  // Usar APENAS categorias dinâmicas do AppContext
   const categoryOptions = useMemo(() => {
     // Sempre usar categorias dinâmicas - sem fallback
     if (dynamicCategories && dynamicCategories[newTransaction.type]) {
@@ -89,15 +103,32 @@ const Dashboard = () => {
     return [];
   }, [dynamicCategories, newTransaction.type]);
 
+  // Tradução das opções de ordenação
+  const translatedSortOptions = useMemo(() => {
+    const sortMapping = {
+      'dateDesc': 'dashboard.sortOptions.dateDesc',
+      'dateAsc': 'dashboard.sortOptions.dateAsc', 
+      'valueDesc': 'dashboard.sortOptions.valueDesc',
+      'valueAsc': 'dashboard.sortOptions.valueAsc',
+      'categoryAsc': 'dashboard.sortOptions.categoryAsc',
+      'categoryDesc': 'dashboard.sortOptions.categoryDesc'
+    };
+    
+    return sortOptions.map(option => ({
+      ...option,
+      label: sortMapping[option.key] ? t(sortMapping[option.key]) : option.label
+    }));
+  }, [sortOptions, t]);
+
   // Logs de debug para verificar integração
   React.useEffect(() => {
     if (dynamicCategories) {
-      console.log('📝 Dashboard - Categorias dinâmicas disponíveis:', dynamicCategories);
-      console.log('📝 Dashboard - Categorias para tipo atual:', categoryOptions);
+      console.log('🔍 Dashboard - Categorias dinâmicas disponíveis:', dynamicCategories);
+      console.log('🔍 Dashboard - Categorias para tipo atual:', categoryOptions);
     }
   }, [dynamicCategories, categoryOptions]);
 
-  // Correção: useCallback para prevenir re-criação de funções
+  // Handlers com useCallback
   const handleTypeChange = useCallback((e) => {
     updateTransactionField('type', e.target.value);
   }, [updateTransactionField]);
@@ -138,7 +169,7 @@ const Dashboard = () => {
           </div>
           <div className="ml-4">
             <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-              {hasActiveFilters ? 'Entradas (Filtradas)' : 'Entradas Hoje'}
+              {hasActiveFilters ? `${t('dashboard.revenue')} (${t('dashboard.filtered')})` : `${t('dashboard.revenue')} ${t('dashboard.thisMonth')}`}
             </p>
             <p className="text-2xl font-bold text-green-600 dark:text-green-400">
               {hasActiveFilters ? formatCurrency(transactionStats.filteredIncome) : formatCurrency(todayStats.income)}
@@ -156,7 +187,7 @@ const Dashboard = () => {
           </div>
           <div className="ml-4">
             <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-              {hasActiveFilters ? 'Saídas (Filtradas)' : 'Saídas Hoje'}
+              {hasActiveFilters ? `${t('dashboard.expenses')} (${t('dashboard.filtered')})` : `${t('dashboard.expenses')} ${t('dashboard.thisMonth')}`}
             </p>
             <p className="text-2xl font-bold text-red-600 dark:text-red-400">
               {hasActiveFilters ? formatCurrency(transactionStats.filteredExpenses) : formatCurrency(todayStats.expenses)}
@@ -174,7 +205,7 @@ const Dashboard = () => {
           </div>
           <div className="ml-4">
             <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-              {hasActiveFilters ? 'Saldo (Filtrado)' : 'Patrimônio Total'}
+              {hasActiveFilters ? `${t('dashboard.balance')} (${t('dashboard.filtered')})` : t('dashboard.balance')}
             </p>
             <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
               {hasActiveFilters ? formatCurrency(transactionStats.filteredBalance) : formatCurrency(getCurrentPatrimony)}
@@ -183,28 +214,34 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
-  ), [todayStats, getCurrentPatrimony, formatCurrency, hasActiveFilters, transactionStats]);
+  ), [todayStats, getCurrentPatrimony, formatCurrency, hasActiveFilters, transactionStats, t]);
 
-  // ✅ FORMULÁRIO ATUALIZADO: Agora usa categorias dinâmicas
+  // Formulário de Nova Transação
   const TransactionForm = useMemo(() => (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Nova Transação</h3>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        {t('dashboard.addTransaction')}
+      </h3>
       <form onSubmit={handleTransactionSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tipo</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t('dashboard.transactionForm.type')}
+            </label>
             <select
               value={newTransaction.type}
               onChange={handleTypeChange}
               className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
-              <option value="income">Entrada</option>
-              <option value="expenses">Saída</option>
+              <option value="income">{t('dashboard.transactionTypes.income')}</option>
+              <option value="expenses">{t('dashboard.transactionTypes.expense')}</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Data</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t('dashboard.transactionForm.date')}
+            </label>
             <input
               type="date"
               value={newTransaction.date}
@@ -216,7 +253,9 @@ const Dashboard = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Valor *</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t('dashboard.transactionForm.amount')} *
+            </label>
             <input
               key="amount-input" 
               type="number"
@@ -236,11 +275,10 @@ const Dashboard = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Categoria
-              {/* ✅ NOVO: Indicador de categorias dinâmicas */}
+              {t('dashboard.transactionForm.category')}
               {dynamicCategories && (
                 <span className="ml-2 px-2 py-0.5 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full">
-                  Personalizáveis
+                  {t('configuration.categories.customizable')}
                 </span>
               )}
             </label>
@@ -249,29 +287,32 @@ const Dashboard = () => {
               onChange={handleCategoryChange}
               className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
-              <option value="">Selecione uma categoria</option>
+              <option value="">{t('dashboard.selectCategory')}</option>
               {categoryOptions.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
+                <option key={cat} value={cat}>
+                  {translateCategory ? translateCategory(cat, newTransaction.type) : cat}
+                </option>
               ))}
             </select>
-            {/* ✅ NOVO: Debug info (remover em produção) */}
             {process.env.NODE_ENV === 'development' && categoryOptions.length > 0 && (
               <p className="text-xs text-gray-500 mt-1">
-                {categoryOptions.length} categorias disponíveis (incluindo personalizadas)
+                {categoryOptions.length} {t('configuration.categories.customizable').toLowerCase()}
               </p>
             )}
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Descrição</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            {t('dashboard.transactionForm.description')}
+          </label>
           <input
             key="description-input"
             type="text"
             value={newTransaction.description}
             onChange={handleDescriptionChange}
             className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-            placeholder="Descrição da transação (opcional)"
+            placeholder={t('dashboard.transactionForm.description')}
             autoComplete="off"
           />
           {formValidation.errors.description && (
@@ -284,7 +325,7 @@ const Dashboard = () => {
           disabled={!formValidation.isValid}
           className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Adicionar Transação
+          {t('dashboard.transactionForm.save')}
         </button>
       </form>
     </div>
@@ -298,30 +339,31 @@ const Dashboard = () => {
     handleAmountChange,
     handleCategoryChange,
     handleDescriptionChange,
-    dynamicCategories
+    dynamicCategories,
+    t,
+    translateCategory
   ]);
 
-  // ✅ ATUALIZADO: Controles de busca e ordenação com filtros avançados
+  // Controles de busca e ordenação com filtros avançados
   const SearchAndSortControls = useMemo(() => (
     <div className="space-y-4">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex items-center gap-3">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Transações Recentes ({transactionCount})
+            {t('dashboard.showingTransactions', { count: transactionCount, total: transactionCount })}
           </h3>
           
-          {/* ✅ NOVO: Indicador de filtros ativos */}
           {hasActiveFilters && (
             <div className="flex items-center gap-2">
               <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-full">
-                {activeFiltersCount} filtro{activeFiltersCount !== 1 ? 's' : ''} ativo{activeFiltersCount !== 1 ? 's' : ''}
+                {activeFiltersCount} {activeFiltersCount !== 1 ? t('dashboard.activeFiltersPlural') : t('dashboard.activeFilters')}
               </span>
               <button
                 onClick={handleClearAllFilters}
                 className="text-xs text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 underline"
-                title="Limpar todos os filtros"
+                title={t('dashboard.clearFilters')}
               >
-                Limpar
+                {t('common.clear')}
               </button>
             </div>
           )}
@@ -338,7 +380,7 @@ const Dashboard = () => {
               type="text"
               value={searchTerm}
               onChange={handleSearchTermChange}
-              placeholder="Buscar por descrição ou categoria"
+              placeholder={t('dashboard.searchPlaceholder')}
               className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-64 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               autoComplete="off"
             />
@@ -350,14 +392,14 @@ const Dashboard = () => {
             onChange={handleSortChange}
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           >
-            {sortOptions.map(option => (
+            {translatedSortOptions.map(option => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
             ))}
           </select>
           
-          {/* ✅ NOVO: Botão de filtros avançados */}
+          {/* Botão de filtros avançados */}
           <button
             onClick={toggleAdvancedFilters}
             className={`
@@ -367,19 +409,19 @@ const Dashboard = () => {
                 : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
               }
             `}
-            title="Filtros avançados"
+            title={t('filters.advanced.title')}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"/>
             </svg>
             <span className="hidden sm:inline">
-              Filtros {hasAdvancedFilters && `(${activeFiltersCount})`}
+              {t('filters.advanced.filters')} {hasAdvancedFilters && `(${activeFiltersCount})`}
             </span>
           </button>
         </div>
       </div>
       
-      {/* ✅ NOVO: Componente de filtros avançados */}
+      {/* Componente de filtros avançados */}
       {showAdvancedFilters && (
         <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
           <AdvancedFilters />
@@ -391,7 +433,7 @@ const Dashboard = () => {
     searchTerm, 
     sortBy, 
     sortOrder, 
-    sortOptions,
+    translatedSortOptions,
     handleSearchTermChange,
     handleSortChange,
     showAdvancedFilters,
@@ -399,7 +441,8 @@ const Dashboard = () => {
     hasActiveFilters,
     hasAdvancedFilters,
     activeFiltersCount,
-    handleClearAllFilters
+    handleClearAllFilters,
+    t
   ]);
 
   // Lista de transações com botão editar
@@ -409,16 +452,16 @@ const Dashboard = () => {
         <div className="text-center py-8 text-gray-500 dark:text-gray-400">
           {hasActiveFilters ? (
             <div className="space-y-2">
-              <p>Nenhuma transação encontrada com os filtros aplicados.</p>
+              <p>{t('dashboard.noTransactionsWithFilters')}</p>
               <button
                 onClick={handleClearAllFilters}
                 className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline text-sm"
               >
-                Limpar filtros
+                {t('dashboard.clearFilters')}
               </button>
             </div>
           ) : (
-            'Nenhuma transação encontrada.'
+            t('dashboard.noTransactions')
           )}
         </div>
       ) : (
@@ -432,7 +475,7 @@ const Dashboard = () => {
                       ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' 
                       : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
                   }`}>
-                    {transaction.type === 'income' ? 'Entrada' : 'Saída'}
+                    {transaction.type === 'income' ? t('dashboard.transactionTypes.income') : t('dashboard.transactionTypes.expense')}
                   </span>
                   <span className="text-sm text-gray-500 dark:text-gray-400">{formatDate(transaction.date)}</span>
                   <span className="text-xs text-gray-400 dark:text-gray-500">ID: {transaction.id}</span>
@@ -440,20 +483,23 @@ const Dashboard = () => {
                 <p className="font-medium text-gray-900 dark:text-gray-100 mt-1">
                   {searchTerm ? (
                     <span dangerouslySetInnerHTML={{
-                      __html: highlightSearchTerm(transaction.description || 'Sem descrição', searchTerm)
+                      __html: highlightSearchTerm(transaction.description || t('dashboard.noDescription'), searchTerm)
                     }} />
                   ) : (
-                    transaction.description || 'Sem descrição'
+                    transaction.description || t('dashboard.noDescription')
                   )}
                 </p>
                 <div className="flex items-center gap-4 mt-1">
                   <span className="text-sm text-gray-600 dark:text-gray-400">
                     {searchTerm ? (
                       <span dangerouslySetInnerHTML={{
-                        __html: highlightSearchTerm(transaction.category || 'Sem categoria', searchTerm)
+                        __html: highlightSearchTerm(
+                          translateCategory ? translateCategory(transaction.category || t('dashboard.noCategory'), transaction.type) : (transaction.category || t('dashboard.noCategory')), 
+                          searchTerm
+                        )
                       }} />
                     ) : (
-                      transaction.category || 'Sem categoria'
+                      translateCategory ? translateCategory(transaction.category || t('dashboard.noCategory'), transaction.type) : (transaction.category || t('dashboard.noCategory'))
                     )}
                   </span>
                   <span className={`font-semibold ${
@@ -477,7 +523,7 @@ const Dashboard = () => {
                     transaction.category || ''
                   )}
                   className="p-2 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-lg transition-colors"
-                  title="Editar transação"
+                  title={t('dashboard.editTransaction')}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -490,10 +536,10 @@ const Dashboard = () => {
                     transaction.id, 
                     transaction.date, 
                     transaction.type, 
-                    transaction.description || 'Sem descrição'
+                    transaction.description || t('dashboard.noDescription')
                   )}
                   className="p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900 rounded-lg transition-colors"
-                  title="Excluir transação"
+                  title={t('dashboard.deleteTransaction')}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
@@ -511,17 +557,17 @@ const Dashboard = () => {
   const LiquiditySummary = useMemo(() => (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-        {hasActiveFilters ? 'Resumo (Filtrado)' : 'Liquidez Mensal'}
+        {hasActiveFilters ? t('dashboard.summaryFiltered') : `${t('dashboard.balance')} ${t('dashboard.thisMonth')}`}
       </h3>
       <div className="space-y-3">
         <div className="flex justify-between items-center">
-          <span className="text-gray-600 dark:text-gray-400">Total de entradas:</span>
+          <span className="text-gray-600 dark:text-gray-400">{t('dashboard.totalIncome')}:</span>
           <span className="font-semibold text-green-600 dark:text-green-400">
             {hasActiveFilters ? formatCurrency(transactionStats.filteredIncome) : formatCurrency(transactionStats.totalIncome)}
           </span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-gray-600 dark:text-gray-400">Saídas totais:</span>
+          <span className="text-gray-600 dark:text-gray-400">{t('dashboard.totalExpenses')}:</span>
           <span className="font-semibold text-red-600 dark:text-red-400">
             {hasActiveFilters ? formatCurrency(transactionStats.filteredExpenses) : formatCurrency(transactionStats.totalExpenses)}
           </span>
@@ -529,7 +575,7 @@ const Dashboard = () => {
         <div className="border-t dark:border-gray-700 pt-2">
           <div className="flex justify-between items-center">
             <span className="text-gray-900 dark:text-gray-100 font-medium">
-              {hasActiveFilters ? 'Saldo Filtrado:' : 'Saldo Liquidez:'}
+              {hasActiveFilters ? `${t('dashboard.balanceFiltered')}:` : `${t('dashboard.balance')}:`}
             </span>
             <span className={`font-bold text-lg ${
               (hasActiveFilters ? transactionStats.filteredBalance : transactionStats.liquidBalance) >= 0 
@@ -542,54 +588,58 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
-  ), [transactionStats, formatCurrency, hasActiveFilters]);
+  ), [transactionStats, formatCurrency, hasActiveFilters, t]);
 
   // Status do sistema (memoizado)
   const SystemStatus = useMemo(() => (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Status do Sistema</h3>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        {t('configuration.system.title')}
+      </h3>
       <div className="space-y-3">
         <div className="flex justify-between items-center">
-          <span className="text-gray-600 dark:text-gray-400">Aplicativo:</span>
+          <span className="text-gray-600 dark:text-gray-400">{t('configuration.system.type')}:</span>
           <span className="flex items-center">
             <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
             <span className="text-green-600 dark:text-green-400 font-medium">Progressive Web App</span>
           </span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-gray-600 dark:text-gray-400">Banco de dados:</span>
+          <span className="text-gray-600 dark:text-gray-400">{t('dashboard.database')}:</span>
           <span className="flex items-center">
             <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
             <span className="text-green-600 dark:text-green-400 font-medium">{connectionStatus}</span>
           </span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-gray-600 dark:text-gray-400">Transações:</span>
-          <span className="text-gray-900 dark:text-gray-100 font-medium">{Object.keys(dailyTransactions).length} registros</span>
+          <span className="text-gray-600 dark:text-gray-400">{t('dashboard.recentTransactions')}:</span>
+          <span className="text-gray-900 dark:text-gray-100 font-medium">
+            {Object.keys(dailyTransactions).length} {t('dashboard.records')}
+          </span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-gray-600 dark:text-gray-400">Investimentos:</span>
-          <span className="text-gray-900 dark:text-gray-100 font-medium">{Object.keys(investmentMovements).length} movimentos</span>
+          <span className="text-gray-600 dark:text-gray-400">{t('patrimony.recentMovements')}:</span>
+          <span className="text-gray-900 dark:text-gray-100 font-medium">
+            {Object.keys(investmentMovements).length} {t('dashboard.movements')}
+          </span>
         </div>
-        {/* ✅ NOVO: Status das categorias dinâmicas */}
         {dynamicCategories && (
           <div className="flex justify-between items-center">
-            <span className="text-gray-600 dark:text-gray-400">Categorias:</span>
+            <span className="text-gray-600 dark:text-gray-400">{t('configuration.categories.title')}:</span>
             <span className="text-blue-600 dark:text-blue-400 font-medium">
-              {(dynamicCategories.income?.length || 0) + (dynamicCategories.expenses?.length || 0)} personalizáveis
+              {(dynamicCategories.income?.length || 0) + (dynamicCategories.expenses?.length || 0)} {t('configuration.categories.customizable').toLowerCase()}
             </span>
           </div>
         )}
-        {/* ✅ NOVO: Status dos filtros */}
         {hasActiveFilters && (
           <div className="flex justify-between items-center">
-            <span className="text-gray-600 dark:text-gray-400">Filtros ativos:</span>
+            <span className="text-gray-600 dark:text-gray-400">{t('filters.advanced.filters')} {activeFiltersCount !== 1 ? t('dashboard.activeFiltersPlural') : t('dashboard.activeFilters')}:</span>
             <span className="text-blue-600 dark:text-blue-400 font-medium">{activeFiltersCount}</span>
           </div>
         )}
       </div>
     </div>
-  ), [connectionStatus, dailyTransactions, investmentMovements, hasActiveFilters, activeFiltersCount, dynamicCategories]);
+  ), [connectionStatus, dailyTransactions, investmentMovements, hasActiveFilters, activeFiltersCount, dynamicCategories, t]);
 
   // Render principal
   return (

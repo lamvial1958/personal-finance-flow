@@ -9,18 +9,20 @@
  * - Estatísticas de uso por categoria
  * - Suporte completo ao modo escuro
  * - Design responsivo e acessível
+ * - Sistema multilínguas integrado
  * 
  * Localização: C:\Personal_Finance_Flow\src\components\Configuration\CategoryManager.jsx
- * Sistema de Categorias Personalizáveis
+ * Sistema de Categorias Personalizáveis + Multilínguas
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useCategories } from '../../hooks/useCategories';
 import { useTheme } from '../../hooks/useTheme';
+import { useLanguage } from '../../hooks/useLanguage';
 
 // Mapeamento de ícones Lucide React para componentes
 const IconMap = {
-  'tag': '🏷️', 'folder': '📁', 'bookmark': '🔖', 'star': '⭐', 'heart': '❤️',
+  'tag': '🏷️', 'folder': '📁', 'bookmark': '📖', 'star': '⭐', 'heart': '❤️',
   'circle': '⚪', 'square': '⬜', 'briefcase': '💼', 'laptop': '💻', 
   'trending-up': '📈', 'shopping-bag': '🛍️', 'award': '🏆', 'plus-circle': '➕',
   'utensils': '🍽️', 'car': '🚗', 'home': '🏠', 'book-open': '📖', 
@@ -35,6 +37,7 @@ const IconMap = {
 
 const CategoryManager = () => {
   const { isDark } = useTheme();
+  const { t, translateCategory } = useLanguage();
   const {
     categories,
     categoriesByType,
@@ -138,7 +141,6 @@ const CategoryManager = () => {
       });
 
     } catch (error) {
-      // Erro já tratado no hook
       console.error('Erro no formulário:', error);
     }
   }, [formData, activeTab, submitCategoryForm, defaultColors]);
@@ -168,7 +170,9 @@ const CategoryManager = () => {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-        <span className="ml-3 text-gray-600 dark:text-gray-300">Carregando categorias...</span>
+        <span className="ml-3 text-gray-600 dark:text-gray-300">
+          {t('common.loading')}...
+        </span>
       </div>
     );
   }
@@ -179,17 +183,17 @@ const CategoryManager = () => {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Gerenciar Categorias
+            {t('configuration.categories.manage')}
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Personalize as categorias para suas transações
+            {t('configuration.categories.description')}
           </p>
         </div>
         <button
           onClick={toggleStats}
           className="px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
         >
-          {showStats ? 'Ocultar' : 'Ver'} Estatísticas
+          {showStats ? t('common.hide') : t('common.show')} {t('configuration.categories.statistics')}
         </button>
       </div>
 
@@ -203,7 +207,7 @@ const CategoryManager = () => {
               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
           }`}
         >
-          Receitas ({categoriesByType.income?.length || 0})
+          {t('dashboard.transactionTypes.income')} ({categoriesByType.income?.length || 0})
         </button>
         <button
           onClick={() => setActiveTab('expenses')}
@@ -213,7 +217,7 @@ const CategoryManager = () => {
               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
           }`}
         >
-          Despesas ({categoriesByType.expenses?.length || 0})
+          {t('dashboard.transactionTypes.expense')} ({categoriesByType.expenses?.length || 0})
         </button>
       </div>
 
@@ -243,13 +247,15 @@ const CategoryManager = () => {
       {showStats && (
         <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
           <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-3">
-            Estatísticas de Uso - {activeTab === 'income' ? 'Receitas' : 'Despesas'}
+            {t('configuration.categories.statistics')} - {activeTab === 'income' ? t('dashboard.transactionTypes.income') : t('dashboard.transactionTypes.expense')}
           </h4>
           
           {loadingStats ? (
             <div className="flex items-center justify-center py-4">
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
-              <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">Carregando...</span>
+              <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">
+                {t('common.loading')}...
+              </span>
             </div>
           ) : activeStats.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -257,18 +263,22 @@ const CategoryManager = () => {
                 <div key={stat.id} className="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
                   <div className="flex items-center space-x-2 mb-2">
                     <span style={{ color: stat.color }}>{IconMap[stat.icon] || '🏷️'}</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{stat.name}</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      {translateCategory(stat.name, stat.type)}
+                    </span>
                   </div>
                   <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                    <div>Uso: {stat.usage_count} vezes</div>
-                    <div>Total: ${Number(stat.total_amount).toFixed(2)}</div>
-                    {stat.last_used && <div>Último uso: {new Date(stat.last_used).toLocaleDateString('pt-BR')}</div>}
+                    <div>{t('configuration.categories.usage')}: {stat.usage_count}</div>
+                    <div>{t('common.total')}: {new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(stat.total_amount)}</div>
+                    {stat.last_used && <div>{t('configuration.categories.lastUsed')}: {new Date(stat.last_used).toLocaleDateString('it-IT')}</div>}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-600 dark:text-gray-400">Nenhuma estatística disponível</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {t('configuration.categories.noStats')}
+            </p>
           )}
         </div>
       )}
@@ -278,14 +288,14 @@ const CategoryManager = () => {
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <h4 className="text-md font-medium text-gray-900 dark:text-gray-100">
-              Categorias de {activeTab === 'income' ? 'Receitas' : 'Despesas'}
+              {t('configuration.categories.title')} {activeTab === 'income' ? t('dashboard.transactionTypes.income') : t('dashboard.transactionTypes.expense')}
             </h4>
             <button
               onClick={() => startAddCategory(activeTab)}
               disabled={isUpdating}
               className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
             >
-              Adicionar Categoria
+              {t('configuration.categories.addCategory')}
             </button>
           </div>
         </div>
@@ -305,21 +315,21 @@ const CategoryManager = () => {
                     <div>
                       <div className="flex items-center space-x-2">
                         <span className="font-medium text-gray-900 dark:text-gray-100">
-                          {category.name}
+                          {translateCategory(category.name, category.type)}
                         </span>
                         {category.is_default === 1 && (
                           <span className="px-2 py-0.5 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full">
-                            Padrão
+                            {t('configuration.categories.default')}
                           </span>
                         )}
                         {category.is_active === 0 && (
                           <span className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full">
-                            Inativa
+                            {t('configuration.categories.inactive')}
                           </span>
                         )}
                       </div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">
-                        Cor: {category.color} • Ícone: {category.icon}
+                        {t('configuration.categories.color')}: {category.color} • {t('configuration.categories.icon')}: {category.icon}
                       </div>
                     </div>
                   </div>
@@ -330,7 +340,7 @@ const CategoryManager = () => {
                       disabled={isUpdating}
                       className="px-2 py-1 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded disabled:opacity-50 transition-colors"
                     >
-                      Editar
+                      {t('common.edit')}
                     </button>
                     {category.is_default !== 1 && (
                       <button
@@ -338,7 +348,7 @@ const CategoryManager = () => {
                         disabled={isUpdating}
                         className="px-2 py-1 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded disabled:opacity-50 transition-colors"
                       >
-                        Excluir
+                        {t('common.delete')}
                       </button>
                     )}
                   </div>
@@ -348,7 +358,7 @@ const CategoryManager = () => {
           ) : (
             <div className="p-8 text-center">
               <p className="text-gray-500 dark:text-gray-400">
-                Nenhuma categoria encontrada para {activeTab === 'income' ? 'receitas' : 'despesas'}
+                {t('configuration.categories.noCategories')}
               </p>
             </div>
           )}
@@ -360,7 +370,7 @@ const CategoryManager = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-md font-medium text-gray-900 dark:text-gray-100">
-              {formMode === 'add' ? 'Adicionar' : 'Editar'} Categoria
+              {formMode === 'add' ? t('configuration.categories.addCategory') : t('configuration.categories.editCategory')}
             </h4>
             <button
               onClick={cancelCategoryForm}
@@ -374,14 +384,14 @@ const CategoryManager = () => {
             {/* Nome */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Nome da Categoria
+                {t('configuration.categories.categoryName')}
               </label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => updateFormField('name', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Digite o nome da categoria"
+                placeholder={t('configuration.categories.categoryName')}
                 required
                 minLength={2}
                 maxLength={50}
@@ -391,7 +401,7 @@ const CategoryManager = () => {
             {/* Cor */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Cor
+                {t('configuration.categories.color')}
               </label>
               <div className="flex items-center space-x-3">
                 <input
@@ -430,7 +440,7 @@ const CategoryManager = () => {
             {/* Ícone */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Ícone
+                {t('configuration.categories.icon')}
               </label>
               <div className="grid grid-cols-8 gap-2 max-h-32 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-md p-2">
                 {availableIcons.map(icon => (
@@ -454,7 +464,7 @@ const CategoryManager = () => {
             {/* Preview */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Preview
+                {t('common.preview')}
               </label>
               <div className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
                 <div 
@@ -464,7 +474,7 @@ const CategoryManager = () => {
                   {IconMap[formData.icon] || '🏷️'}
                 </div>
                 <span className="font-medium text-gray-900 dark:text-gray-100">
-                  {formData.name || 'Nome da categoria'}
+                  {formData.name || t('configuration.categories.categoryName')}
                 </span>
               </div>
             </div>
@@ -476,14 +486,14 @@ const CategoryManager = () => {
                 onClick={cancelCategoryForm}
                 className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
               >
-                Cancelar
+                {t('common.cancel')}
               </button>
               <button
                 type="submit"
                 disabled={isUpdating || !formData.name.trim()}
                 className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
               >
-                {isUpdating ? 'Salvando...' : (formMode === 'add' ? 'Adicionar' : 'Salvar')}
+                {isUpdating ? t('common.loading') : (formMode === 'add' ? t('configuration.categories.addCategory') : t('common.save'))}
               </button>
             </div>
           </form>
@@ -497,13 +507,12 @@ const CategoryManager = () => {
             <div className="text-center mb-4">
               <div className="text-4xl mb-2">⚠️</div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                Confirmar Exclusão
+                {t('modals.delete.title')}
               </h3>
             </div>
             
             <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-              Tem certeza que deseja excluir a categoria "{deleteConfirm.name}"?
-              Esta ação não pode ser desfeita.
+              {t('modals.delete.message')} <strong>{translateCategory(deleteConfirm.name, deleteConfirm.type)}</strong>?
             </p>
             
             <div className="flex justify-center space-x-3">
@@ -511,14 +520,14 @@ const CategoryManager = () => {
                 onClick={() => setDeleteConfirm(null)}
                 className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
               >
-                Cancelar
+                {t('common.cancel')}
               </button>
               <button
                 onClick={() => handleDelete(deleteConfirm.id)}
                 disabled={isUpdating}
                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 transition-colors"
               >
-                {isUpdating ? 'Excluindo...' : 'Excluir'}
+                {isUpdating ? t('common.loading') : t('modals.delete.confirm')}
               </button>
             </div>
           </div>

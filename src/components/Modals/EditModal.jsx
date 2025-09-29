@@ -1,16 +1,19 @@
 /**
  * EditModal Component - Personal Finance Flow (VERSÃO LIMPA)
  * Modal de edição auto-gerenciado - dados preenchidos automaticamente
+ * Sistema Multilínguas + Suporte a Modo Escuro
  * 
  * Localização: C:\Personal_Finance_Flow\src\components\Modals\EditModal.jsx
- * Versão: 1.5.1 - Versão otimizada sem logs excessivos
+ * Versão: 1.6.0 - Sistema Multilínguas Integrado
  * Atualização: Setembro 2025
  */
 
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../hooks/useLanguage'; // NOVO: Sistema multilínguas
 
 const EditModal = React.memo(() => {
+  const { t } = useLanguage(); // NOVO: Hook de tradução
   const {
     formatDate,
     categories,
@@ -34,7 +37,7 @@ const EditModal = React.memo(() => {
   useEffect(() => {
     if (showEditModal && transactionToEdit) {
       // Log apenas para operações importantes
-      console.log('📝 Editando transação ID:', transactionToEdit.id);
+      console.log('🔍 Editing transaction ID:', transactionToEdit.id);
       setFormData({
         type: transactionToEdit.type,
         amount: transactionToEdit.amount.toString(),
@@ -93,11 +96,11 @@ const EditModal = React.memo(() => {
       hasAmount,
       hasValidDate,
       errors: {
-        amount: !hasAmount ? 'Valor é obrigatório e deve ser maior que zero' : null,
-        date: !hasValidDate ? 'Data inválida' : null
+        amount: !hasAmount ? t('transactions.validation.requiredAmountPositive') : null,
+        date: !hasValidDate ? t('transactions.validation.invalidDate') : null
       }
     };
-  }, [formData.amount, formData.date]);
+  }, [formData.amount, formData.date, t]);
 
   // Opções de categoria baseadas no tipo selecionado (memoizada)
   const categoryOptions = useMemo(() => {
@@ -119,7 +122,7 @@ const EditModal = React.memo(() => {
         category: formData.category || ''
       };
 
-      console.log('✅ Atualizando transação ID:', transactionToEdit.id, 'com campos:', updatedFields);
+      console.log('✅ Updating transaction ID:', transactionToEdit.id, 'with fields:', updatedFields);
 
       await updateTransaction(transactionToEdit.id, updatedFields);
       
@@ -127,14 +130,14 @@ const EditModal = React.memo(() => {
       setShowEditModal(false);
       setTransactionToEdit(null);
       
-      console.log('✅ Transação atualizada com sucesso!');
-      alert('Transação atualizada com sucesso!');
+      console.log('✅ Transaction updated successfully!');
+      alert(t('transactions.messages.updateSuccess'));
       
     } catch (error) {
-      console.error('❌ Erro ao editar transação:', error);
-      alert('Erro ao atualizar transação: ' + error.message);
+      console.error('❌ Transaction edit error:', error);
+      alert(t('transactions.messages.updateError') + ': ' + error.message);
     }
-  }, [formData, transactionToEdit, formValidation.isValid, updateTransaction, setShowEditModal, setTransactionToEdit]);
+  }, [formData, transactionToEdit, formValidation.isValid, updateTransaction, setShowEditModal, setTransactionToEdit, t]);
 
   // Cancelar edição
   const handleCancel = useCallback(() => {
@@ -149,26 +152,32 @@ const EditModal = React.memo(() => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full shadow-xl max-h-96 overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full shadow-xl max-h-96 overflow-y-auto transition-colors">
         <div className="text-center mb-4">
           <div className="text-4xl mb-2">✏️</div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-            Editar Transação
+            {t('modals.edit.title')}
           </h3>
         </div>
         
-        <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg transition-colors">
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-            <strong>ID:</strong> {transactionToEdit.id}
+            <strong>{t('modals.edit.fields.id')}:</strong> {transactionToEdit.id}
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-            <strong>Data Original:</strong> {formatDate(transactionToEdit.date)}
+            <strong>{t('modals.edit.fields.originalDate')}:</strong> {formatDate(transactionToEdit.date)}
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-            <strong>Tipo Original:</strong> {transactionToEdit.type === 'income' ? 'Entrada' : 'Saída'}
+            <strong>{t('modals.edit.fields.originalType')}:</strong> {
+              transactionToEdit.type === 'income' 
+                ? t('dashboard.transactionTypes.income')
+                : t('dashboard.transactionTypes.expense')
+            }
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            <strong>Descrição Original:</strong> {transactionToEdit.description || 'Sem descrição'}
+            <strong>{t('modals.edit.fields.originalDescription')}:</strong> {
+              transactionToEdit.description || t('common.noDescription')
+            }
           </p>
         </div>
 
@@ -177,28 +186,28 @@ const EditModal = React.memo(() => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Tipo
+                {t('dashboard.transactionForm.type')}
               </label>
               <select
                 value={formData.type}
                 onChange={handleTypeChange}
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors"
                 required
               >
-                <option value="income">Entrada</option>
-                <option value="expenses">Saída</option>
+                <option value="income">{t('dashboard.transactionTypes.income')}</option>
+                <option value="expenses">{t('dashboard.transactionTypes.expense')}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Data *
+                {t('dashboard.transactionForm.date')} *
               </label>
               <input
                 type="date"
                 value={formData.date}
                 onChange={handleDateChange}
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors"
                 required
               />
               {formValidation.errors.date && (
@@ -211,7 +220,7 @@ const EditModal = React.memo(() => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Valor *
+                {t('dashboard.transactionForm.amount')} *
               </label>
               <input
                 type="number"
@@ -219,7 +228,7 @@ const EditModal = React.memo(() => {
                 min="0.01"
                 value={formData.amount}
                 onChange={handleAmountChange}
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors"
                 placeholder="0,00"
                 required
                 autoComplete="off"
@@ -231,14 +240,14 @@ const EditModal = React.memo(() => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Categoria
+                {t('dashboard.transactionForm.category')}
               </label>
               <select
                 value={formData.category}
                 onChange={handleCategoryChange}
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors"
               >
-                <option value="">Selecione uma categoria</option>
+                <option value="">{t('dashboard.transactionForm.selectCategory')}</option>
                 {categoryOptions.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
@@ -249,14 +258,14 @@ const EditModal = React.memo(() => {
           {/* Descrição */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Descrição
+              {t('dashboard.transactionForm.description')}
             </label>
             <input
               type="text"
               value={formData.description}
               onChange={handleDescriptionChange}
-              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              placeholder="Descrição da transação (opcional)"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors"
+              placeholder={t('dashboard.transactionForm.descriptionPlaceholder')}
               autoComplete="off"
             />
           </div>
@@ -266,9 +275,9 @@ const EditModal = React.memo(() => {
             <button
               type="submit"
               disabled={!formValidation.isValid}
-              className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-blue-600 dark:bg-blue-700 text-white py-3 rounded hover:bg-blue-700 dark:hover:bg-blue-600 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              ✅ Salvar Alterações
+              ✅ {t('modals.edit.actions.saveChanges')}
             </button>
             
             <button
@@ -276,13 +285,13 @@ const EditModal = React.memo(() => {
               onClick={handleCancel}
               className="w-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 rounded hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
             >
-              Cancelar
+              {t('common.cancel')}
             </button>
           </div>
         </form>
 
         <p className="text-xs text-gray-400 dark:text-gray-500 text-center mt-4">
-          Os gráficos serão atualizados automaticamente após a edição
+          {t('modals.edit.footer.autoUpdate')}
         </p>
       </div>
     </div>

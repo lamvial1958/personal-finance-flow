@@ -2,14 +2,21 @@
  * AnnualReportView Component - Personal Finance Flow
  * Componente para geração e visualização de relatórios anuais
  * 
+ * CORREÇÃO V1.6.1:
+ * - 100% dos textos agora traduzidos
+ * - Integração completa com sistema i18n
+ * - Nomes de meses traduzidos
+ * - Mensagens de erro e loading internacionalizadas
+ * 
  * Localização: C:\Personal_Finance_Flow\src\components\Reports\AnnualReportView.jsx
- * Versão: 1.1.0 - CORRIGIDO: Database timing issue + Modo Escuro
+ * Versão: 1.6.1 - Multilínguas Completo + Database timing fix + Modo Escuro
  * Criado: Setembro 2025
  */
 
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useTheme } from '../../hooks/useTheme';
+import { useLanguage } from '../../hooks/useLanguage';
 import dbManager from '../../db-manager.js';
 
 const AnnualReportView = () => {
@@ -21,6 +28,7 @@ const AnnualReportView = () => {
   } = useApp();
 
   const { isDark } = useTheme();
+  const { t } = useLanguage();
 
   // Estado local do componente
   const [reportData, setReportData] = useState(null);
@@ -31,11 +39,14 @@ const AnnualReportView = () => {
   // Anos disponíveis para seleção
   const availableYears = [2025, 2024, 2023, 2022, 2021, 2020];
 
-  // Nomes dos meses
-  const monthNames = [
-    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-  ];
+  // Nomes dos meses traduzidos
+  const getMonthName = (monthIndex) => {
+    const monthKeys = [
+      'january', 'february', 'march', 'april', 'may', 'june',
+      'july', 'august', 'september', 'october', 'november', 'december'
+    ];
+    return t(`reports.months.${monthKeys[monthIndex]}`);
+  };
 
   // ✅ CORREÇÃO CRÍTICA: Gerar relatório com verificação de inicialização
   const generateReport = async (year) => {
@@ -85,12 +96,12 @@ const AnnualReportView = () => {
     setSelectedYear(parseInt(year));
   };
 
-  // Cabeçalho com seletor de ano (COM TEMA)
+  // Cabeçalho com seletor de ano (COM TEMA + TRADUZIDO)
   const ReportHeader = () => (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 transition-colors">
-          Relatório Anual {selectedYear}
+          {t('reports.annualReport')} {selectedYear}
         </h2>
         <select
           value={selectedYear}
@@ -105,7 +116,7 @@ const AnnualReportView = () => {
     </div>
   );
 
-  // Cards de resumo (COM TEMA)
+  // Cards de resumo (COM TEMA + TRADUZIDO)
   const SummaryCards = () => {
     if (!reportData) return null;
 
@@ -115,21 +126,27 @@ const AnnualReportView = () => {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 transition-colors">Receitas Totais</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 transition-colors">
+            {t('reports.totalIncome')}
+          </h3>
           <p className="text-2xl font-bold text-green-600 dark:text-green-400 transition-colors">
             {formatCurrency(summary.totalIncome)}
           </p>
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 transition-colors">Despesas Totais</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 transition-colors">
+            {t('reports.totalExpenses')}
+          </h3>
           <p className="text-2xl font-bold text-red-600 dark:text-red-400 transition-colors">
             {formatCurrency(summary.totalExpenses)}
           </p>
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 transition-colors">Saldo Líquido</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 transition-colors">
+            {t('reports.netBalance')}
+          </h3>
           <p className={`text-2xl font-bold transition-colors ${
             netBalance >= 0 
               ? 'text-green-600 dark:text-green-400' 
@@ -142,38 +159,40 @@ const AnnualReportView = () => {
     );
   };
 
-  // Tabela de evolução mensal (COM TEMA)
+  // Tabela de evolução mensal (COM TEMA + TRADUZIDO)
   const MonthlyTable = () => {
     if (!reportData) return null;
 
     return (
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 transition-colors">Evolução Mensal</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 transition-colors">
+          {t('reports.monthlyEvolution')}
+        </h3>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-700 transition-colors">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider transition-colors">
-                  Mês
+                  {t('reports.month')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider transition-colors">
-                  Receitas
+                  {t('reports.income')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider transition-colors">
-                  Despesas
+                  {t('reports.expenses')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider transition-colors">
-                  Saldo
+                  {t('reports.balance')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider transition-colors">
-                  Investimentos
+                  {t('reports.investments')}
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700 transition-colors">
               {Object.entries(reportData.monthlyData).map(([month, data]) => {
                 const monthIndex = parseInt(month) - 1;
-                const monthName = monthNames[monthIndex];
+                const monthName = getMonthName(monthIndex);
                 const balance = data.income - data.expenses;
                 
                 return (
@@ -207,17 +226,17 @@ const AnnualReportView = () => {
     );
   };
 
-  // ✅ Estado de loading MELHORADO (COM TEMA)
+  // ✅ Estado de loading MELHORADO (COM TEMA + TRADUZIDO)
   const LoadingState = () => (
     <div className="flex justify-center items-center py-12">
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
       <span className="ml-2 text-gray-600 dark:text-gray-400 transition-colors">
-        {isInitializing ? 'Inicializando sistema...' : 'Gerando relatório...'}
+        {isInitializing ? t('reports.loading.initializing') : t('reports.loading.generating')}
       </span>
     </div>
   );
 
-  // Estado de erro (COM TEMA)
+  // Estado de erro (COM TEMA + TRADUZIDO)
   const ErrorState = () => (
     <div className="text-center py-12">
       <div className="text-4xl mb-4 text-red-500 dark:text-red-400">⚠️</div>
@@ -226,36 +245,40 @@ const AnnualReportView = () => {
         onClick={() => generateReport(selectedYear)}
         className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
       >
-        Tentar Novamente
+        {t('reports.errors.tryAgain')}
       </button>
     </div>
   );
 
-  // Estado vazio (sem dados) (COM TEMA)
+  // Estado vazio (sem dados) (COM TEMA + TRADUZIDO)
   const EmptyState = () => (
     <div className="text-center py-12">
       <div className="text-4xl mb-4 text-gray-400 dark:text-gray-500">📊</div>
-      <p className="text-gray-600 dark:text-gray-400 mb-2 transition-colors">Nenhum dado encontrado para {selectedYear}</p>
+      <p className="text-gray-600 dark:text-gray-400 mb-2 transition-colors">
+        {t('reports.errors.noData', { year: selectedYear })}
+      </p>
       <p className="text-sm text-gray-500 dark:text-gray-500 transition-colors">
-        Adicione algumas transações para gerar relatórios
+        {t('reports.errors.noDataHint')}
       </p>
     </div>
   );
 
-  // Informações sobre o relatório (COM TEMA)
+  // Informações sobre o relatório (COM TEMA + TRADUZIDO)
   const ReportInfo = () => (
     <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 transition-colors">
-      <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2 transition-colors">Como interpretar o relatório</h4>
+      <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2 transition-colors">
+        {t('reports.info.title')}
+      </h4>
       <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1 transition-colors">
-        <p>• <strong>Receitas:</strong> Todas as entradas registradas no ano</p>
-        <p>• <strong>Despesas:</strong> Todas as saídas registradas no ano</p>
-        <p>• <strong>Saldo:</strong> Diferença entre receitas e despesas mensais</p>
-        <p>• <strong>Investimentos:</strong> Movimentações de aplicações e resgates</p>
+        <p>• <strong>{t('reports.income')}:</strong> {t('reports.info.incomeDesc')}</p>
+        <p>• <strong>{t('reports.expenses')}:</strong> {t('reports.info.expensesDesc')}</p>
+        <p>• <strong>{t('reports.balance')}:</strong> {t('reports.info.balanceDesc')}</p>
+        <p>• <strong>{t('reports.investments')}:</strong> {t('reports.info.investmentsDesc')}</p>
       </div>
     </div>
   );
 
-  // Estatísticas adicionais (COM TEMA)
+  // Estatísticas adicionais (COM TEMA + TRADUZIDO)
   const AdditionalStats = () => {
     if (!reportData || !reportData.summary) return null;
 
@@ -266,19 +289,33 @@ const AnnualReportView = () => {
 
     return (
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 transition-colors">Estatísticas Adicionais</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 transition-colors">
+          {t('reports.stats.title')}
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">Meses com Dados</p>
-            <p className="text-xl font-semibold text-blue-600 dark:text-blue-400 transition-colors">{monthsWithData}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">
+              {t('reports.stats.monthsWithData')}
+            </p>
+            <p className="text-xl font-semibold text-blue-600 dark:text-blue-400 transition-colors">
+              {monthsWithData}
+            </p>
           </div>
           <div className="text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">Média Mensal Receitas</p>
-            <p className="text-xl font-semibold text-green-600 dark:text-green-400 transition-colors">{formatCurrency(avgMonthlyIncome)}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">
+              {t('reports.stats.avgMonthlyIncome')}
+            </p>
+            <p className="text-xl font-semibold text-green-600 dark:text-green-400 transition-colors">
+              {formatCurrency(avgMonthlyIncome)}
+            </p>
           </div>
           <div className="text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">Média Mensal Despesas</p>
-            <p className="text-xl font-semibold text-red-600 dark:text-red-400 transition-colors">{formatCurrency(avgMonthlyExpenses)}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">
+              {t('reports.stats.avgMonthlyExpenses')}
+            </p>
+            <p className="text-xl font-semibold text-red-600 dark:text-red-400 transition-colors">
+              {formatCurrency(avgMonthlyExpenses)}
+            </p>
           </div>
         </div>
       </div>
@@ -289,7 +326,7 @@ const AnnualReportView = () => {
   const hasReportData = reportData && reportData.summary && 
     (reportData.summary.totalIncome > 0 || reportData.summary.totalExpenses > 0);
 
-  // ✅ RENDER PRINCIPAL COM TEMA
+  // ✅ RENDER PRINCIPAL COM TEMA + TRADUZIDO
   return (
     <div key={`report-${dataVersion}-${selectedYear}`} className="space-y-6">
       {/* Cabeçalho */}

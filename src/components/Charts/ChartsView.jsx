@@ -2,7 +2,8 @@
  * ChartsView.jsx - Gráficos Interativos com Categorias Dinâmicas
  * Personal Finance Flow - Sistema de Categorias Personalizáveis
  * 
- * CORREÇÕES:
+ * CORREÇÕES V1.6.1:
+ * - 100% dos textos agora traduzidos
  * - Integração com categorias dinâmicas do AppContext
  * - Performance otimizada (React.memo + useMemo)
  * - Logs de debug removidos para evitar re-renders excessivos
@@ -10,12 +11,13 @@
  * - Processamento de dados corrigido para categorias customizadas
  * 
  * Localização: C:\Personal_Finance_Flow\src\components\Charts\ChartsView.jsx
- * Categorias Personalizáveis Integradas
+ * Versão: V1.6.1 - Multilínguas Completo + Categorias Personalizáveis
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useCharts } from '../../hooks/useCharts';
 import { useTheme } from '../../hooks/useTheme';
+import { useLanguage } from '../../hooks/useLanguage';
 import { useApp } from '../../context/AppContext';
 import {
   LineChart,
@@ -36,8 +38,9 @@ import {
 } from 'recharts';
 
 const ChartsView = React.memo(() => {
-  const { dailyTransactions, categories } = useApp(); // Incluindo categorias dinâmicas
+  const { dailyTransactions, categories } = useApp();
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedPeriod, setSelectedPeriod] = useState('12m');
 
@@ -142,13 +145,13 @@ const ChartsView = React.memo(() => {
     </div>
   ), [periodOptions, selectedPeriod, isDark]);
 
-  // Componente de abas - memoizado
+  // Componente de abas - memoizado e traduzido
   const TabNavigation = useMemo(() => {
     const tabs = [
-      { id: 'overview', label: 'Visão Geral', icon: '📊' },
-      { id: 'trends', label: 'Tendências', icon: '📈' },
-      { id: 'categories', label: 'Categorias', icon: '🥧' },
-      { id: 'evolution', label: 'Evolução', icon: '📉' }
+      { id: 'overview', labelKey: 'charts.tabs.overview', icon: '📊' },
+      { id: 'trends', labelKey: 'charts.tabs.trends', icon: '📈' },
+      { id: 'categories', labelKey: 'charts.tabs.categories', icon: '🥧' },
+      { id: 'evolution', labelKey: 'charts.tabs.evolution', icon: '📉' }
     ];
 
     return (
@@ -170,34 +173,34 @@ const ChartsView = React.memo(() => {
             `}
           >
             <span className="text-lg">{tab.icon}</span>
-            <span className="hidden sm:inline">{tab.label}</span>
+            <span className="hidden sm:inline">{t(tab.labelKey)}</span>
           </button>
         ))}
       </div>
     );
-  }, [activeTab, isDark]);
+  }, [activeTab, isDark, t]);
 
-  // Estado de loading/sem dados
+  // Estado de loading/sem dados - traduzido
   if (!hasData) {
     return (
       <div className="max-w-7xl mx-auto p-6">
         <div className="text-center py-16">
           <div className="text-6xl mb-4">📊</div>
           <h2 className={`text-2xl font-bold mb-2 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>
-            Nenhum dado encontrado
+            {t('charts.noDataTitle')}
           </h2>
           <p className={`text-lg mb-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-            Adicione algumas transações para ver os gráficos
+            {t('charts.noDataMessage')}
           </p>
           <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-            Vá para o Painel e adicione receitas ou despesas, ou importe dados OFX
+            {t('charts.noDataInstructions')}
           </p>
         </div>
       </div>
     );
   }
 
-  // Gráfico de visão geral (Receitas vs Despesas) - memoizado
+  // Gráfico de visão geral (Receitas vs Despesas) - memoizado e traduzido
   const OverviewChart = useMemo(() => (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -213,7 +216,7 @@ const ChartsView = React.memo(() => {
             text-lg font-semibold mb-4
             ${isDark ? 'text-gray-100' : 'text-gray-900'}
           `}>
-            Receitas vs Despesas
+            {t('charts.incomeVsExpenses')}
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={formattedMonthlyData}>
@@ -238,7 +241,7 @@ const ChartsView = React.memo(() => {
                 dataKey="receitas"
                 stroke={colors.income}
                 strokeWidth={2}
-                name="Receitas"
+                name={t('charts.income')}
                 dot={{ fill: colors.income, strokeWidth: 2, r: 4 }}
               />
               <Line
@@ -246,7 +249,7 @@ const ChartsView = React.memo(() => {
                 dataKey="despesas"
                 stroke={colors.expense}
                 strokeWidth={2}
-                name="Despesas"
+                name={t('charts.expenses')}
                 dot={{ fill: colors.expense, strokeWidth: 2, r: 4 }}
               />
             </LineChart>
@@ -265,7 +268,7 @@ const ChartsView = React.memo(() => {
             text-lg font-semibold mb-4
             ${isDark ? 'text-gray-100' : 'text-gray-900'}
           `}>
-            Saldo Mensal
+            {t('charts.monthlyBalance')}
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={formattedMonthlyData}>
@@ -286,7 +289,7 @@ const ChartsView = React.memo(() => {
               <Tooltip content={<CustomTooltip />} />
               <Bar
                 dataKey="saldo"
-                name="Saldo"
+                name={t('charts.balance')}
                 fill={colors.balance}
                 radius={[4, 4, 0, 0]}
               />
@@ -295,11 +298,10 @@ const ChartsView = React.memo(() => {
         </div>
       </div>
     </div>
-  ), [formattedMonthlyData, isDark, colors, formatCurrency, CustomTooltip]);
+  ), [formattedMonthlyData, isDark, colors, formatCurrency, CustomTooltip, t]);
 
-  // Gráfico de categorias (Pizza) - corrigido para categorias dinâmicas
+  // Gráfico de categorias (Pizza) - corrigido para categorias dinâmicas e traduzido
   const CategoriesChart = useMemo(() => {
-    // Verificação adicional para categorias dinâmicas
     const hasCategoryData = formattedCategoryData.length > 0;
     
     return (
@@ -314,7 +316,7 @@ const ChartsView = React.memo(() => {
           text-lg font-semibold mb-4
           ${isDark ? 'text-gray-100' : 'text-gray-900'}
         `}>
-          Gastos por Categoria
+          {t('charts.expensesByCategory')}
         </h3>
         
         {hasCategoryData ? (
@@ -339,7 +341,7 @@ const ChartsView = React.memo(() => {
                   ))}
                 </Pie>
                 <Tooltip 
-                  formatter={(value) => [formatCurrency(value), 'Valor']}
+                  formatter={(value) => [formatCurrency(value), t('charts.value')]}
                   labelStyle={{ color: isDark ? '#f3f4f6' : '#111827' }}
                   contentStyle={{
                     backgroundColor: isDark ? '#1f2937' : '#ffffff',
@@ -376,18 +378,18 @@ const ChartsView = React.memo(() => {
           <div className="text-center py-12">
             <div className="text-6xl mb-4">📊</div>
             <p className="text-gray-500 dark:text-gray-400 mb-2">
-              Nenhum dado de categoria encontrado para o período selecionado
+              {t('charts.noCategoryData')}
             </p>
             <p className="text-sm text-gray-400 dark:text-gray-500">
-              Certifique-se de que suas transações têm categorias definidas
+              {t('charts.noCategoryDataHint')}
             </p>
           </div>
         )}
       </div>
     );
-  }, [formattedCategoryData, isDark, colors, formatCurrency]);
+  }, [formattedCategoryData, isDark, colors, formatCurrency, t]);
 
-  // Gráfico de evolução patrimonial - memoizado
+  // Gráfico de evolução patrimonial - memoizado e traduzido
   const EvolutionChart = useMemo(() => (
     <div className={`
       p-6 rounded-xl shadow-sm border
@@ -400,7 +402,7 @@ const ChartsView = React.memo(() => {
         text-lg font-semibold mb-4
         ${isDark ? 'text-gray-100' : 'text-gray-900'}
       `}>
-        Evolução Patrimonial
+        {t('charts.balanceEvolution')}
       </h3>
       <ResponsiveContainer width="100%" height={400}>
         <AreaChart data={evolutionData}>
@@ -425,12 +427,12 @@ const ChartsView = React.memo(() => {
             stroke={colors.evolution}
             fill={colors.evolution}
             fillOpacity={0.3}
-            name="Patrimônio Acumulado"
+            name={t('charts.accumulatedPatrimony')}
           />
         </AreaChart>
       </ResponsiveContainer>
     </div>
-  ), [evolutionData, isDark, colors, formatCurrency, CustomTooltip]);
+  ), [evolutionData, isDark, colors, formatCurrency, CustomTooltip, t]);
 
   // Renderizar conteúdo baseado na aba ativa
   const renderActiveTab = useCallback(() => {
@@ -438,7 +440,7 @@ const ChartsView = React.memo(() => {
       case 'overview':
         return OverviewChart;
       case 'trends':
-        return OverviewChart; // Mesmo que overview por agora
+        return OverviewChart;
       case 'categories':
         return CategoriesChart;
       case 'evolution':
@@ -457,13 +459,13 @@ const ChartsView = React.memo(() => {
             text-2xl font-bold
             ${isDark ? 'text-gray-100' : 'text-gray-900'}
           `}>
-            Análise Gráfica
+            {t('charts.title')}
           </h1>
           <p className={`
             mt-1 text-sm
             ${isDark ? 'text-gray-400' : 'text-gray-500'}
           `}>
-            Visualize suas finanças através de gráficos interativos
+            {t('charts.subtitle')}
           </p>
         </div>
         
@@ -473,7 +475,7 @@ const ChartsView = React.memo(() => {
             px-4 py-2 rounded-lg text-center
             ${isDark ? 'bg-gray-800' : 'bg-gray-50'}
           `}>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Total Transações</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">{t('charts.totalTransactions')}</div>
             <div className="font-semibold text-gray-900 dark:text-gray-100">
               {transactionCount}
             </div>
@@ -482,7 +484,7 @@ const ChartsView = React.memo(() => {
             px-4 py-2 rounded-lg text-center
             ${isDark ? 'bg-gray-800' : 'bg-gray-50'}
           `}>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Categorias</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">{t('charts.categories')}</div>
             <div className="font-semibold text-gray-900 dark:text-gray-100">
               {(categories?.income?.length || 0) + (categories?.expenses?.length || 0)}
             </div>
@@ -501,7 +503,7 @@ const ChartsView = React.memo(() => {
         {renderActiveTab()}
       </div>
 
-      {/* Footer com informações */}
+      {/* Footer com informações - traduzido */}
       <div className={`
         text-xs text-center py-4 border-t
         ${isDark 
@@ -509,8 +511,7 @@ const ChartsView = React.memo(() => {
           : 'text-gray-400 border-gray-200'
         }
       `}>
-        Dados baseados nas suas transações • Período: {selectedPeriod} • 
-        Categorias dinâmicas ativas • Atualizado em tempo real
+        {t('charts.footerMessage', { period: selectedPeriod })}
       </div>
     </div>
   );

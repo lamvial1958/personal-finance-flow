@@ -98,7 +98,7 @@ export default defineConfig(({ command, mode }) => {
           lang: 'pt-BR',
           dir: 'ltr',
           // NOVO: Versão no manifest para forçar detecção de mudanças
-          version: '1.5.1',
+          version: '1.6.0',
           icons: [
             {
               src: isProduction ? '/personal-finance-flow/icon-192.png' : '/icon-192.png',
@@ -172,7 +172,7 @@ export default defineConfig(({ command, mode }) => {
     
     // NOVO: Definições para debugging de atualizações
     define: {
-      __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.5.1'),
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.6.0'),
       __BUILD_DATE__: JSON.stringify(new Date().toISOString()),
       // NOVO: Flag para debugging de atualizações
       __PWA_DEBUG__: JSON.stringify(!isProduction)
