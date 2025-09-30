@@ -1,24 +1,61 @@
 /**
  * AuthenticationForm.jsx - Componente de Autenticação com Tema
- * Estados LOCAIS + Suporte a Modo Escuro + Sistema Multilínguas
+ * Estados LOCAIS + Suporte a Modo Escuro + Sistema Multilínguas + Seletor de Idioma
  * 
  * FUNCIONALIDADE v1.6.0:
  * - Classes Tailwind dark mode aplicadas
  * - Transições suaves entre temas
  * - Estados 100% locais mantidos
  * - Sistema multilínguas integrado
+ * - Seletor visual de idioma pré-autenticação
  * 
  * Localização: C:\Personal_Finance_Flow\src\components\Auth\AuthenticationForm.jsx
  */
 
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../hooks/useTheme';
-import { useLanguage } from '../../hooks/useLanguage'; // NOVO: Sistema multilínguas
+import { useLanguage } from '../../hooks/useLanguage';
 import dbManager from '../../db-manager.js';
+
+// Componente de seleção de idioma pré-autenticação
+const LanguageSelectorPreAuth = () => {
+  const { language: currentLanguage, changeLanguage, availableLanguages } = useLanguage();
+
+  return (
+    <div className="mb-6">
+      <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-3 font-medium">
+        Select Your Language
+      </p>
+      <div className="grid grid-cols-6 gap-2">
+        {availableLanguages.map((lang) => (
+          <button
+            key={lang.code}
+            onClick={() => changeLanguage(lang.code)}
+            className={`flex flex-col items-center p-2 rounded-lg transition-all ${
+              currentLanguage === lang.code
+                ? 'bg-blue-100 dark:bg-blue-900 ring-2 ring-blue-500'
+                : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+            }`}
+            title={lang.nativeName}
+          >
+            <span className="text-3xl mb-1">{lang.flag}</span>
+            <span className={`text-xs font-medium ${
+              currentLanguage === lang.code
+                ? 'text-blue-600 dark:text-blue-400'
+                : 'text-gray-600 dark:text-gray-400'
+            }`}>
+              {lang.code.toUpperCase()}
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const AuthenticationForm = () => {
   const { isDark } = useTheme();
-  const { t } = useLanguage(); // NOVO: Hook de tradução
+  const { t } = useLanguage();
   
   // Estados locais - SEM CONTEXT API PARA EVITAR LOOPS
   const [isSystemSetup, setIsSystemSetup] = useState(null);
@@ -35,7 +72,7 @@ const AuthenticationForm = () => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        console.log('🔍 Initializing authentication system...');
+        console.log('🔐 Initializing authentication system...');
         await dbManager.initialize();
         
         const setupCheck = await dbManager.checkSetup();
@@ -120,6 +157,10 @@ const AuthenticationForm = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4 transition-colors">
       <div className="max-w-md w-full space-y-6">
+        
+        {/* NOVO: Seletor de Idioma */}
+        <LanguageSelectorPreAuth />
+        
         {/* Header com tema */}
         <div className="text-center">
           <div className="mx-auto h-16 w-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-4 transition-colors">
@@ -152,10 +193,7 @@ const AuthenticationForm = () => {
               <input
                 type="password"
                 value={password}
-                onChange={(e) => {
-                  console.log('🔑 Typing setup password:', e.target.value.length, 'chars');
-                  setPassword(e.target.value);
-                }}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors"
                 placeholder={t('auth.placeholders.minimumChars')}
                 autoComplete="new-password"
@@ -169,10 +207,7 @@ const AuthenticationForm = () => {
               <input
                 type="password"
                 value={confirmPassword}
-                onChange={(e) => {
-                  console.log('🔑 Confirming password:', e.target.value.length, 'chars');
-                  setConfirmPassword(e.target.value);
-                }}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors"
                 placeholder={t('auth.placeholders.confirmPassword')}
                 autoComplete="new-password"
@@ -200,10 +235,7 @@ const AuthenticationForm = () => {
               <input
                 type="password"
                 value={password}
-                onChange={(e) => {
-                  console.log('🔑 Typing login password:', e.target.value.length, 'chars');
-                  setPassword(e.target.value);
-                }}
+                onChange={(e) => setPassword(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
                 className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors"
                 placeholder={t('auth.placeholders.enterPassword')}
@@ -258,14 +290,14 @@ const AuthenticationForm = () => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors"
-                placeholder={t('auth.placeholders.newPassword')}
+                placeholder={t('auth.placeholders.enterNewPassword')}
                 autoComplete="new-password"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('auth.fields.confirmNewPassword')}
+                {t('auth.fields.confirmPassword')}
               </label>
               <input
                 type="password"
@@ -281,7 +313,7 @@ const AuthenticationForm = () => {
               onClick={handleChangePassword}
               className="w-full bg-green-600 dark:bg-green-700 text-white py-3 px-4 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
             >
-              {t('auth.actions.changePassword')}
+              {t('auth.actions.confirmChange')}
             </button>
 
             <button
