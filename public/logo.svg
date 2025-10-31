@@ -1,0 +1,25 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="256" fill="#2563EB"/>
+
+  <!-- V&M Letters -->
+  <g fill="#FFFFFF">
+    <!-- V Letter -->
+    <path d="M160 160 L200 280 L240 160 L280 160 L220 340 L180 340 L120 160 Z"/>
+
+    <!-- & Symbol -->
+    <circle cx="256" cy="220" r="8" fill="#93C5FD"/>
+
+    <!-- M Letter -->
+    <path d="M280 160 L320 160 L320 340 L290 340 L290 220 L256 280 L222 220 L222 340 L192 340 L192 160 L232 160 L256 210 L280 160 Z" transform="translate(60, 0)"/>
+  </g>
+
+  <!-- Dollar Sign Accent -->
+  <g fill="#93C5FD" opacity="0.8">
+    <rect x="400" y="140" width="6" height="80" rx="3"/>
+    <circle cx="403" cy="135" r="6"/>
+    <circle cx="403" cy="225" r="6"/>
+    <path d="M 380 160 Q 403 150, 426 160" stroke="#93C5FD" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M 380 200 Q 403 210, 426 200" stroke="#93C5FD" stroke-width="6" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

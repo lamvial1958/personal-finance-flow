@@ -126,9 +126,9 @@ const AuthenticatedApp = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg transition-colors">
-              <img 
-                src="/icon-192.png" 
-                alt="V&M Finance Logo" 
+              <img
+                src="/logo-clean.svg"
+                alt="V&M Finance Logo"
                 className="w-8 h-8 object-contain"
               />
             </div>
