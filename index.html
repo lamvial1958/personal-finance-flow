@@ -59,7 +59,30 @@
       .loading-content {
         text-align: center;
       }
-      
+
+      .loading-logo {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 1rem;
+        padding: 0.75rem;
+        background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.3);
+        animation: logoFloat 2s ease-in-out infinite;
+      }
+
+      .loading-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
+      }
+
+      @keyframes logoFloat {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+      }
+
       .loading-spinner {
         width: 40px;
         height: 40px;
@@ -163,11 +186,16 @@
         #loading-screen {
           background: #111827;
         }
-        
+
+        .loading-logo {
+          background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+          box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.5);
+        }
+
         .loading-title {
           color: #f9fafb;
         }
-        
+
         .loading-subtitle {
           color: #9ca3af;
         }
@@ -178,6 +206,9 @@
     <!-- Loading Screen -->
     <div id="loading-screen">
       <div class="loading-content">
+        <div class="loading-logo">
+          <img src="/icon-192.png" alt="V&M Finance Logo" />
+        </div>
         <div class="loading-spinner"></div>
         <h2 class="loading-title">V&M Personal Finance</h2>
         <p class="loading-subtitle">Carregando aplicativo...</p>
