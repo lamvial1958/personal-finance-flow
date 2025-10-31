@@ -164,10 +164,10 @@ const AuthenticationForm = () => {
         {/* Header com tema */}
         <div className="text-center">
           <div className="mx-auto h-16 w-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-4 transition-colors">
-            <img 
-              src="/icon-192.png" 
-              alt="Logo" 
-              className="h-12 w-12 object-contain" 
+            <img
+              src="/logo-clean.svg"
+              alt="V&M Finance Logo"
+              className="h-12 w-12 object-contain"
             />
           </div>
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100 transition-colors">
