@@ -17,6 +17,9 @@ import React, { useState, useEffect } from 'react';
 // NOVO: Sistema i18n
 import './i18n'; // Inicializar sistema de tradução
 
+// Logo com caminho baseado no BASE_URL do Vite (funciona em dev e produção)
+const logoSvg = `${import.meta.env.BASE_URL}logo-clean.svg`;
+
 // Context Providers
 import { AppProvider } from './context/AppContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -127,7 +130,7 @@ const AuthenticatedApp = () => {
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg transition-colors">
               <img
-                src="/logo-clean.svg"
+                src={logoSvg}
                 alt="V&M Finance Logo"
                 className="w-8 h-8 object-contain"
               />

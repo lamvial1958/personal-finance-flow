@@ -17,6 +17,9 @@ import { useTheme } from '../../hooks/useTheme';
 import { useLanguage } from '../../hooks/useLanguage';
 import dbManager from '../../db-manager.js';
 
+// Logo com caminho baseado no BASE_URL do Vite (funciona em dev e produção)
+const logoSvg = `${import.meta.env.BASE_URL}logo-clean.svg`;
+
 // Componente de seleção de idioma pré-autenticação
 const LanguageSelectorPreAuth = () => {
   const { language: currentLanguage, changeLanguage, availableLanguages } = useLanguage();
@@ -165,7 +168,7 @@ const AuthenticationForm = () => {
         <div className="text-center">
           <div className="mx-auto h-16 w-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-4 transition-colors">
             <img
-              src="/logo-clean.svg"
+              src={logoSvg}
               alt="V&M Finance Logo"
               className="h-12 w-12 object-contain"
             />
